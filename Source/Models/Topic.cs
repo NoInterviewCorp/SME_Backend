@@ -7,6 +7,5 @@ namespace Module_SME.Models
         public string Name { get; set; }
         public List<Question> Questions { get; set; }
         public int TechnologyId { get; set; }
-
     }
 }

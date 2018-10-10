@@ -1,8 +1,8 @@
 namespace Module_SME.Models
 {
-    public enum BloomTaxonomy
+    public enum BloomTaxonomy : byte
     {
-        Knowledge,
+        Knowledge = 1,
         Comprehension,
         Application,
         Analysis,
