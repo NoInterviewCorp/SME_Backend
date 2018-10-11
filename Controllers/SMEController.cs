@@ -15,7 +15,7 @@ namespace SME.Controllers
         [HttpGet]
         public IActionResult Get()
         {
-            BloomTaxonomy bloom = (BloomTaxonomy)2;
+            BloomTaxonomy bloom = (BloomTaxonomy)6;
             return Ok(bloom.ToString());
         }
 
