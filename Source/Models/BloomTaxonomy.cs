@@ -1,4 +1,4 @@
-namespace Module_SME.Models
+namespace SME.Models
 {
     public enum BloomTaxonomy : byte
     {

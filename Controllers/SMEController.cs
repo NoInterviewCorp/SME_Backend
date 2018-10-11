@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SME.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace SME.Controllers
@@ -12,34 +13,35 @@ namespace SME.Controllers
     {
         // GET api/SME
         [HttpGet]
-        public ActionResult<IEnumerable<string>> Get()
+        public IActionResult Get()
         {
-            return new string[] { "value1", "value2" };
+            BloomTaxonomy bloom = (BloomTaxonomy)2;
+            return Ok(bloom.ToString());
         }
 
-        // GET api/SME/5
-        [HttpGet("{id}")]
-        public ActionResult<string> Get(int id)
-        {
-            return "value";
-        }
+        // // GET api/SME/
+        // [HttpGet("{techName}")]
+        // public IActionResult Get(string techName, [FromQuery] int bloomLevel)
+        // {
+        //     return "value";
+        // }
 
-        // POST api/SME
-        [HttpPost]
-        public void Post([FromBody] string value)
-        {
-        }
+        // // POST api/SME
+        // [HttpPost]
+        // public IActionResult Post([FromBody] string value)
+        // {
+        // }
 
-        // PUT api/SME/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
+        // // PUT api/SME/5
+        // [HttpPut("{id}")]
+        // public IActionResult Put(int id, [FromBody] string value)
+        // {
+        // }
 
-        // DELETE api/SME/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-        }
+        // // DELETE api/SME/5
+        // [HttpDelete("{id}")]
+        // public IActionResult Delete(int id)
+        // {
+        // }
     }
 }

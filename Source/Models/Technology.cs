@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace SME_Backend.Models
+namespace SME.Models
 {
     public class Technology
     {

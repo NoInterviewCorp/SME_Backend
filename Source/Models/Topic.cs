@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-namespace Module_SME.Models
+namespace SME.Models
 {
     public class Topic
     {
