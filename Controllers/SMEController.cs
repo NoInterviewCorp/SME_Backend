@@ -72,7 +72,7 @@ namespace SME.Controllers
             }
             else
             {
-                return Created(technologyObj);
+                return Created("api/tech",technologyObj);
             }
         }
 
@@ -87,7 +87,7 @@ namespace SME.Controllers
             }
             else
             {
-                return Created(technologyObj);
+                return Ok();
             }
         }
 

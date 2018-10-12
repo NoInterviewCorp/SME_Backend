@@ -1,5 +1,7 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 using SME.Models;
 
 namespace SME.Persistence{
@@ -11,8 +13,7 @@ namespace SME.Persistence{
         }
 
         public List<Technology> GetAllTechnologies(){
-            List<Technology> technologies = new List<Technology>();
-            return technologies;
+            return context.Technologies.Include(t=>t.Topics).ToList();
         }
 
         public List<Topic> GetAllTopicsInATechnology(string technology){
@@ -30,11 +31,11 @@ namespace SME.Persistence{
         }
 
         public Technology UpdateQuestions(string techName, Technology technology){
-
+            return new Technology();
         }
 
-        public boolean DeleteQuestionById(string technology, string topic, int questionId){
-            
+        public bool DeleteQuestionById(string technology, string topic, int questionId){
+            return false;
         }
     }
 }
