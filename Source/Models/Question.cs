@@ -6,7 +6,7 @@ namespace SME.Models
     public class Question
     {
         [Key]
-        public string QuestionId { get; set; }
+        public int QuestionId { get; set; }
         [Required]
         public string ProblemStatement { get; set; }
         [Required]

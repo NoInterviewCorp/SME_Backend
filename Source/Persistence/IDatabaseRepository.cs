@@ -5,7 +5,11 @@ namespace SME.Persistence
     public interface IDatabaseRepository
     {
         List<Technology> GetAllTechnologies();
-        List<Topic> GetAllTopicsInATechnology();
+        List<Topic> GetAllTopicsInATechnology(string technology);
+        List<Question> GetAllQuestionsFromTopic(string technology, string topic, BloomTaxonomy bloomlevel);
+        Technology PostToTechnology(Technology technology);
+        Technology UpdateQuestions(string techName, Technology technology);
+        boolean DeleteQuestionById(string technology, string topic, int questionId );
         
     }
 }
