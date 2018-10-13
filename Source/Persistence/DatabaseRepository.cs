@@ -17,24 +17,55 @@ namespace SME.Persistence{
         }
 
         public List<Topic> GetAllTopicsInATechnology(string technology){
-            List<Topic> topics = new List<Topic>();
+            var technologies = GetAllTechnologies();
+            if(technologies == null){
+                return null;
+            }
+            var tech = technologies.FirstOrDefault(t => t.Name == technology);
+            if(tech == null){
+                return null;
+            }
+            List<Topic> topics = tech.Topics;
             return topics;
         }
 
         public List<Question> GetAllQuestionsFromTopic(string technology, string topic, BloomTaxonomy bloomlevel){
-            List<Question> questions = new List<Question>();
+            var topics = GetAllTopicsInATechnology(technology); 
+            if(topics == null){
+                return null;
+            }
+            var topicObj = topics.FirstOrDefault(t => t.Name == topic);
+            if(topicObj == null){
+                return null;
+            }
+            int topicId = topicObj.TopicId;
+            List<Question> questions =  context.Questions
+                                        .Include(q=>q.Options)
+                                        .Where(q=> q.TopicId == topicId)
+                                        .ToList();
             return questions;
         }
 
         public Technology PostToTechnology(Technology technology){
-            return new Technology();;
+            if(context.Technologies.FirstOrDefault(t=>t.Name == technology.Name) == null){
+                context.Technologies.Add(technology);
+                context.SaveChanges();
+                return technology;
+            }
+            return null;
         }
 
-        public Technology UpdateQuestions(string techName, Technology technology){
-            return new Technology();
+        public Technology UpdateQuestions(string topicName, Technology technology){
+            
+            if(GetAllTopicsInATechnology(technology.Name).FirstOrDefault(t => t.Name == topicName) != null){
+                // TODO: Add UPDATE database logic here 
+                return technology;
+            }
+            return null;
         }
 
         public bool DeleteQuestionById(string technology, string topic, int questionId){
+            // TODO: Add DELETE logic here
             return false;
         }
     }

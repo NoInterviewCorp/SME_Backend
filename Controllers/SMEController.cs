@@ -8,13 +8,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace SME.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class SMEController : ControllerBase
     {
         private IDatabaseRepository repository;
 
-        SMEController(IDatabaseRepository repository)
+        public SMEController(IDatabaseRepository repository)
         {
             this.repository = repository;
         }
@@ -33,16 +33,16 @@ namespace SME.Controllers
 
         // GET api/SME/
         [HttpGet("{technology}")]
-        public IActionResult Get(string technolgy, [FromQuery] string topic, [FromQuery] int bloomAsInt)
+        public IActionResult Get(string technology, [FromQuery] string topic, [FromQuery] int bloomAsInt)
         {
             // if the request doesn't contain any query parameters we give all topics
             // in a particular technology
-            if (topic == "" && bloomAsInt == 0)
+            if (topic == null && bloomAsInt == 0)
             {
-                var topics = repository.GetAllTopicsInATechnology(technolgy);
+                var topics = repository.GetAllTopicsInATechnology(technology);
                 if (topics == null)
                 {
-                    topics = new List<Topic>();
+                    return NotFound();
                 }
                 return Ok(topics);
             }
@@ -52,10 +52,10 @@ namespace SME.Controllers
             {
                 // convert the bloomlevel from integer to enum form
                 BloomTaxonomy bloomLevel = (BloomTaxonomy)bloomAsInt;
-                var questions = repository.GetAllQuestionsFromTopic(technolgy, topic, bloomLevel);
+                var questions = repository.GetAllQuestionsFromTopic(technology, topic, bloomLevel);
                 if (questions == null)
                 {
-                    questions = new List<Question>();
+                    return NotFound();
                 }
                 return Ok(questions);
             }
@@ -65,30 +65,38 @@ namespace SME.Controllers
         [HttpPost]
         public IActionResult Post([FromBody] Technology technology)
         {
-            var technologyObj = repository.PostToTechnology(technology);
-            if (technologyObj == null)
+            if (ModelState.IsValid)
             {
-                return BadRequest("Input value is invalid");
+                var technologyObj = repository.PostToTechnology(technology);
+                if (technologyObj == null)
+                {
+                    return BadRequest("Input value is invalid");
+                }
+                else
+                {
+                    return Created("api/tech", technologyObj);
+                }
             }
-            else
-            {
-                return Created("api/tech",technologyObj);
-            }
+            return BadRequest();
         }
 
         // PUT api/SME/5
         [HttpPut("{techName}")]
         public IActionResult Put(string techName, [FromBody] Technology technology)
         {
-            var technologyObj = repository.UpdateQuestions(techName, technology);
-            if (technologyObj == null)
+            if (ModelState.IsValid)
             {
-                return NotFound();
+                var technologyObj = repository.UpdateQuestions(techName, technology);
+                if (technologyObj == null)
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    return Ok();
+                }
             }
-            else
-            {
-                return Ok();
-            }
+            return BadRequest();
         }
 
         // DELETE api/SME/5
@@ -96,10 +104,12 @@ namespace SME.Controllers
         public IActionResult Delete(string techName, [FromQuery] string topicName, [FromQuery] int questionId)
         {
             var hasDeleted = repository.DeleteQuestionById(techName, topicName, questionId);
-            if(!hasDeleted){
+            if (!hasDeleted)
+            {
                 return NotFound("Deletion failed. Your input values was invalid.");
             }
-            else{
+            else
+            {
                 return Ok("Question has been successfully deleted");
             }
         }
