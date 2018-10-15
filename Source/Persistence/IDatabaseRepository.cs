@@ -8,8 +8,11 @@ namespace SME.Persistence
         List<Topic> GetAllTopicsInATechnology(string technology);
         List<Question> GetAllQuestionsFromTopic(string technology, string topic, BloomTaxonomy bloomlevel);
         Technology PostToTechnology(Technology technology);
-        Technology UpdateQuestions(string topicName, Technology technology);
-        bool DeleteQuestionById(string technology, string topic, int questionId );
-        
+        Question PostToTopic(Question question);
+        Technology UpdateTechnology(Technology technology);
+        Question UpdateQuestions(Question question);
+        bool DeleteTechnology(string technology);
+        bool DeleteQuestionById(int questionId);
+
     }
 }

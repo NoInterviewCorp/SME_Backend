@@ -19,7 +19,7 @@ namespace SME.Controllers
             this.repository = repository;
         }
 
-        // GET api/SME
+        // GET SME
         [HttpGet]
         public IActionResult Get()
         {
@@ -31,7 +31,7 @@ namespace SME.Controllers
             return Ok(technologies);
         }
 
-        // GET api/SME/
+        // GET SME
         [HttpGet("{technology}")]
         public IActionResult Get(string technology, [FromQuery] string topic, [FromQuery] int bloomAsInt)
         {
@@ -61,8 +61,8 @@ namespace SME.Controllers
             }
         }
 
-        // POST api/SME
-        [HttpPost]
+        // POST SME
+        [HttpPost()]
         public IActionResult Post([FromBody] Technology technology)
         {
             if (ModelState.IsValid)
@@ -74,36 +74,82 @@ namespace SME.Controllers
                 }
                 else
                 {
-                    return Created("api/tech", technologyObj);
+                    return Created("sme", technologyObj);
                 }
             }
             return BadRequest();
         }
 
-        // PUT api/SME/5
-        [HttpPut("{techName}")]
-        public IActionResult Put(string techName, [FromBody] Technology technology)
+        // POST SME/Angular
+        [HttpPost("{technology}")]
+        public IActionResult Post([FromBody] Question question)
         {
             if (ModelState.IsValid)
             {
-                var technologyObj = repository.UpdateQuestions(techName, technology);
-                if (technologyObj == null)
+                var questionObj = repository.PostToTopic(question);
+                if (questionObj == null)
                 {
-                    return NotFound();
+                    return BadRequest("Input value is invalid");
                 }
                 else
                 {
-                    return Ok();
+                    return Created("sme", questionObj);
                 }
             }
             return BadRequest();
         }
 
-        // DELETE api/SME/5
-        [HttpDelete("{techName}")]
-        public IActionResult Delete(string techName, [FromQuery] string topicName, [FromQuery] int questionId)
+        // PUT SME/5
+        [HttpPut()]
+        public IActionResult Put([FromBody] Technology technology)
         {
-            var hasDeleted = repository.DeleteQuestionById(techName, topicName, questionId);
+            if (ModelState.IsValid)
+            {
+                var technologyObj = repository.UpdateTechnology(technology);
+                if (technologyObj == null)
+                {
+                    return NotFound(technology.Name + " was not found or You didn't include it's ID");
+                }
+                else
+                {
+                    return Created("/sme",technologyObj);
+                }
+            }
+            return BadRequest();
+        }
+
+        // PUT SME/Angular/5
+        [HttpPut("{technology}")]
+        public IActionResult Put([FromBody] Question question)
+        {
+            if (ModelState.IsValid)
+            {
+                var questionObj = repository.UpdateQuestions(question);
+                if (questionObj == null)
+                {
+                    return NotFound("Question with id : " + question.QuestionId + " was not found");
+                }
+                else
+                {
+                    return Ok("Question with id : " + question.QuestionId + " has been updated");
+                }
+            }
+            return BadRequest();
+        }
+
+        // DELETE SME/5
+        [HttpDelete("{technology}")]
+        public IActionResult Delete(string technology,[FromQuery] int questionId)
+        {
+            bool hasDeleted;
+            if (questionId != 0)
+            {
+                hasDeleted = repository.DeleteQuestionById(questionId);
+            }
+            else
+            {
+                hasDeleted = repository.DeleteTechnology(technology);
+            }
             if (!hasDeleted)
             {
                 return NotFound("Deletion failed. Your input values was invalid.");
