@@ -95,7 +95,7 @@ paths:
         summary: "what topics does the learner needs the questions from"
         description: "use this query when you need to retrieve questions from the api"
         required: false
-        type: "integer"
+        type: "string"
       responses:
         200:
           description: "successful fetch of topic's data"
