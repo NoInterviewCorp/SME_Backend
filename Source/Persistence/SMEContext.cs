@@ -7,6 +7,7 @@ namespace SME.Persistence
 {
     public class SMEContext : DbContext
     {
+        // database tables for every model
         public DbSet<Technology> Technologies { get; set; }
         public DbSet<Topic> Topics { get; set; }
         public DbSet<Question> Questions { get; set; }
@@ -17,12 +18,14 @@ namespace SME.Persistence
             optionsBuilder.UseSqlServer(@"Server=localhost\SQLEXPRESS;Database=SME;Trusted_Connection=True;");
         }
 
+        // one to many relationship between the models
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Technology>().HasMany(tech => tech.Topics).WithOne().HasForeignKey(topic => topic.TechnologyId);
             modelBuilder.Entity<Topic>().HasMany(topic => topic.Questions).WithOne().HasForeignKey(question => question.TopicId);
             modelBuilder.Entity<Question>().HasMany(question => question.Options).WithOne().HasForeignKey(option => option.QuestionId);
         }
+        // detaches all the tracked columns by ef core
         public void DetachAllEntities()
         {
             var changedEntriesCopy = this.ChangeTracker.Entries()

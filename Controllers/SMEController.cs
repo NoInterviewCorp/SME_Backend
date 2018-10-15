@@ -12,6 +12,9 @@ namespace SME.Controllers
     [ApiController]
     public class SMEController : ControllerBase
     {
+        // dependency injection for the repository interface
+        // which is responsible for business logic for interacting
+        // with the database
         private IDatabaseRepository repository;
 
         public SMEController(IDatabaseRepository repository)
@@ -19,7 +22,7 @@ namespace SME.Controllers
             this.repository = repository;
         }
 
-        // GET SME
+        // GET SME/
         [HttpGet]
         public IActionResult Get()
         {
@@ -31,12 +34,13 @@ namespace SME.Controllers
             return Ok(technologies);
         }
 
-        // GET SME
+        // GET SME/technology
         [HttpGet("{technology}")]
         public IActionResult Get(string technology, [FromQuery] string topic, [FromQuery] int bloomAsInt)
         {
             // if the request doesn't contain any query parameters we give all topics
             // in a particular technology
+            // GET SME/Angular
             if (topic == null && bloomAsInt == 0)
             {
                 var topics = repository.GetAllTopicsInATechnology(technology);
@@ -48,6 +52,7 @@ namespace SME.Controllers
             }
             // else we will respond with all the questions containing in a particular
             // topic of a particular bloomLevel
+            // GET SME/Angular?topic=Routing&bloomasint=1
             else
             {
                 // convert the bloomlevel from integer to enum form
@@ -61,7 +66,7 @@ namespace SME.Controllers
             }
         }
 
-        // POST SME
+        // POST SME/
         [HttpPost()]
         public IActionResult Post([FromBody] Technology technology)
         {
@@ -99,7 +104,7 @@ namespace SME.Controllers
             return BadRequest();
         }
 
-        // PUT SME/5
+        // PUT SME/
         [HttpPut()]
         public IActionResult Put([FromBody] Technology technology)
         {
@@ -118,7 +123,7 @@ namespace SME.Controllers
             return BadRequest();
         }
 
-        // PUT SME/Angular/5
+        // PUT SME/Angular
         [HttpPut("{technology}")]
         public IActionResult Put([FromBody] Question question)
         {
@@ -137,7 +142,9 @@ namespace SME.Controllers
             return BadRequest();
         }
 
-        // DELETE SME/5
+        // DELETE SME/Angular
+        // or
+        // DELETE SME/Angular?questionid=1
         [HttpDelete("{technology}")]
         public IActionResult Delete(string technology,[FromQuery] int questionId)
         {
