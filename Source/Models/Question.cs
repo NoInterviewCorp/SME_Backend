@@ -15,6 +15,7 @@ namespace SME.Models
         public string ResourceLink { get; set; }
         [Required]
         public BloomTaxonomy BloomLevel { get; set; }
+        public bool HasPublished {get; set;}
         public int TopicId { get; set; }
     }
 }

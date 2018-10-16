@@ -56,7 +56,7 @@ namespace SME.Persistence
             int topicId = topicObj.TopicId;
             List<Question> questions = context.Questions
                                         .Include(q => q.Options)
-                                        .Where(q => q.TopicId == topicId)
+                                        .Where(q => q.HasPublished && q.TopicId == topicId)
                                         .ToList();
             return questions;
         }
@@ -78,6 +78,7 @@ namespace SME.Persistence
         {
             if (context.Questions.FirstOrDefault(q => q.ProblemStatement == question.ProblemStatement) == null)
             {
+                question.HasPublished = true;
                 context.Questions.Add(question);
                 context.SaveChanges();
                 return question;
