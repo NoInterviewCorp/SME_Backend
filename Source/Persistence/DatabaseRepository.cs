@@ -15,6 +15,11 @@ namespace SME.Persistence
             this.context = context;
         }
 
+        public List<Technology> GetAllData()
+        {
+            return context.Technologies.Include(t => t.Topics).ThenInclude(t=>t.Questions).ThenInclude(q => q.Options).ToList();
+        }
+
         // gets all technologies in the database with their respective
         // topics but doesn't include questions
         public List<Technology> GetAllTechnologies()
@@ -41,7 +46,7 @@ namespace SME.Persistence
         }
 
         // returns all questions from a particular topic inside a technology
-        public List<Question> GetAllQuestionsFromTopic(string technology, string topic, BloomTaxonomy bloomlevel)
+        public List<Question> GetAllQuestionsFromTopic(string technology, string topic, bool hasPublished)
         {
             var topics = GetAllTopicsInATechnology(technology);
             if (topics == null)
@@ -56,7 +61,7 @@ namespace SME.Persistence
             int topicId = topicObj.TopicId;
             List<Question> questions = context.Questions
                                         .Include(q => q.Options)
-                                        .Where(q => q.HasPublished && q.TopicId == topicId)
+                                        .Where(q => q.HasPublished == hasPublished && q.TopicId == topicId)
                                         .ToList();
             return questions;
         }
@@ -78,7 +83,6 @@ namespace SME.Persistence
         {
             if (context.Questions.FirstOrDefault(q => q.ProblemStatement == question.ProblemStatement) == null)
             {
-                question.HasPublished = true;
                 context.Questions.Add(question);
                 context.SaveChanges();
                 return question;
@@ -87,12 +91,14 @@ namespace SME.Persistence
         }
 
         // used in PUT, updates the technology or the topics inside it
-        public Technology UpdateTechnology(Technology technology){
-            if(technology.TechnologyId == 0){
+        public Technology UpdateTechnology(Technology technology)
+        {
+            if (technology.TechnologyId == 0)
+            {
                 return null;
             }
             Technology technologyObj = context.Technologies
-                                        .FirstOrDefault(t => t.TechnologyId== technology.TechnologyId);
+                                        .FirstOrDefault(t => t.TechnologyId == technology.TechnologyId);
             if (technologyObj != null)
             {
                 context.DetachAllEntities();
@@ -106,7 +112,7 @@ namespace SME.Persistence
         // used in PUT, updates the questions residing inside a topics
         public Question UpdateQuestions(Question question)
         {
-            Question questionObj = context.Questions.FirstOrDefault(q=>q.QuestionId == question.QuestionId);
+            Question questionObj = context.Questions.FirstOrDefault(q => q.QuestionId == question.QuestionId);
             if (questionObj != null)
             {
                 // detach all entities to prevent error which says
@@ -124,8 +130,9 @@ namespace SME.Persistence
         public bool DeleteQuestionById(int questionId)
         {
             // TODO: Add DELETE logic here
-            Question question = context.Questions.FirstOrDefault(q=>q.QuestionId == questionId);
-            if(question != null){
+            Question question = context.Questions.FirstOrDefault(q => q.QuestionId == questionId);
+            if (question != null)
+            {
                 context.Questions.Remove(question);
                 context.SaveChanges();
                 return true;
@@ -133,9 +140,11 @@ namespace SME.Persistence
             return false;
         }
         // deletes a particular technology using it's technology name
-        public bool DeleteTechnology(string technology){
-            Technology tech = context.Technologies.FirstOrDefault(t=>t.Name==technology);
-            if(tech!=null){
+        public bool DeleteTechnology(string technology)
+        {
+            Technology tech = context.Technologies.FirstOrDefault(t => t.Name == technology);
+            if (tech != null)
+            {
                 context.Technologies.Remove(tech);
                 context.SaveChanges();
                 return true;

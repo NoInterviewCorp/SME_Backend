@@ -23,6 +23,19 @@ namespace SME.Controllers
         }
 
         // GET SME/
+        [Route("/all")]
+        [HttpGet]
+        public IActionResult GetAll()
+        {
+            var technologies = repository.GetAllData();
+            if (technologies == null)
+            {
+                technologies = new List<Technology>();
+            }
+            return Ok(technologies);
+        }
+
+        // GET SME/
         [HttpGet]
         public IActionResult Get()
         {
@@ -36,12 +49,12 @@ namespace SME.Controllers
 
         // GET SME/technology
         [HttpGet("{technology}")]
-        public IActionResult Get(string technology, [FromQuery] string topic, [FromQuery] int bloomAsInt)
+        public IActionResult Get(string technology, [FromQuery] string topic, [FromQuery] bool hasPublished)
         {
             // if the request doesn't contain any query parameters we give all topics
             // in a particular technology
             // GET SME/Angular
-            if (topic == null && bloomAsInt == 0)
+            if (topic == null)
             {
                 var topics = repository.GetAllTopicsInATechnology(technology);
                 if (topics == null)
@@ -50,14 +63,12 @@ namespace SME.Controllers
                 }
                 return Ok(topics);
             }
-            // else we will respond with all the questions containing in a particular
-            // topic of a particular bloomLevel
-            // GET SME/Angular?topic=Routing&bloomasint=1
+            // else we will respond with all the questions containing in a topic
+            // filtering according to if they're published or not
+            // GET SME/Angular?topic=Routing&hasPublished=true
             else
             {
-                // convert the bloomlevel from integer to enum form
-                BloomTaxonomy bloomLevel = (BloomTaxonomy)bloomAsInt;
-                var questions = repository.GetAllQuestionsFromTopic(technology, topic, bloomLevel);
+                var questions = repository.GetAllQuestionsFromTopic(technology, topic, hasPublished);
                 if (questions == null)
                 {
                     return NotFound();
