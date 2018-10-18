@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Swashbuckle.AspNetCore.Swagger;
 using SME.Models;
 using SME.Persistence;
 
@@ -29,7 +30,29 @@ namespace SME
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddDbContext<SMEContext>();
-            services.AddScoped<IDatabaseRepository,DatabaseRepository>();
+            services.AddScoped<IDatabaseRepository, DatabaseRepository>();
+            // Register the Swagger generator, defining 1 or more Swagger documents
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info
+                {
+                    Version = "v1",
+                    Title = "SME API",
+                    Description = "This is a documentation for Learning Resource Input (SME) Module which lets a SME to add, modify and delete resources for our learning system",
+                    TermsOfService = "None",
+                    Contact = new Contact
+                    {
+                        Name = "NoInterviewCorp",
+                        Email = string.Empty,
+                        Url = "https://github.com/NoInterviewCorp/"
+                    },
+                    License = new License
+                    {
+                        Name = "Use under LICX",
+                        Url = "https://example.com/license"
+                    }
+                });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -43,6 +66,16 @@ namespace SME
             {
                 app.UseHsts();
             }
+            // Enable middleware to serve generated Swagger as a JSON endpoint.
+            app.UseSwagger();
+
+            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), 
+            // specifying the Swagger JSON endpoint.
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "SME V1");
+                c.RoutePrefix = string.Empty;
+            });
 
             app.UseHttpsRedirection();
             app.UseMvc();
