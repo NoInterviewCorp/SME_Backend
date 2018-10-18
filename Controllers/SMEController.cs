@@ -22,9 +22,15 @@ namespace SME.Controllers
             this.repository = repository;
         }
 
+        /// <summary>
+        /// Retrieves all database content.
+        /// Used to transfer SME data to Learner Evaluation Module
+        /// </summary>
+        /// <response code="200">Returns the database</response>
         // GET SME/
         [Route("/all")]
         [HttpGet]
+        [ProducesResponseType(200)]
         public IActionResult GetAll()
         {
             var technologies = repository.GetAllData();
@@ -35,8 +41,14 @@ namespace SME.Controllers
             return Ok(technologies);
         }
 
+        /// <summary>
+        /// Retrieves All technologies with their topics from
+        /// the Database. Does not include Questions        
+        /// </summary>
+        /// <response code="200">Returns Technologies with theirTopics</response>
         // GET SME/
         [HttpGet]
+        [ProducesResponseType(200)]
         public IActionResult Get()
         {
             var technologies = repository.GetAllTechnologies();
@@ -47,8 +59,17 @@ namespace SME.Controllers
             return Ok(technologies);
         }
 
+        /// <summary>
+        /// Retrieves either all topics in a <paramref name="technology"/>
+        /// or Retrieves all questions inside a given topics. With <paramref name="hasPublished"/> 
+        /// one can retrieve saved or published questions
+        /// </summary>
+        /// <response code="200">Returns Questions according to the request</response>
+        /// <response code="404">If the item was not found</response> 
         // GET SME/technology
         [HttpGet("{technology}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
         public IActionResult Get(string technology, [FromQuery] string topic, [FromQuery] bool hasPublished)
         {
             // if the request doesn't contain any query parameters we give all topics
@@ -76,9 +97,15 @@ namespace SME.Controllers
                 return Ok(questions);
             }
         }
-
+        /// <summary>
+        /// Posts a <paramref name="technology"/> into the database
+        /// </summary>
+        /// <response code="201">Returns the newly created <paramref name="technology"/></response>
+        /// <response code="400">If the <paramref name="technology"/> already exists or modelstate is invalid </response> 
         // POST SME/
         [HttpPost()]
+        [ProducesResponseType(201)]
+        [ProducesResponseType(400)]
         public IActionResult Post([FromBody] Technology technology)
         {
             if (ModelState.IsValid)
@@ -95,9 +122,15 @@ namespace SME.Controllers
             }
             return BadRequest();
         }
-
+        /// <summary>
+        /// Posts a <paramref name="question"/> into the database
+        /// </summary>
+        /// <response code="201">Returns the newly created question</response>
+        /// <response code="400">If the question already exists or modelstate is invalid </response> 
         // POST SME/Angular
         [HttpPost("{technology}")]
+        [ProducesResponseType(201)]
+        [ProducesResponseType(400)]
         public IActionResult Post([FromBody] Question question)
         {
             if (ModelState.IsValid)
@@ -114,9 +147,16 @@ namespace SME.Controllers
             }
             return BadRequest();
         }
-
+        /// <summary>
+        /// Updates a <paramref name="technology"/> into the database if it
+        /// exists
+        /// </summary>
+        /// <response code="201">Returns the newly updated <paramref name="technology"/></response>
+        /// <response code="400">If the <paramref name="technology"/> doesn not exists or modelstate is invalid </response> 
         // PUT SME/
         [HttpPut()]
+        [ProducesResponseType(201)]
+        [ProducesResponseType(400)]
         public IActionResult Put([FromBody] Technology technology)
         {
             if (ModelState.IsValid)
@@ -133,9 +173,16 @@ namespace SME.Controllers
             }
             return BadRequest();
         }
-
+        /// <summary>
+        /// Updates a <paramref name="question"/> into the database if it
+        /// exists
+        /// </summary>
+        /// <response code="201">Returns the newly created <paramref name="question"/></response>
+        /// <response code="400">If the <paramref name="question"/> does not exists or modelstate is invalid </response> 
         // PUT SME/Angular
         [HttpPut("{technology}")]
+        [ProducesResponseType(201)]
+        [ProducesResponseType(400)]
         public IActionResult Put([FromBody] Question question)
         {
             if (ModelState.IsValid)
@@ -152,11 +199,18 @@ namespace SME.Controllers
             }
             return BadRequest();
         }
-
+        /// <summary>
+        /// Deletes a <paramref name="technology"/> or a question
+        /// using it's id
+        /// </summary>
+        /// <response code="200">On a successful deletion</response>
+        /// <response code="404">If the item does not exists </response> 
         // DELETE SME/Angular
         // or
         // DELETE SME/Angular?questionid=1
         [HttpDelete("{technology}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
         public IActionResult Delete(string technology,[FromQuery] int questionId)
         {
             bool hasDeleted;
