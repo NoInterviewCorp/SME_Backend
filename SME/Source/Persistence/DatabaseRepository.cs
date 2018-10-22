@@ -156,7 +156,7 @@ namespace SME.Persistence
 
         public List<Question> AddQuestionsFromExcel()
         {
-            string pathToExcelFile = @"C:\Users\CGI\Desktop\NoInterviewCorp\SME_Backend\wwwroot\Questions.xlsx";
+            string pathToExcelFile = @"C:\Users\CGI\Desktop\NoInterviewCorp\SME_Backend\SME\wwwroot\Questions.xlsx";
             List<Question> questions = new List<Question>();
             var workbookFileInfo = new FileInfo(pathToExcelFile);
             using (ExcelPackage excelPackage = new ExcelPackage(workbookFileInfo))
