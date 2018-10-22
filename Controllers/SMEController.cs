@@ -147,6 +147,35 @@ namespace SME.Controllers
             }
             return BadRequest();
         }
+
+        /// <summary>
+        /// Posts all the questions from the excel file into the database
+        /// </summary>
+        /// <response code="201">Returns the newly created question</response>
+        /// <response code="400">If the question already exists or modelstate is invalid </response> 
+        // POST SME/Angular
+        [HttpPost()]
+        [Route("/SME/Excel")]
+        [ProducesResponseType(201)]
+        [ProducesResponseType(400)]
+        public IActionResult Post([FromBody] string path)
+        {
+            if (ModelState.IsValid)
+            {
+                var questionObj = repository.AddQuestionsFromExcel();
+                if (questionObj == null)
+                {
+                    return BadRequest("Input value is invalid");
+                }
+                else
+                {
+                    return Created("sme", questionObj);
+                }
+            }
+            return BadRequest();
+        }
+
+
         /// <summary>
         /// Updates a <paramref name="technology"/> into the database if it
         /// exists
@@ -187,7 +216,7 @@ namespace SME.Controllers
         {
             if (ModelState.IsValid)
             {
-                var questionObj = repository.UpdateQuestions(question);
+                var questionObj = repository.UpdateQuestion(question);
                 if (questionObj == null)
                 {
                     return NotFound("Question with id : " + question.QuestionId + " was not found");

@@ -11,9 +11,11 @@ namespace SME.Persistence
         Technology PostToTechnology(Technology technology);
         Question PostToTopic(Question question);
         Technology UpdateTechnology(Technology technology);
-        Question UpdateQuestions(Question question);
+        Question UpdateQuestion(Question question);
         bool DeleteTechnology(string technology);
         bool DeleteQuestionById(int questionId);
+        List<Question> UpdateQuestionsFromExcel(string pathToExcelFile);
+        List<Question> AddQuestionsFromExcel();
 
     }
 }

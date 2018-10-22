@@ -1,8 +1,10 @@
 using System;
+using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using SME.Models;
+using OfficeOpenXml;
 
 namespace SME.Persistence
 {
@@ -17,7 +19,7 @@ namespace SME.Persistence
 
         public List<Technology> GetAllData()
         {
-            return context.Technologies.Include(t => t.Topics).ThenInclude(t=>t.Questions).ThenInclude(q => q.Options).ToList();
+            return context.Technologies.Include(t => t.Topics).ThenInclude(t => t.Questions).ThenInclude(q => q.Options).ToList();
         }
 
         // gets all technologies in the database with their respective
@@ -110,7 +112,7 @@ namespace SME.Persistence
         }
 
         // used in PUT, updates the questions residing inside a topics
-        public Question UpdateQuestions(Question question)
+        public Question UpdateQuestion(Question question)
         {
             Question questionObj = context.Questions.FirstOrDefault(q => q.QuestionId == question.QuestionId);
             if (questionObj != null)
@@ -150,6 +152,77 @@ namespace SME.Persistence
                 return true;
             }
             return false;
+        }
+
+        public List<Question> AddQuestionsFromExcel()
+        {
+            string pathToExcelFile = @"C:\Users\CGI\Desktop\NoInterviewCorp\SME_Backend\wwwroot\Questions.xlsx";
+            List<Question> questions = new List<Question>();
+            var workbookFileInfo = new FileInfo(pathToExcelFile);
+            using (ExcelPackage excelPackage = new ExcelPackage(workbookFileInfo))
+            {
+                var totalWorkSheets = excelPackage.Workbook.Worksheets.Count;
+                for (int sheetIndex = 1; sheetIndex <= totalWorkSheets; sheetIndex++)
+                {
+                    var workSheet = excelPackage.Workbook.Worksheets[sheetIndex];
+                    Console.WriteLine("Worksheet Name: {0}", workSheet.Name);
+                    int rowCount = workSheet.Dimension.Rows;
+                    int columnCount = workSheet.Dimension.Columns;
+                    for (int rowIndex = 2; rowIndex <= rowCount; rowIndex++)
+                    {
+                        Question question = new Question();
+                        question.ProblemStatement = workSheet.Cells[rowIndex, 2].Value.ToString();
+                        question.Options = new List<Option>();
+                        for (int columnIndex = 3; columnIndex < 7; columnIndex++)
+                        {
+                            Option option = new Option
+                            {
+                                Content = workSheet.Cells[rowIndex, columnIndex].Value.ToString()
+                            };
+                            question.Options.Add(option);
+                        }
+                        string[] correctOptions = workSheet.Cells[rowIndex, 7].Value.ToString()
+                                                    .Split(new char[] { ' ', ',', '&' });
+                        foreach(string correctOption in correctOptions)
+                        {
+                            int option = 0;
+                            if (Int32.TryParse(correctOption, out option))
+                            {
+                                question.Options[option - 1].IsCorrect = true;
+                            }
+                            else{
+                                throw new ArgumentException("Correct Option Column in the Excel document is filled in an invalid format");
+                            }
+                        }
+                        question.ResourceLink = workSheet.Cells[rowIndex, 8].Value.ToString();
+                        int bloomAsInt = 0;
+                        if(Int32.TryParse(workSheet.Cells[rowIndex, 9].Value.ToString(), out bloomAsInt)){
+                            question.BloomLevel = (BloomTaxonomy)bloomAsInt;
+                        }
+                        else{
+                            throw new ArgumentException("Bloom level is specified in an invalid format in the excel file");
+                        }
+                        question.HasPublished = true;
+                        Topic topic = context.Topics.FirstOrDefault(t => t.Name == workSheet.Cells[rowIndex, 1].Value.ToString());
+                        if(topic == null){
+                            throw new ArgumentException("Topic name mentioned in the excel file doesn't match with entries inside the database. Please re-enter the topic name");
+                        }
+                        else{
+                            question.TopicId = topic.TopicId;
+                        }
+                        questions.Add(question);
+                        context.Questions.Add(question);
+                        context.SaveChanges();
+                    }
+                }
+            }
+            return questions;
+        }
+
+        public List<Question> UpdateQuestionsFromExcel(string pathToExcelFile)
+        {
+            List<Question> questions = new List<Question>();
+            return questions;
         }
     }
 }
