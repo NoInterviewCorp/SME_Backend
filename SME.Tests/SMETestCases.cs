@@ -153,9 +153,9 @@ namespace SME.Tests
             dataRepo.Setup(d => d.GetAllTopicsInATechnology(technology)).Returns(list);
             SMEController sMEController = new SMEController(dataRepo.Object);
 
-            var actionResult = sMEController.Get(technology,null,false);
+            var actionResult = sMEController.Get(technology, null, false);
 
-            var okObjectResult = actionResult as NotFoundObjectResult;
+            Assert.IsType<NotFoundResult>(actionResult);
         }
 
         [Fact]
@@ -181,18 +181,144 @@ namespace SME.Tests
             Assert.Equal(list.Count, model.Count);
         }
         [Fact]
-        public void GetAllQuestionsInATech_Negative_ReturnsNotFound(){
+        public void GetAllQuestionsInATech_Negative_ReturnsNotFound()
+        {
             var dataRepo = new Mock<IDatabaseRepository>();
             string technology = "Java";
             string topic = "OOPS";
             bool hasPublished = false;
             List<Question> list = null;
-            dataRepo.Setup(d => d.GetAllQuestionsFromTopic(technology,topic,hasPublished)).Returns(list);
+            dataRepo.Setup(d => d.GetAllQuestionsFromTopic(technology, topic, hasPublished)).Returns(list);
             SMEController sMEController = new SMEController(dataRepo.Object);
 
-            var actionResult = sMEController.Get(technology,topic,hasPublished);
+            var actionResult = sMEController.Get(technology, topic, hasPublished);
 
-            var okObjectResult = actionResult as NotFoundObjectResult;
+            Assert.IsType<NotFoundResult>(actionResult);
+        }
+
+        [Fact]
+        public void PostTechnology_Positive_ReturnsCreatedObject()
+        {
+            var dataRepo = new Mock<IDatabaseRepository>();
+            Technology technology = new Technology
+            {
+                Name = "Java",
+                Topics = new List<Topic>()
+            };
+            dataRepo.Setup(d => d.PostToTechnology(technology)).Returns(technology);
+            SMEController sMEController = new SMEController(dataRepo.Object);
+
+            var actionResult = sMEController.Post(technology);
+            Assert.NotNull(actionResult);
+
+            var createdResult = actionResult as CreatedResult;
+            Assert.NotNull(createdResult);
+
+            var model = createdResult.Value as Technology;
+            Assert.NotNull(model);
+        }
+
+        [Fact]
+        public void PostTechnology_Negative_ReturnsBadRequest()
+        {
+            var dataRepo = new Mock<IDatabaseRepository>();
+            Technology technology = null;
+            dataRepo.Setup(d => d.PostToTechnology(technology)).Returns(technology);
+            SMEController sMEController = new SMEController(dataRepo.Object);
+
+            var actionResult = sMEController.Post(technology);
+            Assert.IsType<BadRequestObjectResult>(actionResult);
+        }
+
+        [Fact]
+        public void PostQuestion_Positive_ReturnsCreatedObject()
+        {
+            var dataRepo = new Mock<IDatabaseRepository>();
+            Question question = new Question();
+            dataRepo.Setup(d => d.PostToTopic(question)).Returns(question);
+            SMEController sMEController = new SMEController(dataRepo.Object);
+
+            var actionResult = sMEController.Post(question);
+            Assert.NotNull(actionResult);
+
+            var createdResult = actionResult as CreatedResult;
+            Assert.NotNull(createdResult);
+
+            var model = createdResult.Value as Question;
+            Assert.NotNull(model);
+        }
+
+        [Fact]
+        public void PostQuestion_Negative_ReturnsBadRequest()
+        {
+            var dataRepo = new Mock<IDatabaseRepository>();
+            Question question = null;
+            dataRepo.Setup(d => d.PostToTopic(question)).Returns(question);
+            SMEController sMEController = new SMEController(dataRepo.Object);
+
+            var actionResult = sMEController.Post(question);
+            Assert.IsType<BadRequestObjectResult>(actionResult);
+        }
+
+
+        [Fact]
+        public void PutTechnology_Positive_ReturnsUpdatedObject()
+        {
+            var dataRepo = new Mock<IDatabaseRepository>();
+            Technology technology = new Technology
+            {
+                Name = "Java",
+                Topics = new List<Topic>()
+            };
+            dataRepo.Setup(d => d.UpdateTechnology(technology)).Returns(technology);
+            SMEController sMEController = new SMEController(dataRepo.Object);
+
+            var actionResult = sMEController.Put(technology);
+            Assert.NotNull(actionResult);
+
+            var createdResult = actionResult as CreatedResult;
+            Assert.NotNull(createdResult);
+
+            var model = createdResult.Value as Technology;
+            Assert.NotNull(model);
+        }
+
+        [Fact]
+        public void PutTechnology_Negative_ReturnsBadRequest()
+        {
+            var dataRepo = new Mock<IDatabaseRepository>();
+            Technology technology = null;
+            dataRepo.Setup(d => d.UpdateTechnology(technology)).Returns(technology);
+            SMEController sMEController = new SMEController(dataRepo.Object);
+
+            var actionResult = sMEController.Put(new Technology());
+            Assert.IsType<NotFoundObjectResult>(actionResult);
+        }
+        [Fact]
+        public void DeleteTechnology_Positive_ReturnsOk()
+        {
+            var dataRepo = new Mock<IDatabaseRepository>();
+            string technology = "C#";
+            dataRepo.Setup(d => d.DeleteTechnology(technology)).Returns(true);
+            SMEController sMEController = new SMEController(dataRepo.Object);
+
+            var actionResult = sMEController.Delete(technology, 0);
+            Assert.NotNull(actionResult);
+
+            var okObjectResult = actionResult as OkObjectResult;
+            Assert.NotNull(okObjectResult);
+        }
+        [Fact]
+        public void DeleteTechnology_Negative_ReturnsNotFound()
+        {
+            var dataRepo = new Mock<IDatabaseRepository>();
+            string technology = "Java";
+            dataRepo.Setup(d => d.DeleteTechnology(technology)).Returns(false);
+            SMEController sMEController = new SMEController(dataRepo.Object);
+
+            var actionResult = sMEController.Delete(technology, 0);
+            Assert.NotNull(actionResult);
+            Assert.IsType<NotFoundObjectResult>(actionResult);
         }
     }
 }
