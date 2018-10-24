@@ -6,8 +6,6 @@ notifications:
     on_success: always
     on_failure: always
   slack: cgiwave6:1NqbLKzmuRjgH6YOBVndxtwR
-    on_success: always
-    on_failure: always
 mono: none
 dotnet: 2.1
 script
