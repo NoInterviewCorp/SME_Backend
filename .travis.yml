@@ -1,9 +1,10 @@
 language: csharp
 solution: SME_Backend
 notifications:
-  slack: cgiwave6:1NqbLKzmuRjgH6YOBVndxtwR
+  email:
     on_success: always
     on_failure: always
+  slack: cgiwave6:1NqbLKzmuRjgH6YOBVndxtwR
 mono: none
 dotnet: 2.1
 script
