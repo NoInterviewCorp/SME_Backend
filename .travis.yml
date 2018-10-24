@@ -7,6 +7,6 @@ notifications:
   slack: cgiwave6:1NqbLKzmuRjgH6YOBVndxtwR
 mono: none
 dotnet: 2.1
-script
+script:
   - dotnet restore
   - dotnet test SME.Tests
