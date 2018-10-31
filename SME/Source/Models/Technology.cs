@@ -6,10 +6,10 @@ namespace SME.Models
     public class Technology
     {
         [Key]
-        public int TechnologyId { get; set; }
+        public string TechnologyId { get; set; }
         [Required]
         public string Name { get; set; }
         [Required]
-        public List<Topic> Topics { get; set; }
+        public List<Concept> Concepts { get; set; }
     }
 }

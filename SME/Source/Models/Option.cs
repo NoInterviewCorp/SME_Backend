@@ -5,10 +5,10 @@ namespace SME.Models
     public class Option
     {
         [Key]
-        public int OptionId { get; set; }
+        public string OptionId { get; set; }
         [Required]
         public string Content { get; set; }
         public bool IsCorrect { get; set; }
-        public int QuestionId { get; set; }
+        public string QuestionId { get; set; }
     }
 }

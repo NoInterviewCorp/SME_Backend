@@ -6,16 +6,16 @@ namespace SME.Models
     public class Question
     {
         [Key]
-        public int QuestionId { get; set; }
+        public strings QuestionId { get; set; }
         [Required]
         public string ProblemStatement { get; set; }
         [Required]
         public List<Option> Options { get; set; }
         [Required]
-        public string ResourceLink { get; set; }
-        [Required]
         public BloomTaxonomy BloomLevel { get; set; }
         public bool HasPublished {get; set;}
-        public int TopicId { get; set; }
+        public string TopicId { get; set; }
+        public string ResourceId { get; set; }
+        public string ConceptId { get; set; }
     }
 }

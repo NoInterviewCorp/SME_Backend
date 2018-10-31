@@ -12,6 +12,10 @@ namespace SME.Persistence
         public DbSet<Topic> Topics { get; set; }
         public DbSet<Question> Questions { get; set; }
         public DbSet<Option> Options { get; set; }
+        public DbSet<Resource> Resources { get; set; }
+        public DbSet<Concept> Concepts { get; set; }
+        public DbSet<LearningPlan> LearningPlan { get; set; }
+        
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -21,9 +25,9 @@ namespace SME.Persistence
         // one to many relationship between the models
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Technology>().HasMany(tech => tech.Topics).WithOne().HasForeignKey(topic => topic.TechnologyId);
-            modelBuilder.Entity<Topic>().HasMany(topic => topic.Questions).WithOne().HasForeignKey(question => question.TopicId);
-            modelBuilder.Entity<Question>().HasMany(question => question.Options).WithOne().HasForeignKey(option => option.QuestionId);
+            // modelBuilder.Entity<Technology>().HasMany(tech => tech.Topics).WithOne().HasForeignKey(topic => topic.TechnologyId);
+            // modelBuilder.Entity<Topic>().HasMany(topic => topic.Questions).WithOne().HasForeignKey(question => question.TopicId);
+            // modelBuilder.Entity<Question>().HasMany(question => question.Options).WithOne().HasForeignKey(option => option.QuestionId);
         }
         // detaches all the tracked columns by ef core
         public void DetachAllEntities()
