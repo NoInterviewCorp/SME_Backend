@@ -1,15 +1,13 @@
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 namespace SME.Models
 {
-    public class Option
+    public class ConceptQuestion
     {
         [Key]
-        public string OptionId { get; set; }
-        [Required]
-        public string Content { get; set; }
-        public bool IsCorrect { get; set; }
+        public string ConceptId { get; set; }
+        public Concept Concept { get; set; }
+        [Key]
         public string QuestionId { get; set; }
         public Question Question { get; set; }
     }

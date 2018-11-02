@@ -13,9 +13,9 @@ namespace SME.Models
         public List<Option> Options { get; set; }
         [Required]
         public BloomTaxonomy BloomLevel { get; set; }
-        public bool HasPublished {get; set;}
-        public string TopicId { get; set; }
+        public bool HasPublished { get; set; }
+        public Resource Resource { get; set; }
         public string ResourceId { get; set; }
-        public string ConceptId { get; set; }
+        public List<ConceptQuestion> ConceptQuestions { get; set; }
     }
 }

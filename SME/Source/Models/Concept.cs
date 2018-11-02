@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 namespace SME.Models{
     public class Concept{
         [Key]
@@ -5,11 +8,11 @@ namespace SME.Models{
         [Required]
         public string Name { get; set; }
         // foreign key to topic
-        public List<Topic> Topics { get; set;}
+        public List<ConceptTechnology> ConceptTechnologies { get; set;}
         // foreign key to question
-        public List<Question> Questions { get; set; }
+        public List<ConceptQuestion> ConceptQuestions { get; set; }
         // foreign key to resources
-        public List<Resource> Resources { get; set; }
+        public List<ResourceConcept> ResourceConcepts { get; set; }
 
     }
 }
