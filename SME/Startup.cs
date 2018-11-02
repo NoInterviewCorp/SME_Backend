@@ -32,7 +32,7 @@ namespace SME
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddDbContext<SMEContext>();
-            services.AddScoped<IDatabaseRepository, DatabaseRepository>();
+            // services.AddScoped<IDatabaseRepository, DatabaseRepository>();
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>
             {

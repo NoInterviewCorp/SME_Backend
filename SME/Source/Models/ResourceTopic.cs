@@ -5,10 +5,8 @@ namespace SME.Models
 {
     public class ResourceTopic
     {
-        [Key]
         public string ResourceId { get; set; }
         public Resource Resource { get; set; }
-        [Key]
         public string TopicId { get; set; }
         public Topic Topic { get; set; }
     }
