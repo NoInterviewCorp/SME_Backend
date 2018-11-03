@@ -1,26 +1,73 @@
-﻿// using System;
-// using System.Collections.Generic;
-// using System.Linq;
-// using System.Threading.Tasks;
-// using SME.Models;
-// using SME.Persistence;
-// using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using SME.Models;
+using SME.Persistence;
+using Microsoft.AspNetCore.Mvc;
 
-// namespace SME.Controllers
-// {
-//     [Route("[controller]")]
-//     [ApiController]
-//     public class SMEController : ControllerBase
-//     {
-//         // dependency injection for the repository interface
-//         // which is responsible for business logic for interacting
-//         // with the database
-//         private IDatabaseRepository repository;
+namespace SME.Controllers
+{
+    [Route("[controller]")]
+    [ApiController]
+    public class ResourceController : ControllerBase
+    {
+        // dependency injection for the repository interface
+        // which is responsible for business logic for interacting
+        // with the database
+        private IDatabaseRepository repository;
 
-//         public SMEController(IDatabaseRepository repository)
-//         {
-//             this.repository = repository;
-//         }
+        public ResourceController(IDatabaseRepository repository)
+        {
+            this.repository = repository;
+        }
+
+        /// <summary>
+        /// Retrieves All Resources from the Database
+        /// </summary>
+        /// <response code="200">Returns all Resources </response>
+        // GET Resource/
+        [HttpGet]
+        [ProducesResponseType(200)]
+        public IActionResult GetResources()
+        {
+            var resources = repository.GetResources();
+            if (resources == null)
+            {
+                resources = new List<Resource>();
+            }
+            return Ok(resources);
+        }
+
+        /// <summary>
+        /// Posts a <paramref name="resource"/> into the database
+        /// </summary>
+        /// <param name="resource"> Object of type resource which needs to be posted
+        /// to the database </param>
+        /// <response code="201">Returns the newly created resource</response>
+        /// <response code="400">If the resource already exists or modelstate is invalid </response> 
+        // POST SME/
+        [HttpPost()]
+        [ProducesResponseType(201)]
+        [ProducesResponseType(400)]
+        public IActionResult Post([FromBody] Resource resource)
+        {
+            if (ModelState.IsValid)
+            {
+                var resourceObj = repository.AddResource(resource);
+                if (resourceObj == null)
+                {
+                    return BadRequest("Resource submitted is invalid");
+                }
+                else
+                {
+                    return Created("/resource", resourceObj);
+                }
+            }
+            return BadRequest();
+        }       
+    }
+}
 
 //         /// <summary>
 //         /// Retrieves all database content.
@@ -97,31 +144,7 @@
 //                 return Ok(questions);
 //             }
 //         }
-//         /// <summary>
-//         /// Posts a <paramref name="technology"/> into the database
-//         /// </summary>
-//         /// <response code="201">Returns the newly created <paramref name="technology"/></response>
-//         /// <response code="400">If the <paramref name="technology"/> already exists or modelstate is invalid </response> 
-//         // POST SME/
-//         [HttpPost()]
-//         [ProducesResponseType(201)]
-//         [ProducesResponseType(400)]
-//         public IActionResult Post([FromBody] Technology technology)
-//         {
-//             if (ModelState.IsValid)
-//             {
-//                 var technologyObj = repository.PostToTechnology(technology);
-//                 if (technologyObj == null)
-//                 {
-//                     return BadRequest("Input value is invalid");
-//                 }
-//                 else
-//                 {
-//                     return Created("sme", technologyObj);
-//                 }
-//             }
-//             return BadRequest();
-//         }
+
 //         /// <summary>
 //         /// Posts a <paramref name="question"/> into the database
 //         /// </summary>

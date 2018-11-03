@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Newtonsoft.Json;
 namespace SME.Models
 {
     public class Topic
@@ -12,6 +13,7 @@ namespace SME.Models
         [Required]
         public List<ResourceTopic> ResourceTopics { get; set; }
         public string LearningPlanId { get; set; }
+        [JsonIgnore]
         public LearningPlan LearningPlan { get; set; }
     }
 }
