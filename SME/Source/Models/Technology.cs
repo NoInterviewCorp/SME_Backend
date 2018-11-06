@@ -14,6 +14,7 @@ namespace SME.Models
         public List<ConceptTechnology> ConceptTechnologies { get; set; }
         // Foreign Key for One-Many relationship
         public List<LearningPlan> LearningPlans { get; set; }
+        public List<Question> Questions { get; set; }
 
     }
 }

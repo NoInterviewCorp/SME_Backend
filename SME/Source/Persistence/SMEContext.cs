@@ -61,6 +61,10 @@ namespace SME.Persistence
             // 1-M Learning plan -> Technology
             modelBuilder.Entity<LearningPlan>().HasOne(lp => lp.Technology)
             .WithMany(t => t.LearningPlans).HasForeignKey(lp => lp.TechnologyId);
+
+            // 1-M Technology -> Question
+            modelBuilder.Entity<Question>().HasOne(q=>q.Technology)
+            .WithMany(t=>t.Questions).HasForeignKey(q=>q.TechnologyId);
             
             // M-M Concept -> Question
             modelBuilder.Entity<ConceptQuestion>().HasOne(cq => cq.Concept)

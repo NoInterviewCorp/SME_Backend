@@ -18,6 +18,9 @@ namespace SME.Models
         [JsonIgnore]
         public Resource Resource { get; set; }
         public string ResourceId { get; set; }
+        [JsonIgnore]
+        public Technology Technology { get; set; }
+        public string TechnologyId { get; set; }
         public List<ConceptQuestion> ConceptQuestions { get; set; }
     }
 }
