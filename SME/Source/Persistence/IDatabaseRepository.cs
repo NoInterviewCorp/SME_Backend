@@ -28,6 +28,7 @@ namespace SME.Persistence
 
         // Technology
         List<Technology> GetAllTechnologies();
+        Technology AddTechnology(Technology technology);
         Technology GetTechnologyByName(string name);
         Technology UpdateTechnology(Technology technology);
 

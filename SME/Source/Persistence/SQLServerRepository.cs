@@ -43,6 +43,8 @@ namespace SME.Persistence
         {
             if (context.Concepts.FirstOrDefault(c=>c.ConceptId == concept.ConceptId) != null)
             {
+                
+                context.DetachAllEntities();
                 context.Concepts.Update(concept);
                 context.SaveChanges();
                 return concept;
@@ -91,6 +93,7 @@ namespace SME.Persistence
         {
             if (context.Resources.FirstOrDefault(r=> r.ResourceId == resource.ResourceId) != null)
             {
+                context.DetachAllEntities();
                 context.Resources.Update(resource);
                 context.SaveChanges();
                 return resource;
@@ -139,6 +142,7 @@ namespace SME.Persistence
         {
             if (context.LearningPlan.FirstOrDefault(lp=>lp.LearningPlanId == learningPlan.LearningPlanId) != null)
             {
+                context.DetachAllEntities();
                 context.LearningPlan.Update(learningPlan);
                 context.SaveChanges();
                 return learningPlan;
@@ -171,6 +175,7 @@ namespace SME.Persistence
         {
             if (context.Technologies.FirstOrDefault(t => t.TechnologyId == technology.TechnologyId) != null)
             {
+                context.DetachAllEntities();
                 context.Technologies.Update(technology);
                 context.SaveChanges();
                 return technology;
@@ -196,6 +201,7 @@ namespace SME.Persistence
         {
             if (context.Questions.FirstOrDefault(q => q.QuestionId == question.QuestionId) != null)
             {
+                context.DetachAllEntities();
                 context.Questions.Update(question);
                 context.SaveChanges();
                 return question;
