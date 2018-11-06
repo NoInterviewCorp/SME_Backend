@@ -33,7 +33,7 @@ namespace SME.Persistence
 
         // Question
         Question AddQuestion(Question question);
-        Question GetQuestions();
+        List<Question> GetQuestions();
         Question UpdateQuestion(Question question);
     }
 }

@@ -75,7 +75,16 @@ namespace SME.Persistence
         }
 
         public List<Resource> GetResourceByTechnology(string technology){
-            return context.Resources.FindAll(r=>r.Technology == technology).ToList();
+            var techObj = context.Technologies.FirstOrDefault(t=>t.Name==technology);
+            if(techObj!=null){
+                List<Resource> resources = new List<Resource>();
+                var listRT =  context.ResourceTechnologies.Include(rt=>rt.Resource).Where(rt=>rt.TechnologyId == techObj.TechnologyId).ToList();
+                foreach(ResourceTechnology rt in listRT){
+                    resources.Add(rt.Resource);
+                }
+                return resources;
+            }
+            return null;
         }
 
         public Resource UpdateResource(Resource resource)
@@ -123,7 +132,7 @@ namespace SME.Persistence
         }
 
         public List<LearningPlan> GetLearningPlansByTechnology(string technology){
-            return context.LearningPlan.FindAll(lp=>lp.Technology == technology).ToList();
+            return context.LearningPlan.Where(lp=>lp.Technology.Name == technology).ToList();
         }
 
         public LearningPlan UpdateLearningPlan(LearningPlan learningPlan)
@@ -179,7 +188,7 @@ namespace SME.Persistence
             return null;
         }
 
-        public Question GetQuestions(){
+        public List<Question> GetQuestions(){
             return context.Questions.ToList();
         }
 
