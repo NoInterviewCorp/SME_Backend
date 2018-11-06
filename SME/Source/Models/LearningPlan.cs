@@ -16,5 +16,6 @@ namespace SME.Models
         [JsonIgnore]
         public Technology Technology { get; set; }
 
+
     }
 }

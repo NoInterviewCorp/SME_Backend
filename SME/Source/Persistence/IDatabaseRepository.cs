@@ -5,26 +5,35 @@ namespace SME.Persistence
 {
     public interface IDatabaseRepository
     {
-
-        List<Resource> GetResources();
-        Resource AddResource(Resource  resource);
-        Concept AddConcept(Concept concept);
+        // Concept
+        Concept AddConcept(Concept concept, bool skipFind = false);
         List<Concept> GetConcepts();
+        Concept GetConceptByName(string name);
+        Concept UpdateConcept(Concept concept);
+
+        // Resource
+        Resource AddResource(Resource  resource);
+        List<Resource> GetResources();
+        Resource GetResourceByLink(string link);
+        List<Resource> GetResourceByTechnology(string technology);
+        Resource UpdateResource(Resource resource);
+
+        // Learning Plan
         LearningPlan AddLearningPlan(LearningPlan learningPlan);
         IQueryable<LearningPlan> GetLearningPlans();
         LearningPlan GetLearningPlanById(string learningPlanId);
         IQueryable<LearningPlan> GetLearningPlansByUserName(string userName);
-        // List<Technology> GetAllTechnologies();
-        // List<Topic> GetAllTopicsInAResource(string Resource);
-        // List<Question> GetAllQuestionsFromTopic(string technology, string topic, bool hasPublished);
-        // Technology PostToTechnology(Technology technology);
-        // Question PostToTopic(Question question);
-        // Technology UpdateTechnology(Technology technology);
-        // Question UpdateQuestion(Question question);
-        // bool DeleteTechnology(string technology);
-        // bool DeleteQuestionById(int questionId);
-        // List<Question> UpdateQuestionsFromExcel(string pathToExcelFile);
-        // List<Question> AddQuestionsFromExcel();
+        List<LearningPlan> GetLearningPlansByTechnology(string technology);
+        LearningPlan UpdateLearningPlan(LearningPlan learningPlan);
 
+        // Technology
+        List<Technology> GetAllTechnologies();
+        Technology GetTechnologyByName(string name);
+        Technology UpdateTechnology(Technology technology);
+
+        // Question
+        Question AddQuestion(Question question);
+        Question GetQuestions();
+        Question UpdateQuestion(Question question);
     }
 }
