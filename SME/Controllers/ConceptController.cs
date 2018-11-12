@@ -80,7 +80,7 @@ namespace SME.Controllers
                 }
                 else
                 {
-                    return Created("concept", conceptObj);
+                    return Created("/concept", conceptObj);
                 }
             }
             return BadRequest();
@@ -107,7 +107,7 @@ namespace SME.Controllers
                 }
                 else
                 {
-                    return Created("/sme", ConceptObj);
+                    return Created("/concept", ConceptObj);
                 }
             }
             return BadRequest();

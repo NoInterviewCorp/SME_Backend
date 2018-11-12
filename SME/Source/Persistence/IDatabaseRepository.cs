@@ -35,6 +35,7 @@ namespace SME.Persistence
         // Question
         Question AddQuestion(Question question);
         List<Question> GetQuestions();
+        List<Question> GetQuestionsByConceptOfATech(string technology, string concept);
         Question UpdateQuestion(Question question);
     }
 }

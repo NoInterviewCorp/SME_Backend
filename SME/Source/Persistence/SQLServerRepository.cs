@@ -35,15 +35,16 @@ namespace SME.Persistence
             return context.Concepts.ToList();
         }
 
-        public Concept GetConceptByName(string name){
-            return context.Concepts.FirstOrDefault(c=>c.Name == name);
+        public Concept GetConceptByName(string name)
+        {
+            return context.Concepts.FirstOrDefault(c => c.Name == name);
         }
 
         public Concept UpdateConcept(Concept concept)
         {
-            if (context.Concepts.FirstOrDefault(c=>c.ConceptId == concept.ConceptId) != null)
+            if (context.Concepts.FirstOrDefault(c => c.ConceptId == concept.ConceptId) != null)
             {
-                
+
                 context.DetachAllEntities();
                 context.Concepts.Update(concept);
                 context.SaveChanges();
@@ -72,16 +73,20 @@ namespace SME.Persistence
             return context.Resources.Include(r => r.ResourceConcepts).ToList();
         }
 
-        public Resource GetResourceByLink(string link){
-            return context.Resources.FirstOrDefault(r=>r.ResourceLink == link);
+        public Resource GetResourceByLink(string link)
+        {
+            return context.Resources.FirstOrDefault(r => r.ResourceLink == link);
         }
 
-        public List<Resource> GetResourceByTechnology(string technology){
-            var techObj = context.Technologies.FirstOrDefault(t=>t.Name==technology);
-            if(techObj!=null){
+        public List<Resource> GetResourceByTechnology(string technology)
+        {
+            var techObj = context.Technologies.FirstOrDefault(t => t.Name == technology);
+            if (techObj != null)
+            {
                 List<Resource> resources = new List<Resource>();
-                var listRT =  context.ResourceTechnologies.Include(rt=>rt.Resource).Where(rt=>rt.TechnologyId == techObj.TechnologyId).ToList();
-                foreach(ResourceTechnology rt in listRT){
+                var listRT = context.ResourceTechnologies.Include(rt => rt.Resource).Where(rt => rt.TechnologyId == techObj.TechnologyId).ToList();
+                foreach (ResourceTechnology rt in listRT)
+                {
                     resources.Add(rt.Resource);
                 }
                 return resources;
@@ -91,7 +96,7 @@ namespace SME.Persistence
 
         public Resource UpdateResource(Resource resource)
         {
-            if (context.Resources.FirstOrDefault(r=> r.ResourceId == resource.ResourceId) != null)
+            if (context.Resources.FirstOrDefault(r => r.ResourceId == resource.ResourceId) != null)
             {
                 context.DetachAllEntities();
                 context.Resources.Update(resource);
@@ -134,13 +139,14 @@ namespace SME.Persistence
             return context.LearningPlan.FirstOrDefault(lp => lp.LearningPlanId == learningPlanId);
         }
 
-        public List<LearningPlan> GetLearningPlansByTechnology(string technology){
-            return context.LearningPlan.Where(lp=>lp.Technology.Name == technology).ToList();
+        public List<LearningPlan> GetLearningPlansByTechnology(string technology)
+        {
+            return context.LearningPlan.Where(lp => lp.Technology.Name == technology).ToList();
         }
 
         public LearningPlan UpdateLearningPlan(LearningPlan learningPlan)
         {
-            if (context.LearningPlan.FirstOrDefault(lp=>lp.LearningPlanId == learningPlan.LearningPlanId) != null)
+            if (context.LearningPlan.FirstOrDefault(lp => lp.LearningPlanId == learningPlan.LearningPlanId) != null)
             {
                 context.DetachAllEntities();
                 context.LearningPlan.Update(learningPlan);
@@ -157,12 +163,15 @@ namespace SME.Persistence
             return context.Technologies.ToList();
         }
 
-        public Technology GetTechnologyByName(string name){
-            return context.Technologies.FirstOrDefault(t=>t.Name == name);
+        public Technology GetTechnologyByName(string name)
+        {
+            return context.Technologies.FirstOrDefault(t => t.Name == name);
         }
 
-        public Technology AddTechnology(Technology technology){
-            if(context.Technologies.FirstOrDefault(t=>t.Name == technology.Name)==null){
+        public Technology AddTechnology(Technology technology)
+        {
+            if (context.Technologies.FirstOrDefault(t => t.Name == technology.Name) == null)
+            {
                 technology.TechnologyId = Guid.NewGuid().ToString("N");
                 context.Technologies.Add(technology);
                 context.SaveChanges();
@@ -183,8 +192,10 @@ namespace SME.Persistence
             return null;
         }
 
-        public Question AddQuestion(Question question){
-            if(context.Questions.FirstOrDefault(q => q.ProblemStatement == question.ProblemStatement)==null){
+        public Question AddQuestion(Question question)
+        {
+            if (context.Questions.FirstOrDefault(q => q.ProblemStatement == question.ProblemStatement) == null)
+            {
                 question.QuestionId = Guid.NewGuid().ToString("N");
                 context.Questions.Add(question);
                 context.SaveChanges();
@@ -193,8 +204,22 @@ namespace SME.Persistence
             return null;
         }
 
-        public List<Question> GetQuestions(){
+        public List<Question> GetQuestions()
+        {
             return context.Questions.ToList();
+        }
+
+        public List<Question> GetQuestionsByConceptOfATech(string technology, string concept)
+        {
+            string technologyId = context.Technologies.FirstOrDefault(t => t.Name.ToLower() == technology.ToLower()).TechnologyId;
+            string conceptId = context.Concepts.FirstOrDefault(c => c.Name.ToLower() == concept.ToLower()).ConceptId;
+            return context.Questions.Include(q => q.ConceptQuestions)
+                .Where(q => 
+                    (q.TechnologyId == technologyId)
+                    &&
+                    (q.ConceptQuestions.Where(cq => cq.ConceptId == conceptId) != null)
+                ).ToList();
+
         }
 
         public Question UpdateQuestion(Question question)

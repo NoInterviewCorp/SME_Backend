@@ -102,7 +102,7 @@ namespace SME.Controllers
                 }
                 else
                 {
-                    return Created("concept", learningplanObj);
+                    return Created("/learningplan", learningplanObj);
                 }
             }
             return BadRequest();
@@ -130,7 +130,7 @@ namespace SME.Controllers
                 }
                 else
                 {
-                    return Created("/sme", learningPlanObj);
+                    return Created("/learningplan", learningPlanObj);
                 }
             }
             return BadRequest();

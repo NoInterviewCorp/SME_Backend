@@ -80,7 +80,7 @@ namespace SME.Controllers
                 }
                 else
                 {
-                    return Created("technology", technologyObj);
+                    return Created("/technology", technologyObj);
                 }
             }
             return BadRequest();
@@ -108,7 +108,7 @@ namespace SME.Controllers
                 }
                 else
                 {
-                    return Created("/sme", technologyObj);
+                    return Created("/technology", technologyObj);
                 }
             }
             return BadRequest();

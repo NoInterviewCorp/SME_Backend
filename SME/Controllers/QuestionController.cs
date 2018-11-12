@@ -32,6 +32,25 @@ namespace SME.Controllers
             }
             return Ok(resources);
         }
+        /// <summary>
+        /// Gets questions from the database according to concept and technology
+        /// </summary>
+        /// <param name="technology">Name of technology you want questions of</param>
+        /// <param name="concept">Name of concept you want questions of</param>
+        /// <response code="200">Returns the question</response>
+        /// <response code="404">If the question doesn't exist for the given specs</response> 
+        [HttpGet("{technology}/{concept}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
+        public IActionResult GetQuestionsByConcept_Tech(string technology, string concept)
+        {
+            var resources = repository.GetQuestionsByConceptOfATech(technology,concept);
+            if (resources == null)
+            {
+                return NotFound();
+            }
+            return Ok(resources);
+        }
 
         /// <summary>
         /// Posts a <paramref name="question"/> into the database
