@@ -15,9 +15,9 @@ namespace SME.Controllers
         // dependency injection for the repository interface
         // which is responsible for business logic for interacting
         // with the database
-        private IDatabaseRepository repository;
+        private ILearningPlanRepository repository;
 
-        public LearningPlanController(IDatabaseRepository repository)
+        public LearningPlanController(ILearningPlanRepository repository)
         {
             this.repository = repository;
         }
@@ -34,7 +34,7 @@ namespace SME.Controllers
             var resources = repository.GetLearningPlans();
             if (resources == null)
             {
-                return Ok("There are no Learning plans. You can create your own Learning plan");
+                return NotFound("There are no Learning plans. You can create your own Learning plan");
             }
             return Ok(resources);
         }

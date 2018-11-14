@@ -15,6 +15,7 @@ using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.Swagger;
 using SME.Models;
 using SME.Persistence;
+using SME.Services;
 
 namespace SME
 {
@@ -31,8 +32,10 @@ namespace SME
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-            services.AddDbContext<SMEContext>();
-            services.AddScoped<IDatabaseRepository, SQLServerRepository>();
+            // services.AddDbContext<SMEContext>();
+            // services.AddScoped<IDatabaseRepository, SQLServerRepository>();
+            services.AddSingleton<GraphDbConnection>();
+            services.AddScoped<IResourceRepository, ResourceRepository>();
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>
             {

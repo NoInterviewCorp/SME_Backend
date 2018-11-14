@@ -15,9 +15,9 @@ namespace SME.Controllers
         // dependency injection for the repository interface
         // which is responsible for business logic for interacting
         // with the database
-        private IDatabaseRepository repository;
+        private ITechnologyRepository repository;
 
-        public TechnologyController(IDatabaseRepository repository)
+        public TechnologyController(ITechnologyRepository repository)
         {
             this.repository = repository;
         }

@@ -6,19 +6,18 @@ namespace SME.Models
     public class Resource
     {
         // Entity Attributes
-        [Key]
+        // [JsonProperty("resourceId")]
         public string ResourceId { get; set; }
-        [Required]
+        // [JsonProperty("resourceLink")]
         public string ResourceLink { get; set; }
-        [Required]
+        
         public List<Question> Questions { get; set; }
         public BloomTaxonomy BloomLevel { get; set; }
         public bool HasPublished { get; set; }
         // Foreign Keys
-        [Required]
-        public List<ResourceConcept> ResourceConcepts { get; set; }
-        public List<ResourceTechnology> ResourceTechnologies { get; set; }
-        public List<ResourceTopic> ResourceTopics { get; set; }
+        public List<Concept> Concept { get; set; }
+        public List<Technology> Technologies { get; set; }
+        public List<Topic> Topics { get; set; }
 
     }
 }
