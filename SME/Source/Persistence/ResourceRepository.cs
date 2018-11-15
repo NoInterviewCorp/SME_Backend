@@ -16,26 +16,72 @@ namespace SME.Persistence
         // Resource
         public async Task<Resource> AddResourceAsync(Resource resource)
         {
+            // Add an unique id to resource
             resource.ResourceId = Guid.NewGuid().ToString("N");
-            var result = await graph.Cypher
-                .Merge("(resourceNode:Resource {ResourceLink : {link} }) ")
-                .OnCreate()
-                .Set("resourceNode = {resource}")
-                .WithParams(new
-                {
-                    link = resource.ResourceLink,
-                    resource
-                })
-                .Return(resourceNode => resourceNode.As<Resource>())
-                .ResultsAsync;
-            List<Resource> resultList = new List<Resource>(result);
-            if (resultList.Count > 0)
+            // Linking technologies between resource and each of its concepts
+            List<Concept> concepts = new List<Concept>();
+            List<Technology> technologies = new List<Technology>();
+            if (resource.Concepts != null)
             {
-                // Console.WriteLine(resultList.Count);
-                return resultList[0];
+                concepts = new List<Concept>(resource.Concepts);
+                resource.Concepts = null;
             }
-            return null;
+            if (resource.Technologies != null)
+            {
+                technologies = new List<Technology>(resource.Technologies);
+                resource.Technologies = null;
+            }
+            // queries
+            // query to create a resource
+            var matchResource = graph.Cypher
+                .Match("(r:Resource)")
+                .Where((Resource r) => r.ResourceLink == resource.ResourceLink)
+                .Return(r => r.As<Resource>())
+                .Results;
+            var list = new List<Resource>(matchResource);
+            if (list.Count > 0)
+            {
+                return null;
+            }
+            else
+            {
+                var resQuery = await graph.Cypher
+                    .Create("(res:Resource {resource})")
+                    // .ForEach("concept in {lConcepts} | MERGE (c:Concept {Name:concept.Name}) ON CREATE c SET c = concept CREATE (res) -[:EXPLAINS]->(c)")
+                    .WithParams(new
+                    {
+                        // lConcepts = concepts,
+                        resource
+                    })
+                    .Return(res => res.As<Resource>())
+                    .ResultsAsync;
+                Neo4jClient.Cypher.ICypherFluentQuery conceptQuery = graph.Cypher;
+                foreach (Concept concept in concepts)
+                {
+                   await graph.Cypher
+                        .Merge("(con:Concept {Name:{conceptName}})")
+                        .OnCreate()
+                        .Set("con={concept}")
+                        .With("con")
+                        .Match("(r:Resource)")
+                        .Where((Resource r) => r.ResourceId == resource.ResourceId)
+                        .Create("(r)-[:EXPLAINS]->(con)")
+                        .WithParams(new
+                        {
+                            // id = resource.ResourceId,
+                            conceptName = concept.Name,
+                            concept
+                        })
+                        .ExecuteWithoutResultsAsync();
+                }
+                // resQuery= await resQuery.Return(res=>res.As<Resource>()).ExecuteWithoutResultsAsync();
+                // await conceptQuery.ExecuteWithoutResultsAsync();
+                return new List<Resource>(resQuery)[0];
+            }
         }
+
+       
+
         // public Task<List<Resource>> GetResourcesAsync()
         // {
         //     return null;

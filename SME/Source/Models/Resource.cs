@@ -15,9 +15,8 @@ namespace SME.Models
         public BloomTaxonomy BloomLevel { get; set; }
         public bool HasPublished { get; set; }
         // Foreign Keys
-        public List<Concept> Concept { get; set; }
+        public List<Concept> Concepts { get; set; }
         public List<Technology> Technologies { get; set; }
-        public List<Topic> Topics { get; set; }
 
     }
 }
