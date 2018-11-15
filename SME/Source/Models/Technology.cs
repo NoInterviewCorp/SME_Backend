@@ -9,10 +9,8 @@ namespace SME.Models
         public string TechnologyId { get; set; }
         [Required]
         public string Name { get; set; }
-        // Many-Many relationships
-        public List<ResourceTechnology> ResourceTechnologies { get; set; }
-        public List<ConceptTechnology> ConceptTechnologies { get; set; }
-        // Foreign Key for One-Many relationship
+        public List<Resource> Resources { get; set; }
+        public List<Concept> Concepts { get; set; }
         public List<LearningPlan> LearningPlans { get; set; }
         public List<Question> Questions { get; set; }
 

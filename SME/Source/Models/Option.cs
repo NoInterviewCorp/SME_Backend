@@ -11,8 +11,5 @@ namespace SME.Models
         [Required]
         public string Content { get; set; }
         public bool IsCorrect { get; set; }
-        public string QuestionId { get; set; }
-        [JsonIgnore]
-        public Question Question { get; set; }
     }
 }

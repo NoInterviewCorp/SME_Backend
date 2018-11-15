@@ -11,9 +11,7 @@ namespace SME.Models
         [Required]
         public string Name { get; set; }
         [Required]
-        public List<ResourceTopic> ResourceTopics { get; set; }
-        public string LearningPlanId { get; set; }
-        [JsonIgnore]
+        public List<Resource> Resources { get; set; }
         public LearningPlan LearningPlan { get; set; }
     }
 }
