@@ -45,42 +45,58 @@ namespace SME.Persistence
             }
             else
             {
-                var resQuery = await graph.Cypher
+                await graph.Cypher
                     .Create("(res:Resource {resource})")
-                    // .ForEach("concept in {lConcepts} | MERGE (c:Concept {Name:concept.Name}) ON CREATE c SET c = concept CREATE (res) -[:EXPLAINS]->(c)")
                     .WithParams(new
                     {
-                        // lConcepts = concepts,
                         resource
                     })
                     .Return(res => res.As<Resource>())
                     .ResultsAsync;
-                Neo4jClient.Cypher.ICypherFluentQuery conceptQuery = graph.Cypher;
                 foreach (Concept concept in concepts)
                 {
-                   await graph.Cypher
-                        .Merge("(con:Concept {Name:{conceptName}})")
-                        .OnCreate()
-                        .Set("con={concept}")
-                        .With("con")
-                        .Match("(r:Resource)")
-                        .Where((Resource r) => r.ResourceId == resource.ResourceId)
-                        .Create("(r)-[:EXPLAINS]->(con)")
-                        .WithParams(new
+                    await graph.Cypher
+                          .Merge("(con:Concept {Name:{conceptName}})")
+                          .OnCreate()
+                          .Set("con={concept}")
+                          .With("con")
+                          .Match("(r:Resource)")
+                          .Where((Resource r) => r.ResourceId == resource.ResourceId)
+                          .Create("(r)-[:EXPLAINS]->(con)")
+                          .WithParams(new
+                          {
+                              conceptName = concept.Name,
+                              concept
+                          })
+                     .ExecuteWithoutResultsAsync();
+                    foreach (Technology technology in technologies)
+                    {
+                        if (technology.TechnologyId == null)
                         {
-                            // id = resource.ResourceId,
-                            conceptName = concept.Name,
-                            concept
-                        })
-                        .ExecuteWithoutResultsAsync();
+                            technology.TechnologyId = Guid.NewGuid().ToString("N");
+                        }
+                        await graph.Cypher
+                               .Merge("(t:Technology {Name:{techName}})")
+                               .OnCreate()
+                               .Set("t={technology}")
+                               .With("t")
+                               .Match("(con:Concept)")
+                               .Where((Concept con) => con.Name == concept.Name)
+                               //    .With("con")
+                               .Create("(con)-[:BELONGS_TO]->(t)")
+                               .WithParams(new
+                               {
+                                   techName = technology.Name,
+                                   technology
+                               })
+                               .ExecuteWithoutResultsAsync();
+                    }
                 }
-                // resQuery= await resQuery.Return(res=>res.As<Resource>()).ExecuteWithoutResultsAsync();
-                // await conceptQuery.ExecuteWithoutResultsAsync();
                 return new List<Resource>(resQuery)[0];
             }
         }
 
-       
+
 
         // public Task<List<Resource>> GetResourcesAsync()
         // {
