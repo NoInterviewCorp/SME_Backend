@@ -26,10 +26,16 @@ namespace SME.Persistence
                 concepts = new List<Concept>(resource.Concepts);
                 resource.Concepts = null;
             }
+            else{
+                return null;
+            }
             if (resource.Technologies != null)
             {
                 technologies = new List<Technology>(resource.Technologies);
                 resource.Technologies = null;
+            }
+            else{
+                return null;
             }
             // queries
             // query to create a resource
@@ -45,16 +51,21 @@ namespace SME.Persistence
             }
             else
             {
-                await graph.Cypher
-                    .Create("(res:Resource {resource})")
-                    .WithParams(new
-                    {
-                        resource
-                    })
-                    .Return(res => res.As<Resource>())
-                    .ResultsAsync;
+                var resQuery = new List<Resource>(
+                    await graph.Cypher
+                        .Create("(res:Resource {resource})")
+                        .WithParams(new
+                        {
+                            resource
+                        })
+                        .Return(res => res.As<Resource>())
+                        .ResultsAsync
+                    )[0];
                 foreach (Concept concept in concepts)
                 {
+                    // Converting resource/technology/concept names to lower case
+                    // for faster indexed searches
+                    concept.Name = concept.Name.ToUpper();
                     await graph.Cypher
                           .Merge("(con:Concept {Name:{conceptName}})")
                           .OnCreate()
@@ -62,7 +73,7 @@ namespace SME.Persistence
                           .With("con")
                           .Match("(r:Resource)")
                           .Where((Resource r) => r.ResourceId == resource.ResourceId)
-                          .Create("(r)-[:EXPLAINS]->(con)")
+                          .Merge("(r)-[:EXPLAINS]->(con)")
                           .WithParams(new
                           {
                               conceptName = concept.Name,
@@ -71,6 +82,9 @@ namespace SME.Persistence
                      .ExecuteWithoutResultsAsync();
                     foreach (Technology technology in technologies)
                     {
+                        // Converting resource/technology/concept names to lower case
+                        // for faster indexed searches
+                        technology.Name = technology.Name.ToUpper();
                         if (technology.TechnologyId == null)
                         {
                             technology.TechnologyId = Guid.NewGuid().ToString("N");
@@ -83,7 +97,7 @@ namespace SME.Persistence
                                .Match("(con:Concept)")
                                .Where((Concept con) => con.Name == concept.Name)
                                //    .With("con")
-                               .Create("(con)-[:BELONGS_TO]->(t)")
+                               .Merge("(con)-[:BELONGS_TO]->(t)")
                                .WithParams(new
                                {
                                    techName = technology.Name,
@@ -92,27 +106,167 @@ namespace SME.Persistence
                                .ExecuteWithoutResultsAsync();
                     }
                 }
-                return new List<Resource>(resQuery)[0];
+                return resQuery;
             }
         }
 
-
-
-        // public Task<List<Resource>> GetResourcesAsync()
-        // {
-        //     return null;
-        // }
-        // public Task<Resource> GetResourceByLinkAsync(string link)
-        // {
-        //     return null;
-        // }
+        public async Task<List<Resource>> GetResourcesAsync()
+        {
+            var results = new List<Resource>(
+                await graph.Cypher
+                    .Match("(r:Resource)")
+                    .Return(r => r.As<Resource>())
+                    .ResultsAsync
+            );
+            foreach (Resource resource in results)
+            {
+                resource.Concepts = new List<Concept>(
+                        await graph.Cypher
+                    .Match("(r:Resource)-[:EXPLAINS]->(c:Concept)")
+                    .Where((Resource r) => r.ResourceId == resource.ResourceId)
+                    .ReturnDistinct(c => c.As<Concept>())
+                    .ResultsAsync
+                );
+                resource.Technologies = new List<Technology>(
+                        await graph.Cypher
+                    .Match("(r:Resource)-[:EXPLAINS]->(:Concept)-[:BELONGS_TO]->(t:Technology)")
+                    .Where((Resource r) => r.ResourceId == resource.ResourceId)
+                    .ReturnDistinct(t => t.As<Technology>())
+                    .ResultsAsync
+                );
+            }
+            Console.WriteLine("Result is " + results[0].ResourceLink);
+            // return new List(results);
+            return results;
+        }
+        // TODO: Add search by link
+        public async Task<List<Resource>> GetResourceByStringAsync(string text)
+        {
+            text = text.ToUpper();
+            var query = graph.Cypher
+                    .Match("(r:Resource)-[:EXPLAINS]->(:Concept)-[:BELONGS_TO]->(t:Technology)")
+                    .Where("t.Name CONTAINS {text}")
+                    .WithParams(new
+                    {
+                        text
+                    })
+                    .ReturnDistinct(r => r.As<Resource>());
+            Console.WriteLine("Query is " + query.Query.QueryText);
+            var results = new List<Resource>(
+                await query
+                    .ResultsAsync
+            );
+            foreach (Resource resource in results)
+            {
+                resource.Concepts = new List<Concept>(
+                        await graph.Cypher
+                    .Match("(r:Resource)-[:EXPLAINS]->(c:Concept)")
+                    .Where((Resource r) => r.ResourceId == resource.ResourceId)
+                    .ReturnDistinct(c => c.As<Concept>())
+                    .ResultsAsync
+                );
+                resource.Technologies = new List<Technology>(
+                        await graph.Cypher
+                    .Match("(r:Resource)-[:EXPLAINS]->(:Concept)-[:BELONGS_TO]->(t:Technology)")
+                    .Where((Resource r) => r.ResourceId == resource.ResourceId)
+                    .ReturnDistinct(t => t.As<Technology>())
+                    .ResultsAsync
+                );
+            }
+            return results;
+        }
         // public Task<List<Resource>> GetResourceByTechnologyAsync(string technology)
         // {
         //     return null;
         // }
-        // public Task<Resource> UpdateResourceAsync(Resource resource)
-        // {
-        //     return null;
-        // }
+
+        // TODO: Add the ability to break relationships when a concept or technology
+        // is deleted from the resource
+        // TODO: Throw error if no concepts & technologies are passed 
+        // as they're required
+        public async Task<Resource> UpdateResourceAsync(Resource resource)
+        {
+            // Linking technologies between resource and each of its concepts
+            List<Concept> concepts = new List<Concept>();
+            List<Technology> technologies = new List<Technology>();
+            if (resource.Concepts != null)
+            {
+                concepts = new List<Concept>(resource.Concepts);
+                resource.Concepts = null;
+            }
+            if (resource.Technologies != null)
+            {
+                technologies = new List<Technology>(resource.Technologies);
+                resource.Technologies = null;
+            }
+            var result = new List<Resource>(
+                await graph.Cypher
+                .Match("(r:Resource)")
+                .Where((Resource r) => r.ResourceId == resource.ResourceId)
+                .Set("r = {resource}")
+                .WithParam("resource", resource)
+                .Return(r => r.As<Resource>())
+                .ResultsAsync
+            )[0];
+            foreach (Concept concept in concepts)
+            {
+                // Converting resource/technology/concept names to lower case
+                // for faster indexed searches
+                concept.Name = concept.Name.ToUpper();
+                await graph.Cypher
+                      .Merge("(con:Concept {Name:{conceptName}})")
+                      .OnCreate()
+                      .Set("con={concept}")
+                      .With("con")
+                      .Match("(r:Resource)")
+                      .Where((Resource r) => r.ResourceId == resource.ResourceId)
+                      .Merge("(r)-[:EXPLAINS]->(con)")
+                      .WithParams(new
+                      {
+                          conceptName = concept.Name,
+                          concept
+                      })
+                 .ExecuteWithoutResultsAsync();
+                foreach (Technology technology in technologies)
+                {
+                    // Converting resource/technology/concept names to lower case
+                    // for faster indexed searches
+                    technology.Name = technology.Name.ToUpper();
+                    if (technology.TechnologyId == null)
+                    {
+                        technology.TechnologyId = Guid.NewGuid().ToString("N");
+                    }
+                    await graph.Cypher
+                           .Merge("(t:Technology {Name:{techName}})")
+                           .OnCreate()
+                           .Set("t={technology}")
+                           .With("t")
+                           .Match("(con:Concept)")
+                           .Where((Concept con) => con.Name == concept.Name)
+                           .Merge("(con)-[:BELONGS_TO]->(t)")
+                           .WithParams(new
+                           {
+                               techName = technology.Name,
+                               technology
+                           })
+                           .ExecuteWithoutResultsAsync();
+                }
+            }
+            return result;
+        }
+
+        public async Task DeleteResourceAsync(string resourceId)
+        {
+            // return await graph.Cypher
+            //     .Match("(r:Resource)")
+            //     .Where((Resource r)=>r.ResourceId == resourceId)
+            //     .Delete("r")
+            //     .ExecuteWithoutResultsAsync();
+            await graph.Cypher
+                .OptionalMatch("(r:Resource)-[relation]->()")
+                .Where((Resource r) => r.ResourceId == resourceId)
+                .Delete("r, relation")
+                .ExecuteWithoutResultsAsync();
+        }
     }
 }

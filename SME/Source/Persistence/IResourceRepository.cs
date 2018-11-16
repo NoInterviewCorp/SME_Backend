@@ -7,9 +7,10 @@ namespace SME.Persistence
     {
         // Resource
         Task<Resource> AddResourceAsync(Resource resource);
-        // Task<List<Resource>> GetResourcesAsync();
+        Task<List<Resource>> GetResourcesAsync();
         // Task<Resource> GetResourceByLinkAsync(string link);
-        // Task<List<Resource>> GetResourceByTechnologyAsync(string technology);
-        // Task<Resource> UpdateResourceAsync(Resource resource);
+        Task<List<Resource>> GetResourceByStringAsync(string text);
+        Task<Resource> UpdateResourceAsync(Resource resource);
+        Task DeleteResourceAsync (string resourceId);
     }
 }
