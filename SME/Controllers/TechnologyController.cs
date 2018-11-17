@@ -29,12 +29,12 @@ namespace SME.Controllers
         // GET Resource/
         [HttpGet]
         [ProducesResponseType(200)]
-        public IActionResult GetTechnologies()
+        public async Task<IActionResult> GetTechnologiesAsync()
         {
-            var resources = repository.GetAllTechnologies();
-            if (resources == null)
+            var resources = repository.GetAllTechnologiesAsync();
+            if (resources.Count == 0)
             {
-                resources = new List<Technology>();
+                return NotFound();
             }
             return Ok(resources);
         }
@@ -48,9 +48,9 @@ namespace SME.Controllers
         [HttpGet("{technologyName}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
-        public IActionResult GetTechnology(string technologyName)
+        public async Task<IActionResult> GetTechnologyAsync(string technologyName)
         {
-            var technology = repository.GetTechnologyByName(technologyName);
+            var technology = repository.GetTechnologyByNameAsync(technologyName);
             if (technology == null)
             {
                 return NotFound();
@@ -69,11 +69,11 @@ namespace SME.Controllers
         [HttpPost()]
         [ProducesResponseType(201)]
         [ProducesResponseType(400)]
-        public IActionResult Post([FromBody] Technology technology)
+        public async Task<IActionResult> PostAsync([FromBody] Technology technology)
         {
             if (ModelState.IsValid)
             {
-                var technologyObj = repository.AddTechnology(technology);
+                var technologyObj = repository.AddTechnologyAsync(technology);
                 if (technologyObj == null)
                 {
                     return BadRequest("technology submitted is invalid");
@@ -97,11 +97,12 @@ namespace SME.Controllers
         [HttpPut("{technologyId}")]
         [ProducesResponseType(201)]
         [ProducesResponseType(400)]
-        public IActionResult Put(string technologyId, [FromBody] Technology technology)
+        public async Task<IActionResult> PutAsync(string technologyId, [FromBody] Technology technology)
         {
             if (ModelState.IsValid)
             {
-                var technologyObj = repository.UpdateTechnology(technology);
+                // TODO: FIGURE OUT IF WE NEED A PUT FOR THIS ENTITY
+                var technologyObj = repository.AddTechnologyAsync(technology);
                 if (technologyObj == null)
                 {
                     return NotFound(technology.Name + " was not found or You didn't include it's ID");
@@ -112,6 +113,28 @@ namespace SME.Controllers
                 }
             }
             return BadRequest();
+        }
+
+        /// <summary>
+        /// Deleted a Technology from the Database
+        /// </summary>
+        /// <response code="200">Deleted a Technology </response>
+        /// <response code="404">Technology not found</response>
+        // GET Technology/
+        [HttpDelete("{technologyId}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> DeleteTechnologysAsync(string technologyId)
+        {
+            var hasDeleted = await repository.DeleteTechnologyAsync(technologyId);
+            if (hasDeleted)
+            {
+                return Ok(technologyId + " has been deleted");
+            }
+            else
+            {
+                return NotFound();
+            }
         }
     }
 }

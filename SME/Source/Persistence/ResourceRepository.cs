@@ -264,18 +264,22 @@ namespace SME.Persistence
             return result;
         }
 
-        public async Task DeleteResourceAsync(string resourceId)
+        public async Task<bool> DeleteResourceAsync(string resourceId)
         {
-            // return await graph.Cypher
-            //     .Match("(r:Resource)")
-            //     .Where((Resource r)=>r.ResourceId == resourceId)
-            //     .Delete("r")
-            //     .ExecuteWithoutResultsAsync();
+            var result = new List<Resource>(graph.Cypher
+                .Match("(r:Resource {ResourceId:{resourceId}})")
+                .Return(r => r.As<Resource>())
+                .ResultsAsync);
+            if (result.Count == 0)
+            {
+                return false;
+            }
             await graph.Cypher
                 .OptionalMatch("(r:Resource)-[relation]->()")
                 .Where((Resource r) => r.ResourceId == resourceId)
                 .Delete("r, relation")
                 .ExecuteWithoutResultsAsync();
+            return true;
         }
     }
 }

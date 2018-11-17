@@ -11,6 +11,6 @@ namespace SME.Persistence
         // Task<Resource> GetResourceByLinkAsync(string link);
         Task<List<Resource>> GetResourceByStringAsync(string text);
         Task<Resource> UpdateResourceAsync(Resource resource);
-        Task DeleteResourceAsync (string resourceId);
+        Task<bool> DeleteResourceAsync (string resourceId);
     }
 }

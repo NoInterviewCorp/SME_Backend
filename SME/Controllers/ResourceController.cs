@@ -88,7 +88,7 @@ namespace SME.Controllers
                 }
             }
             return BadRequest();
-            // return Ok(concepts);
+            // return Ok(Resources);
         }
 
         /// <summary>
@@ -103,15 +103,15 @@ namespace SME.Controllers
         [HttpPut("{resourceId}")]
         [ProducesResponseType(201)]
         [ProducesResponseType(400)]
-        public async Task<IActionResult> PutAsync(string resourceId,[FromBody] Resource resource)
+        public async Task<IActionResult> PutAsync(string resourceId, [FromBody] Resource resource)
         {
             resource.ResourceId = resourceId;
             if (ModelState.IsValid)
             {
                 var resourceObj = await repository.UpdateResourceAsync(resource);
-                if (resourceObj == null ) 
+                if (resourceObj == null)
                 {
-                    return NotFound( "Resource was not found or You didn't include it's ID");
+                    return NotFound("Resource was not found or You didn't include it's ID");
                 }
                 else
                 {
@@ -121,17 +121,26 @@ namespace SME.Controllers
             return BadRequest();
         }
 
-        /// <summary>
+         /// <summary>
         /// Deleted a Resource from the Database
         /// </summary>
         /// <response code="200">Deleted a Resource </response>
+        /// <response code="404">Resource not found</response>
         // GET Resource/
         [HttpDelete("{resourceId}")]
         [ProducesResponseType(200)]
-        public async Task<IActionResult> GetResourcesAsync(string resourceId)
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> DeleteResourcesAsync(string resourceId)
         {
-            await repository.DeleteResourceAsync(resourceId);
-            return Ok();
+            var hasDeleted = await repository.DeleteResourceAsync(resourceId);
+            if (hasDeleted)
+            {
+                return Ok("Resource has been deleted");
+            }
+            else
+            {
+                return NotFound();
+            }
         }
     }
 }

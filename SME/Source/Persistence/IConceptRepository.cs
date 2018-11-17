@@ -1,15 +1,16 @@
 using SME.Models;
 using System.Linq;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 namespace SME.Persistence
 {
     public interface IConceptRepository
     {
         // Concept
-        Concept AddConcept(Concept concept, bool skipFind = false);
-        List<Concept> GetConcepts();
-        Concept GetConceptByName(string name);
-        Concept UpdateConcept(Concept concept);
-
+        Task<Concept> AddConceptAsync(Concept concept);
+        Task<List<Concept>> GetConceptsAsync();
+        Task<Concept> GetConceptByNameAsync(string name);
+        // Task<Concept> UpdateConceptAsync(Concept concept);
+        Task<bool> DeleteConceptByNameAsync(string name);
     }
 }

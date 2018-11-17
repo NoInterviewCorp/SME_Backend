@@ -36,6 +36,8 @@ namespace SME
             // services.AddScoped<IDatabaseRepository, SQLServerRepository>();
             services.AddSingleton<GraphDbConnection>();
             services.AddScoped<IResourceRepository, ResourceRepository>();
+            services.AddScoped<IConceptRepository, ConceptRepository>();
+            services.AddScoped<ITechnologyRepository, TechnologyRepository>();
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>
             {

@@ -26,12 +26,12 @@ namespace SME.Controllers
         /// Retrieves All concepts from the Database
         /// </summary>
         /// <response code="200">Returns all concepts </response>
-        // GET Resource/
+        // GET Concept/
         [HttpGet]
         [ProducesResponseType(200)]
-        public IActionResult GetConcepts()
+        public async Task<IActionResult> GetConceptsAsync()
         {
-            var concepts = repository.GetConcepts();
+            var concepts = await repository.GetConceptsAsync();
             if (concepts == null)
             {
                 concepts = new List<Concept>();
@@ -44,13 +44,13 @@ namespace SME.Controllers
         /// </summary>
         /// <response code="200">Returns all concepts </response>
         /// <response code="404">Concept not found </response>
-        // GET Resource/
+        // GET Concept/
         [HttpGet("{conceptName}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
-        public IActionResult GetConcepts(string conceptName)
+        public async Task<IActionResult> GetConceptsAsync(string conceptName)
         {
-            var concepts = repository.GetConceptByName(conceptName);
+            var concepts = await repository.GetConceptByNameAsync(conceptName);
             if (concepts == null)
             {
                 return NotFound();
@@ -69,11 +69,11 @@ namespace SME.Controllers
         [HttpPost()]
         [ProducesResponseType(201)]
         [ProducesResponseType(400)]
-        public IActionResult Post([FromBody] Concept concept)
+        public async Task<IActionResult> PostAsync([FromBody] Concept concept)
         {
             if (ModelState.IsValid)
             {
-                var conceptObj = repository.AddConcept(concept);
+                var conceptObj = await repository.AddConceptAsync(concept);
                 if (conceptObj == null)
                 {
                     return BadRequest("Concept submitted is invalid");
@@ -89,18 +89,19 @@ namespace SME.Controllers
         /// Updates a <paramref name="concept"/> into the database if it exists
         /// </summary>
         /// <param name="concept">Concept to be added. </param>
-        /// <param name="ConceptId">Conceptid of object which needs to be updated. </param>
+        /// <param name="conceptName">conceptName of object which needs to be updated. </param>
         /// <response code="201">Returns the newly updated Concept</response>
         /// <response code="400">If the Concept does not exists or modelstate is invalid </response> 
         // PUT SME/
-        [HttpPut("{ConceptId}")]
+        [HttpPut("{conceptName}")]
         [ProducesResponseType(201)]
         [ProducesResponseType(400)]
-        public IActionResult Put(string ConceptId, [FromBody] Concept concept)
+        public async Task<IActionResult> PutAsync(string conceptName, [FromBody] Concept concept)
         {
             if (ModelState.IsValid)
             {
-                var ConceptObj = repository.UpdateConcept(concept);
+                // TODO: FIGURE OUT IF WE NEED A PUT FOR THIS ENTITY
+                var ConceptObj = await repository.AddConceptAsync(concept);
                 if (ConceptObj == null)
                 {
                     return NotFound(concept.Name + " was not found or You didn't include it's ID");
@@ -111,6 +112,28 @@ namespace SME.Controllers
                 }
             }
             return BadRequest();
+        }
+
+        /// <summary>
+        /// Deleted a Concept from the Database
+        /// </summary>
+        /// <response code="200">Deleted a Concept </response>
+        /// <response code="404">Concept not found</response>
+        // GET Concept/
+        [HttpDelete("{conceptName}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> DeleteConceptsAsync(string conceptName)
+        {
+            var hasDeleted = await repository.DeleteConceptAsync(conceptName);
+            if (hasDeleted)
+            {
+                return Ok(conceptName + " has been deleted");
+            }
+            else
+            {
+                return NotFound();
+            }
         }
     }
 }
