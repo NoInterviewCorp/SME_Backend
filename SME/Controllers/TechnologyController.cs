@@ -31,7 +31,7 @@ namespace SME.Controllers
         [ProducesResponseType(200)]
         public async Task<IActionResult> GetTechnologiesAsync()
         {
-            var resources = repository.GetAllTechnologiesAsync();
+            var resources = await repository.GetAllTechnologiesAsync();
             if (resources.Count == 0)
             {
                 return NotFound();
@@ -50,7 +50,7 @@ namespace SME.Controllers
         [ProducesResponseType(404)]
         public async Task<IActionResult> GetTechnologyAsync(string technologyName)
         {
-            var technology = repository.GetTechnologyByNameAsync(technologyName);
+            var technology = await repository.GetTechnologyByNameAsync(technologyName);
             if (technology == null)
             {
                 return NotFound();
@@ -73,7 +73,7 @@ namespace SME.Controllers
         {
             if (ModelState.IsValid)
             {
-                var technologyObj = repository.AddTechnologyAsync(technology);
+                var technologyObj = await repository.AddTechnologyAsync(technology);
                 if (technologyObj == null)
                 {
                     return BadRequest("technology submitted is invalid");
@@ -102,7 +102,7 @@ namespace SME.Controllers
             if (ModelState.IsValid)
             {
                 // TODO: FIGURE OUT IF WE NEED A PUT FOR THIS ENTITY
-                var technologyObj = repository.AddTechnologyAsync(technology);
+                var technologyObj = await repository.AddTechnologyAsync(technology);
                 if (technologyObj == null)
                 {
                     return NotFound(technology.Name + " was not found or You didn't include it's ID");

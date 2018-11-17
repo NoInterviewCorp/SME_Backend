@@ -125,7 +125,7 @@ namespace SME.Controllers
         [ProducesResponseType(404)]
         public async Task<IActionResult> DeleteConceptsAsync(string conceptName)
         {
-            var hasDeleted = await repository.DeleteConceptAsync(conceptName);
+            var hasDeleted = await repository.DeleteConceptByNameAsync(conceptName);
             if (hasDeleted)
             {
                 return Ok(conceptName + " has been deleted");

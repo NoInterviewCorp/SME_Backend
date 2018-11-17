@@ -266,7 +266,7 @@ namespace SME.Persistence
 
         public async Task<bool> DeleteResourceAsync(string resourceId)
         {
-            var result = new List<Resource>(graph.Cypher
+            var result = new List<Resource>(await graph.Cypher
                 .Match("(r:Resource {ResourceId:{resourceId}})")
                 .Return(r => r.As<Resource>())
                 .ResultsAsync);

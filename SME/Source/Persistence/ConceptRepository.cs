@@ -51,7 +51,7 @@ namespace SME.Persistence
             var results = new List<Concept>(
                 await graph.Cypher
                     .Match("(c:Concept)")
-                    .Where(c => c.Name == name)
+                    .Where((Concept c) => c.Name == name)
                     .Return(c => c.As<Concept>())
                     .ResultsAsync
             );
@@ -78,7 +78,7 @@ namespace SME.Persistence
         public async Task<bool> DeleteConceptByNameAsync(string name)
         {
             name = name.ToUpper();
-            var result = new List<Concept>(graph.Cypher
+            var result = new List<Concept>(await graph.Cypher
                 .Match("(c:Concept {Name:{conceptName}})")
                 .WithParams(new{
                     conceptName = name
