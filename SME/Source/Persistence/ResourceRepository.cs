@@ -4,6 +4,8 @@ using Neo4jClient;
 using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Dynamic;
+
 namespace SME.Persistence
 {
     public class ResourceRepository : IResourceRepository
@@ -26,7 +28,8 @@ namespace SME.Persistence
                 concepts = new List<Concept>(resource.Concepts);
                 resource.Concepts = null;
             }
-            else{
+            else
+            {
                 return null;
             }
             if (resource.Technologies != null)
@@ -34,7 +37,8 @@ namespace SME.Persistence
                 technologies = new List<Technology>(resource.Technologies);
                 resource.Technologies = null;
             }
-            else{
+            else
+            {
                 return null;
             }
             // queries
@@ -61,51 +65,55 @@ namespace SME.Persistence
                         .Return(res => res.As<Resource>())
                         .ResultsAsync
                     )[0];
-                foreach (Concept concept in concepts)
+                var conceptQuery = graph.Cypher;
+                var techCypherQuery = graph.Cypher;
+                var paramsObj = new ExpandoObject() as IDictionary<string, Object>;
+                for (int h = 0; h < concepts.Count; h++)
                 {
-                    // Converting resource/technology/concept names to lower case
+                    Concept concept = concepts[h];
+                    // Converting resource/technology/concept names to upper case
                     // for faster indexed searches
                     concept.Name = concept.Name.ToUpper();
-                    await graph.Cypher
-                          .Merge("(con:Concept {Name:{conceptName}})")
+                    // To avoid "Property already exists" error with neo4j
+                    // WithParams() call
+                    var conceptParamsObj = new ExpandoObject() as IDictionary<string, Object>;
+                    conceptParamsObj.Add("conceptName" + h, concept.Name);
+                    conceptParamsObj.Add("concept" + h, concept);
+                    conceptQuery = conceptQuery
+                          .Merge($"(con{h}:Concept {{ Name: {{conceptName{h}}}}})")
                           .OnCreate()
-                          .Set("con={concept}")
-                          .With("con")
+                          .Set($"con{h}={{concept{h}}}")
+                          .With($"con{h}")
                           .Match("(r:Resource)")
                           .Where((Resource r) => r.ResourceId == resource.ResourceId)
-                          .Merge("(r)-[:EXPLAINS]->(con)")
-                          .WithParams(new
-                          {
-                              conceptName = concept.Name,
-                              concept
-                          })
-                     .ExecuteWithoutResultsAsync();
-                    foreach (Technology technology in technologies)
+                          .Merge($"(r)-[:EXPLAINS]->(con{h})")
+                          .WithParams(conceptParamsObj);
+                    for (int i = 0; i < technologies.Count; i++)
                     {
-                        // Converting resource/technology/concept names to lower case
+                        conceptParamsObj.Add("techParamsObj" + h + i, new ExpandoObject() as IDictionary<string, object>);
+                        // Converting resource/technology/concept names to upper case
                         // for faster indexed searches
+                        var technology = technologies[i];
                         technology.Name = technology.Name.ToUpper();
                         if (technology.TechnologyId == null)
                         {
                             technology.TechnologyId = Guid.NewGuid().ToString("N");
                         }
-                        await graph.Cypher
-                               .Merge("(t:Technology {Name:{techName}})")
+                        (conceptParamsObj["techParamsObj" + h + i] as IDictionary<string, Object>).Add("techName" + h + i, technology.Name);
+                        (conceptParamsObj["techParamsObj" + h + i] as IDictionary<string, Object>).Add("technology" + h + i, technology);
+                        techCypherQuery = techCypherQuery
+                               .Merge($"(t{h}{i}:Technology {{ Name: {{techName{h}{i}}} }})")
                                .OnCreate()
-                               .Set("t={technology}")
-                               .With("t")
+                               .Set($"t{h}{i}={{technology{h}{i}}}")
+                               .With($"t{h}{i}")
                                .Match("(con:Concept)")
                                .Where((Concept con) => con.Name == concept.Name)
-                               //    .With("con")
-                               .Merge("(con)-[:BELONGS_TO]->(t)")
-                               .WithParams(new
-                               {
-                                   techName = technology.Name,
-                                   technology
-                               })
-                               .ExecuteWithoutResultsAsync();
+                               .Merge($"(con)-[:BELONGS_TO]->(t{h}{i})")
+                               .WithParams((conceptParamsObj["techParamsObj" + h + i] as IDictionary<string, Object>));
                     }
                 }
+                await conceptQuery.ExecuteWithoutResultsAsync();
+                await techCypherQuery.ExecuteWithoutResultsAsync();
                 return resQuery;
             }
         }
@@ -135,8 +143,6 @@ namespace SME.Persistence
                     .ResultsAsync
                 );
             }
-            Console.WriteLine("Result is " + results[0].ResourceLink);
-            // return new List(results);
             return results;
         }
         // TODO: Add search by link
@@ -151,7 +157,6 @@ namespace SME.Persistence
                         text
                     })
                     .ReturnDistinct(r => r.As<Resource>());
-            Console.WriteLine("Query is " + query.Query.QueryText);
             var results = new List<Resource>(
                 await query
                     .ResultsAsync
@@ -207,51 +212,55 @@ namespace SME.Persistence
                 .WithParam("resource", resource)
                 .Return(r => r.As<Resource>())
                 .ResultsAsync
-            )[0];
-            foreach (Concept concept in concepts)
+            )[0]; var conceptQuery = graph.Cypher;
+            var techCypherQuery = graph.Cypher;
+            var paramsObj = new ExpandoObject() as IDictionary<string, Object>;
+            for (int h = 0; h < concepts.Count; h++)
             {
-                // Converting resource/technology/concept names to lower case
+                Concept concept = concepts[h];
+                // Converting resource/technology/concept names to upper case
                 // for faster indexed searches
                 concept.Name = concept.Name.ToUpper();
-                await graph.Cypher
-                      .Merge("(con:Concept {Name:{conceptName}})")
+                // To avoid "Property already exists" error with neo4j
+                // WithParams() call
+                var conceptParamsObj = new ExpandoObject() as IDictionary<string, Object>;
+                conceptParamsObj.Add("conceptName" + h, concept.Name);
+                conceptParamsObj.Add("concept" + h, concept);
+                conceptQuery = conceptQuery
+                      .Merge($"(con{h}:Concept {{ Name: {{conceptName{h}}}}})")
                       .OnCreate()
-                      .Set("con={concept}")
-                      .With("con")
+                      .Set($"con{h}={{concept{h}}}")
+                      .With($"con{h}")
                       .Match("(r:Resource)")
                       .Where((Resource r) => r.ResourceId == resource.ResourceId)
-                      .Merge("(r)-[:EXPLAINS]->(con)")
-                      .WithParams(new
-                      {
-                          conceptName = concept.Name,
-                          concept
-                      })
-                 .ExecuteWithoutResultsAsync();
-                foreach (Technology technology in technologies)
+                      .Merge($"(r)-[:EXPLAINS]->(con{h})")
+                      .WithParams(conceptParamsObj);
+                for (int i = 0; i < technologies.Count; i++)
                 {
-                    // Converting resource/technology/concept names to lower case
+                    conceptParamsObj.Add("techParamsObj" + h + i, new ExpandoObject() as IDictionary<string, object>);
+                    // Converting resource/technology/concept names to upper case
                     // for faster indexed searches
+                    var technology = technologies[i];
                     technology.Name = technology.Name.ToUpper();
                     if (technology.TechnologyId == null)
                     {
                         technology.TechnologyId = Guid.NewGuid().ToString("N");
                     }
-                    await graph.Cypher
-                           .Merge("(t:Technology {Name:{techName}})")
+                    (conceptParamsObj["techParamsObj" + h + i] as IDictionary<string, Object>).Add("techName" + h + i, technology.Name);
+                    (conceptParamsObj["techParamsObj" + h + i] as IDictionary<string, Object>).Add("technology" + h + i, technology);
+                    techCypherQuery = techCypherQuery
+                           .Merge($"(t{h}{i}:Technology {{ Name: {{techName{h}{i}}} }})")
                            .OnCreate()
-                           .Set("t={technology}")
-                           .With("t")
+                           .Set($"t{h}{i}={{technology{h}{i}}}")
+                           .With($"t{h}{i}")
                            .Match("(con:Concept)")
                            .Where((Concept con) => con.Name == concept.Name)
-                           .Merge("(con)-[:BELONGS_TO]->(t)")
-                           .WithParams(new
-                           {
-                               techName = technology.Name,
-                               technology
-                           })
-                           .ExecuteWithoutResultsAsync();
+                           .Merge($"(con)-[:BELONGS_TO]->(t{h}{i})")
+                           .WithParams((conceptParamsObj["techParamsObj" + h + i] as IDictionary<string, Object>));
                 }
             }
+            await conceptQuery.ExecuteWithoutResultsAsync();
+            await techCypherQuery.ExecuteWithoutResultsAsync();
             return result;
         }
 
