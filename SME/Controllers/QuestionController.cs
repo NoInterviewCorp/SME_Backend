@@ -21,16 +21,22 @@ namespace SME.Controllers
         {
             this.repository = repository;
         }
+        /// <summary>
+        /// Gets questions from the database
+        /// </summary>
+        /// <response code="200">Returns all questions</response>
+        /// <response code="404">If any question doesn't exist</response>
         [HttpGet]
         [ProducesResponseType(200)]
-        public IActionResult GetQuestions()
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> GetQuestionsAsync()
         {
-            var resources = repository.GetQuestions();
-            if (resources == null)
+            var Questions = await repository.GetQuestionsAsync();
+            if (Questions.Count == 0)
             {
-                resources = new List<Question>();
+                return NotFound();
             }
-            return Ok(resources);
+            return Ok(Questions);
         }
         /// <summary>
         /// Gets questions from the database according to concept and technology
@@ -42,20 +48,20 @@ namespace SME.Controllers
         [HttpGet("{technology}/{concept}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
-        public IActionResult GetQuestionsByConcept_Tech(string technology, string concept)
+        public async Task<IActionResult> GetQuestionsByConcept_TechAsync(string technology, string concept)
         {
-            var resources = repository.GetQuestionsByConceptOfATech(technology,concept);
-            if (resources == null)
+            var Questions = await repository.GetQuestionsByConceptOfATechAsync(technology,concept);
+            if (Questions == null)
             {
                 return NotFound();
             }
-            return Ok(resources);
+            return Ok(Questions);
         }
 
         /// <summary>
-        /// Posts a <paramref name="question"/> into the database
+        /// Posts many <paramref name="questions"/> into the database
         /// </summary>
-        /// <param name="question"> Object of type question which needs to be posted
+        /// <param name="questions"> Object of type question which needs to be posted
         /// to the database </param>
         /// <response code="201">Returns the newly created question</response>
         /// <response code="400">If the question already exists or modelstate is invalid </response> 
@@ -63,11 +69,11 @@ namespace SME.Controllers
         [HttpPost()]
         [ProducesResponseType(201)]
         [ProducesResponseType(400)]
-        public IActionResult Post([FromBody] Question question)
+        public async Task<IActionResult> PostAsync([FromBody] List<Question> questions)
         {
             if (ModelState.IsValid)
             {
-                var questionObj = repository.AddQuestion(question);
+                var questionObj = await repository.AddQuestionsAsync(questions);
                 if (questionObj == null)
                 {
                     return BadRequest("Question submitted is invalid");
@@ -91,11 +97,11 @@ namespace SME.Controllers
         [HttpPut("{QuestionId}")]
         [ProducesResponseType(201)]
         [ProducesResponseType(400)]
-        public IActionResult Put(string QuestionId, [FromBody] Question question)
+        public async Task<IActionResult> PutAsync(string QuestionId, [FromBody] Question question)
         {
             if (ModelState.IsValid)
             {
-                var questionObj = repository.UpdateQuestion(question);
+                var questionObj = await repository.UpdateQuestionAsync(question);
                 if (questionObj == null)
                 {
                     return NotFound("Question was not found or You didn't include it's ID");
@@ -106,6 +112,28 @@ namespace SME.Controllers
                 }
             }
             return BadRequest();
+        }
+
+        /// <summary>
+        /// Deleted a Question from the Database
+        /// </summary>
+        /// <response code="200">Deleted a Question </response>
+        /// <response code="404">Question not found</response>
+        // GET Question/
+        [HttpDelete("{QuestionId}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> DeleteQuestionsAsync(string QuestionId)
+        {
+            var hasDeleted = await repository.DeleteQuestionByIdAsync(QuestionId);
+            if (hasDeleted)
+            {
+                return Ok("Question has been deleted");
+            }
+            else
+            {
+                return NotFound();
+            }
         }
     }
 }
