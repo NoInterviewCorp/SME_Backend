@@ -7,7 +7,7 @@ COPY *.csproj ./
 COPY . ./
 RUN ["dotnet", "restore"]
 RUN ["dotnet", "build"]
-# EXPOSE 8081/TCP 
+EXPOSE 5000 
 # Build runtime image
 # FROM microsoft/dotnet:aspnetcore-runtime
 # WORKDIR /app

@@ -96,7 +96,7 @@ namespace SME
                 c.RoutePrefix = string.Empty;
             });
             app.UseCors("CorsPolicy");
-            app.UseHttpsRedirection();
+            // app.UseHttpsRedirection();
             app.UseMvc();
         }
     }
