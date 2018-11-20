@@ -1,5 +1,6 @@
 *.swp
 *.*~
+*.chhap
 project.lock.json
 .DS_Store
 *.pyc
