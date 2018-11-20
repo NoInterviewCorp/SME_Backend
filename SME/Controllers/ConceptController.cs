@@ -19,6 +19,7 @@ namespace SME.Controllers
 
         public ConceptController(IConceptRepository repository)
         {
+            
             this.repository = repository;
         }
 
