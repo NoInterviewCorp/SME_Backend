@@ -32,8 +32,21 @@ namespace SME
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-            // services.AddDbContext<SMEContext>();
-            // services.AddScoped<IDatabaseRepository, SQLServerRepository>();
+            services.Configure<MongoSettings>(
+                options =>
+                {
+                    options.ConnectionString = Configuration.GetSection("MongoDb:ConnectionString").Value;
+                    options.Database = Configuration.GetSection("MongoDb:Database").Value;
+                }
+            );
+            services.Configure<Neo4jSettings>(
+                options =>
+                {
+                    options.ConnectionString = Configuration.GetSection("Neo4j:ConnectionString").Value;
+                    options.UserId = Configuration.GetSection("Neo4j:UserId").Value;
+                    options.Password = Configuration.GetSection("Neo4j:Password").Value;
+                }
+            );
             services.AddSingleton<GraphDbConnection>();
             services.AddScoped<IResourceRepository, ResourceRepository>();
             services.AddScoped<IConceptRepository, ConceptRepository>();

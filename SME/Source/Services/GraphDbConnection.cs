@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Options;
 using Neo4jClient;
 using System;
 namespace SME.Services
@@ -6,12 +7,17 @@ namespace SME.Services
     {
         private GraphClient _client;
         public GraphClient Client { get { return _client; } }
-        public GraphDbConnection()
+        public GraphDbConnection(IOptions<Neo4jSettings> options)
         {
-            _client = new GraphClient(new Uri("http://172.23.238.173:17474/db/data"), "neo4j", "qwertyuiop");
+            _client = new GraphClient(
+                new Uri(options.Value.ConnectionString),
+                options.Value.UserId,
+                options.Value.Password
+            );
             _client.Connect();
         }
-        public void Dispose(){
+        public void Dispose()
+        {
             _client.Dispose();
         }
     }
