@@ -1,13 +1,13 @@
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+
 namespace SME.Models
 {
     public class Technology
     {
-        [Key]
-        public string TechnologyId { get; set; }
-        [Required]
+        [BsonId]
+        public ObjectId TechnologyId { get; set; }
         public string Name { get; set; }
         public List<Resource> Resources { get; set; }
         public List<Concept> Concepts { get; set; }

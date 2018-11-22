@@ -47,6 +47,7 @@ namespace SME
                     options.Password = Configuration.GetSection("Neo4j:Password").Value;
                 }
             );
+            services.AddSingleton<MongoDbConnection>();
             services.AddSingleton<GraphDbConnection>();
             services.AddScoped<IResourceRepository, ResourceRepository>();
             services.AddScoped<IConceptRepository, ConceptRepository>();

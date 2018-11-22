@@ -1,16 +1,15 @@
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+
 namespace SME.Models
 {
     public class Resource
     {
-        // Entity Attributes
-        // [JsonProperty("resourceId")]
-        public string ResourceId { get; set; }
-        // [JsonProperty("resourceLink")]
+        [BsonId]
+        public ObjectId ResourceId { get; set; }
         public string ResourceLink { get; set; }
-        
+        [BsonIgnore]
         public List<Question> Questions { get; set; }
         public BloomTaxonomy BloomLevel { get; set; }
         public bool HasPublished { get; set; }

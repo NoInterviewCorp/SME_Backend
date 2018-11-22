@@ -1,15 +1,17 @@
 using SME.Models;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+
 namespace SME.Persistence
 {
     public interface ILearningPlanRepository
     {
         // Learning Plan
-        LearningPlan AddLearningPlan(LearningPlan learningPlan);
-        List<LearningPlan> GetLearningPlans();
-        LearningPlan GetLearningPlanById(string learningPlanId);
-        List<LearningPlan> GetLearningPlansByUserName(string userName);
-        List<LearningPlan> GetLearningPlansByTechnology(string technology);
-        LearningPlan UpdateLearningPlan(LearningPlan learningPlan);
+        Task<LearningPlan> AddLearningPlanAsync(LearningPlan learningPlan);
+        Task<List<LearningPlan>> GetLearningPlansAsync();
+        Task<LearningPlan> GetLearningPlanByIdAsync(string learningPlanId);
+        Task<List<LearningPlan>> GetLearningPlansByUserNameAsync(string userName);
+        Task<List<LearningPlan>> GetLearningPlansByTechnologyAsync(string technology);
+        Task<LearningPlan> UpdateLearningPlanAsync(LearningPlan learningPlan);
     }
 }
