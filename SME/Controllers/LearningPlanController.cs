@@ -29,9 +29,9 @@ namespace SME.Controllers
         // GET Resource/
         [HttpGet]
         [ProducesResponseType(200)]
-        public IActionResult GetLearningPlans()
+        public async Task<IActionResult> GetLearningPlans()
         {
-            var resources = repository.GetLearningPlans();
+            var resources = await repository.GetLearningPlansAsync();
             if (resources == null)
             {
                 return NotFound("There are no Learning plans. You can create your own Learning plan");
@@ -49,26 +49,26 @@ namespace SME.Controllers
         // GET Resource/
         [HttpGet("{text}")]
         [ProducesResponseType(200)]
-        public IActionResult GetUserLearningPlans(string text, [FromQuery] string type)
+        public async Task<IActionResult> GetUserLearningPlansAsync(string text, [FromQuery] string type)
         {
             switch (type.ToLower())
             {
                 case "username":
-                    var resources = repository.GetLearningPlansByUserName(text);
+                    var resources = await repository.GetLearningPlansByUserNameAsync(text);
                     if (resources == null)
                     {
                         return Ok("There are no Learning plans. You can create your own Learning plan");
                     }
                     return Ok(resources);
                 case "id":
-                    var resource = repository.GetLearningPlanById(text);
+                    var resource = await repository.GetLearningPlanByIdAsync(text);
                     if (resource == null)
                     {
                         return Ok("There are no Learning plans. You can create your own Learning plan");
                     }
                     return Ok(resource);
                 case "tech":
-                    var resourcesObj = repository.GetLearningPlansByTechnology(text);
+                    var resourcesObj = await repository.GetLearningPlansByTechnologyAsync(text);
                     if (resourcesObj == null)
                     {
                         return Ok("There are no Learning plans. You can create your own Learning plan");
@@ -91,11 +91,11 @@ namespace SME.Controllers
         [HttpPost()]
         [ProducesResponseType(201)]
         [ProducesResponseType(400)]
-        public IActionResult Post([FromBody] LearningPlan learningPlan)
+        public async Task<IActionResult> PostAsync([FromBody] LearningPlan learningPlan)
         {
             if (ModelState.IsValid)
             {
-                var learningplanObj = repository.AddLearningPlan(learningPlan);
+                var learningplanObj = await repository.AddLearningPlanAsync(learningPlan);
                 if (learningplanObj == null)
                 {
                     return BadRequest("Learning Plan submitted is invalid");
@@ -119,11 +119,11 @@ namespace SME.Controllers
         [HttpPut("{learningPlanId}")]
         [ProducesResponseType(201)]
         [ProducesResponseType(400)]
-        public IActionResult Put(string learningPlanId, [FromBody] LearningPlan learningPlan)
+        public async Task<IActionResult> PutAsync(string learningPlanId, [FromBody] LearningPlan learningPlan)
         {
             if (ModelState.IsValid)
             {
-                var learningPlanObj = repository.UpdateLearningPlan(learningPlan);
+                var learningPlanObj = await repository.UpdateLearningPlanAsync(learningPlan);
                 if (learningPlanObj == null)
                 {
                     return NotFound(learningPlan.Name + " was not found or You didn't include it's ID");

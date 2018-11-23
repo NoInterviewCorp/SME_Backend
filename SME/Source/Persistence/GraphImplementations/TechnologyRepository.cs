@@ -27,7 +27,6 @@ namespace SME.Persistence
         }
         public async Task<Technology> AddTechnologyAsync(Technology technology)
         {
-            technology.TechnologyId = Guid.NewGuid().ToString("N");
             technology.Name = technology.Name.ToUpper();
             var query = new List<Technology>(
                 await graph.Cypher
@@ -60,13 +59,13 @@ namespace SME.Persistence
         // {
         //     return null;
         // }
-        public async Task<bool> DeleteTechnologyAsync(string technologyId)
+        public async Task<bool> DeleteTechnologyAsync(string name)
         {
             var result = new List<Technology>(await graph.Cypher
-                .Match("(t:Technology {TechnologyId:{id}})")
+                .Match("(t:Technology {Name:{name}})")
                 .WithParams(new
                 {
-                    id = technologyId
+                    name
                 })
                 .Return(t => t.As<Technology>())
                 .ResultsAsync);
@@ -76,7 +75,7 @@ namespace SME.Persistence
             }
             await graph.Cypher
                 .OptionalMatch("(t:Technology)-[relation]->()")
-                .Where((Technology t) => t.TechnologyId == technologyId)
+                .Where((Technology t) => t.Name == name)
                 .Delete("t, relation")
                 .ExecuteWithoutResultsAsync();
             return true;

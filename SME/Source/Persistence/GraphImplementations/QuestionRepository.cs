@@ -89,7 +89,7 @@ namespace SME.Persistence
             }
             await graph.Cypher
                 .OptionalMatch("(q:Question)-[relation]->()")
-                .Where((Question q) => q.QuestionId == QuestionId)
+                .Where((Question q) => q.QuestionId.ToString() == QuestionId)
                 .Delete("q, relation")
                 .ExecuteWithoutResultsAsync();
             return true;

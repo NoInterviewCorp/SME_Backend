@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using SME.Models;
 using SME.Persistence;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
 
 namespace SME.Controllers
 {
@@ -105,7 +106,7 @@ namespace SME.Controllers
         [ProducesResponseType(400)]
         public async Task<IActionResult> PutAsync(string resourceId, [FromBody] Resource resource)
         {
-            resource.ResourceId = resourceId;
+            // resource.ResourceId = resourceId;
             if (ModelState.IsValid)
             {
                 var resourceObj = await repository.UpdateResourceAsync(resource);

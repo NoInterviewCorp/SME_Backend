@@ -18,35 +18,76 @@ namespace SME.Persistence
         }
         public async Task<LearningPlan> AddLearningPlanAsync(LearningPlan learningPlan)
         {
+            var techFilter = "{Name:\"" + learningPlan.Technology.Name + "\"}";
+            var techOptions = new UpdateOptions { IsUpsert = true };
+
+
             // Upserting resources in the resource collection
             var models = new List<WriteModel<Resource>>();
             var questionModels = new List<WriteModel<Question>>();
+            var conceptModels = new List<WriteModel<Concept>>();
+
             foreach (Resource resource in learningPlan.Resources)
             {
-                if(resource.ResourceId==null){
-                    resource.ResourceId = new ObjectId(Guid.NewGuid().ToString("N"));
+                if (resource.ResourceId == null)
+                {
+                    resource.ResourceId = Guid.NewGuid().ToString("N");
                 }
-                var resFilter = "{_id:" + resource.ResourceId + "}";
+                var resFilter = "{ResourceId:\"" + resource.ResourceId + "\"}";
                 var upsertQuery = new ReplaceOneModel<Resource>(resFilter, resource) { IsUpsert = true };
 
                 foreach (Question question in resource.Questions)
                 {
                     if (question.QuestionId == null)
                     {
-                        question.QuestionId = new ObjectId(Guid.NewGuid().ToString("N"));
+                        question.QuestionId = Guid.NewGuid().ToString("N");
                     }
-                    var questionFilter = "{_id:" + question.ProblemStatement + "}";
+
+                    foreach (Concept concept in question.Concepts)
+                    {
+                        var conceptFilter = "{Name:\"" + concept.Name + "\"}";
+                        var conceptUpsertQuery = new ReplaceOneModel<Concept>(conceptFilter, concept) { IsUpsert = true };
+                        conceptModels.Add(conceptUpsertQuery);
+                    }
+
+                    string correctId = "";
+                    foreach (Option option in question.Options)
+                    {
+                        option.OptionId = Guid.NewGuid().ToString("N");
+                        if (option.IsCorrect)
+                        {
+                            correctId = option.OptionId;
+                        }
+                    }
+
+                    var questionFilter = "{QuestionId:\"" + question.QuestionId + "\"}";
                     var questionUpsertQuery = new ReplaceOneModel<Question>(questionFilter, question) { IsUpsert = true };
                     questionModels.Add(questionUpsertQuery);
                 }
+                foreach (Concept concept in resource.Concepts)
+                {
+                    var conceptFilter = "{Name:\"" + concept.Name + "\"}";
+                    var conceptUpsertQuery = new ReplaceOneModel<Concept>(conceptFilter, concept) { IsUpsert = true };
+                    conceptModels.Add(conceptUpsertQuery);
+                }
                 models.Add(upsertQuery);
             }
+
+            if (learningPlan.LearningPlanId == null)
+            {
+                learningPlan.LearningPlanId = Guid.NewGuid().ToString("N");
+            }
+
+            // Adding LearningPlan to its collections
+            var filter = "{Name:\"" + learningPlan.Name + "\",AuthorId:\"" + learningPlan.AuthorId + "\"}";
+            var options = new UpdateOptions { IsUpsert = true };
+
+            await dbConnection.Concepts.BulkWriteAsync(conceptModels);
             await dbConnection.Questions.BulkWriteAsync(questionModels);
             await dbConnection.Resources.BulkWriteAsync(models);
-            // Adding LearningPlan to its collections
-            var filter = "{Name:" + learningPlan.Name + ",AuthorId:" + learningPlan.AuthorId + "}";
-            var options = new UpdateOptions { IsUpsert = true };
+            await dbConnection.Technologies.ReplaceOneAsync(techFilter, learningPlan.Technology, techOptions);
             await dbConnection.LearningPlans.ReplaceOneAsync(filter, learningPlan, options);
+            
             return learningPlan;
         }
 
@@ -66,14 +107,14 @@ namespace SME.Persistence
 
         public async Task<List<LearningPlan>> GetLearningPlansByTechnologyAsync(string technology)
         {
-            var filter = "{ Technology : " + technology + " }";
+            var filter = "{ Technology : \"" + technology + "\" }";
             var plans = await dbConnection.LearningPlans.Find(filter).ToListAsync();
             return (plans.Count > 0) ? plans : null;
         }
 
         public async Task<List<LearningPlan>> GetLearningPlansByUserNameAsync(string userName)
         {
-            var filter = "{ AuthorId : " + userName + " }";
+            var filter = "{ AuthorId : \"" + userName + "\" }";
             var plans = await dbConnection.LearningPlans.Find(filter).ToListAsync();
             return (plans.Count > 0) ? plans : null;
         }

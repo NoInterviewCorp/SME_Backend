@@ -95,10 +95,6 @@ namespace SME.Persistence
                         // for faster indexed searches
                         var technology = technologies[i];
                         technology.Name = technology.Name.ToUpper();
-                        if (technology.TechnologyId == null)
-                        {
-                            technology.TechnologyId = Guid.NewGuid().ToString("N");
-                        }
                         (conceptParamsObj["techParamsObj" + h + i] as IDictionary<string, Object>).Add("techName" + h + i, technology.Name);
                         (conceptParamsObj["techParamsObj" + h + i] as IDictionary<string, Object>).Add("technology" + h + i, technology);
                         techCypherQuery = techCypherQuery
@@ -242,10 +238,6 @@ namespace SME.Persistence
                     // for faster indexed searches
                     var technology = technologies[i];
                     technology.Name = technology.Name.ToUpper();
-                    if (technology.TechnologyId == null)
-                    {
-                        technology.TechnologyId = Guid.NewGuid().ToString("N");
-                    }
                     (conceptParamsObj["techParamsObj" + h + i] as IDictionary<string, Object>).Add("techName" + h + i, technology.Name);
                     (conceptParamsObj["techParamsObj" + h + i] as IDictionary<string, Object>).Add("technology" + h + i, technology);
                     techCypherQuery = techCypherQuery

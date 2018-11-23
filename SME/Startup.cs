@@ -53,6 +53,7 @@ namespace SME
             services.AddScoped<IConceptRepository, ConceptRepository>();
             services.AddScoped<ITechnologyRepository, TechnologyRepository>();
             services.AddScoped<IQuestionRepository, QuestionRepository>();
+            services.AddScoped<ILearningPlanRepository,LearningPlanRepository>();
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>
             {
