@@ -6,7 +6,8 @@ namespace SME.Models
 {
     public class LearningPlan
     {
-        
+        [BsonId]
+        public ObjectId _Id { get; set; }
         public string LearningPlanId { get; set; }
         public string AuthorId { get; set; }
         public string Name { get; set; }

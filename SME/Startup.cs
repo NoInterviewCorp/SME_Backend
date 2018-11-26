@@ -49,7 +49,7 @@ namespace SME
             );
             services.AddSingleton<MongoDbConnection>();
             services.AddSingleton<GraphDbConnection>();
-            services.AddScoped<IResourceRepository, ResourceRepository>();
+            services.AddScoped<IResourceRepository, ResourceMongo>();
             services.AddScoped<IConceptRepository, ConceptRepository>();
             services.AddScoped<ITechnologyRepository, TechnologyRepository>();
             services.AddScoped<IQuestionRepository, QuestionRepository>();
