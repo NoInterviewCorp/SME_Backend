@@ -8,7 +8,7 @@ using System.Dynamic;
 
 namespace SME.Persistence
 {
-    public class TechnologyRepository : ITechnologyRepository
+    public class TechnologyRepository // : ITechnologyRepository
     {
         private GraphClient graph;
         public TechnologyRepository(GraphDbConnection graph)

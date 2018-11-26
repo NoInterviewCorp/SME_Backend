@@ -26,17 +26,17 @@ namespace SME.Controllers
         /// Retrieves All Learning Plans from the Database
         /// </summary>
         /// <response code="200">Returns all Learning Plans </response>
-        // GET Resource/
+        // GET LearningPlan/
         [HttpGet]
         [ProducesResponseType(200)]
         public async Task<IActionResult> GetLearningPlans()
         {
-            var resources = await repository.GetLearningPlansAsync();
-            if (resources == null)
+            var LearningPlans = await repository.GetLearningPlansAsync();
+            if (LearningPlans == null)
             {
                 return NotFound("There are no Learning plans. You can create your own Learning plan");
             }
-            return Ok(resources);
+            return Ok(LearningPlans);
         }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace SME.Controllers
         /// </summary>
         /// <response code="200">Returns Learning Plan/s according to <paramref name="type"/> given </response>
         /// <response code="400">Bad Request as type maybe invalid </response>
-        // GET Resource/
+        // GET LearningPlan/
         [HttpGet("{text}")]
         [ProducesResponseType(200)]
         public async Task<IActionResult> GetUserLearningPlansAsync(string text, [FromQuery] string type)
@@ -54,26 +54,26 @@ namespace SME.Controllers
             switch (type.ToLower())
             {
                 case "username":
-                    var resources = await repository.GetLearningPlansByUserNameAsync(text);
-                    if (resources == null)
+                    var LearningPlans = await repository.GetLearningPlansByUserNameAsync(text);
+                    if (LearningPlans == null)
                     {
                         return Ok("There are no Learning plans. You can create your own Learning plan");
                     }
-                    return Ok(resources);
+                    return Ok(LearningPlans);
                 case "id":
-                    var resource = await repository.GetLearningPlanByIdAsync(text);
-                    if (resource == null)
+                    var LearningPlan = await repository.GetLearningPlanByIdAsync(text);
+                    if (LearningPlan == null)
                     {
                         return Ok("There are no Learning plans. You can create your own Learning plan");
                     }
-                    return Ok(resource);
+                    return Ok(LearningPlan);
                 case "tech":
-                    var resourcesObj = await repository.GetLearningPlansByTechnologyAsync(text);
-                    if (resourcesObj == null)
+                    var LearningPlansObj = await repository.GetLearningPlansByTechnologyAsync(text);
+                    if (LearningPlansObj == null)
                     {
                         return Ok("There are no Learning plans. You can create your own Learning plan");
                     }
-                    return Ok(resourcesObj);
+                    return Ok(LearningPlansObj);
                 default:
                     return BadRequest();
             }
@@ -134,6 +134,28 @@ namespace SME.Controllers
                 }
             }
             return BadRequest();
+        }
+
+        /// <summary>
+        /// Deleted a LearningPlan from the Database
+        /// </summary>
+        /// <response code="200">Deleted a LearningPlan </response>
+        /// <response code="404">LearningPlan not found</response>
+        // GET LearningPlan/
+        [HttpDelete("{learningPlanId}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> DeleteLearningPlanAsync(string learningPlanId)
+        {
+            var hasDeleted = await repository.DeleteLearningPlanAsync(learningPlanId);
+            if (hasDeleted)
+            {
+                return Ok("LearningPlan has been deleted");
+            }
+            else
+            {
+                return NotFound();
+            }
         }
     }
 }

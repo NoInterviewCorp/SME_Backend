@@ -13,9 +13,10 @@ namespace SME.Services
         {
             this.client = new MongoClient(options.Value.ConnectionString);
             _db = client.GetDatabase(options.Value.Database);
-            Concepts.Indexes.CreateOne(new CreateIndexModel<Concept>("{ Name : 1 }"));
-            Technologies.Indexes.CreateOne(new CreateIndexModel<Technology>("{ Name : 1 }"));
+            Concepts.Indexes.CreateOne(new CreateIndexModel<Concept>("{ Name : \"text\" }"));
+            Technologies.Indexes.CreateOne(new CreateIndexModel<Technology>("{ Name : \"text\" }"));
             Resources.Indexes.CreateOne(new CreateIndexModel<Resource>("{ ResourceId : 1 }"));
+            Resources.Indexes.CreateOne(new CreateIndexModel<Resource>("{ Name : \"text\", Description: \"text\" }"));
             LearningPlans.Indexes.CreateOne(new CreateIndexModel<LearningPlan>("{ LearningPlanId : 1 }"));
             Questions.Indexes.CreateOne(new CreateIndexModel<Question>("{ QuestionId : 1 }"));
         }

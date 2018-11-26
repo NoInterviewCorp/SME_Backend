@@ -86,34 +86,34 @@ namespace SME.Controllers
             }
             return BadRequest();
         }
-        /// <summary>
-        /// Updates a <paramref name="concept"/> into the database if it exists
-        /// </summary>
-        /// <param name="concept">Concept to be added. </param>
-        /// <param name="conceptName">conceptName of object which needs to be updated. </param>
-        /// <response code="201">Returns the newly updated Concept</response>
-        /// <response code="400">If the Concept does not exists or modelstate is invalid </response> 
-        // PUT SME/
-        [HttpPut("{conceptName}")]
-        [ProducesResponseType(201)]
-        [ProducesResponseType(400)]
-        public async Task<IActionResult> PutAsync(string conceptName, [FromBody] Concept concept)
-        {
-            if (ModelState.IsValid)
-            {
-                // TODO: FIGURE OUT IF WE NEED A PUT FOR THIS ENTITY
-                var ConceptObj = await repository.AddConceptAsync(concept);
-                if (ConceptObj == null)
-                {
-                    return NotFound(concept.Name + " was not found or You didn't include it's ID");
-                }
-                else
-                {
-                    return Created("/concept", ConceptObj);
-                }
-            }
-            return BadRequest();
-        }
+        // /// <summary>
+        // /// Updates a <paramref name="concept"/> into the database if it exists
+        // /// </summary>
+        // /// <param name="concept">Concept to be added. </param>
+        // /// <param name="conceptName">conceptName of object which needs to be updated. </param>
+        // /// <response code="201">Returns the newly updated Concept</response>
+        // /// <response code="400">If the Concept does not exists or modelstate is invalid </response> 
+        // // PUT SME/
+        // [HttpPut("{conceptName}")]
+        // [ProducesResponseType(201)]
+        // [ProducesResponseType(400)]
+        // public async Task<IActionResult> PutAsync(string conceptName, [FromBody] Concept concept)
+        // {
+        //     if (ModelState.IsValid)
+        //     {
+        //         // TODO: FIGURE OUT IF WE NEED A PUT FOR THIS ENTITY
+        //         var ConceptObj = await repository.AddConceptAsync(concept);
+        //         if (ConceptObj == null)
+        //         {
+        //             return NotFound(concept.Name + " was not found or You didn't include it's ID");
+        //         }
+        //         else
+        //         {
+        //             return Created("/concept", ConceptObj);
+        //         }
+        //     }
+        //     return BadRequest();
+        // }
 
         /// <summary>
         /// Deleted a Concept from the Database

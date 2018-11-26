@@ -8,7 +8,7 @@ namespace SME.Persistence
         // Technology
         Task<List<Technology>> GetAllTechnologiesAsync();
         Task<Technology> AddTechnologyAsync(Technology technology);
-        Task<Technology> GetTechnologyByNameAsync(string name);
+        Task<List<Technology>> GetTechnologyByNameAsync(string name);
         // Task<Technology> UpdateTechnologyAsync(Technology technology);
         Task<bool> DeleteTechnologyAsync(string technologyId);
     }

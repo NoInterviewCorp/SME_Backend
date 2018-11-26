@@ -7,10 +7,10 @@ using System;
 
 namespace SME.Persistence
 {
-    public class LearningPlanRepository : ILearningPlanRepository
+    public class LearningPlanMongo : ILearningPlanRepository
     {
         private MongoDbConnection dbConnection;
-        public LearningPlanRepository(MongoDbConnection dbConnection)
+        public LearningPlanMongo(MongoDbConnection dbConnection)
         {
             this.dbConnection = dbConnection;
         }
@@ -28,10 +28,9 @@ namespace SME.Persistence
             {
                 return null;
             }
-            
+
             // Delegating the job of upserting to a helper function aynchronously
             learningPlan = await UpsertLearningPlanAsync(learningPlan);
-
 
             // finally updating this learning plan in it's own collection
             await dbConnection.LearningPlans.ReplaceOneAsync(filter, learningPlan, options);
@@ -90,6 +89,18 @@ namespace SME.Persistence
             return (plan.IsAcknowledged) ? learningPlan : null;
         }
 
+        public async Task<bool> DeleteLearningPlanAsync(string learningPlanId){
+            var removeQuery = await dbConnection.LearningPlans.DeleteOneAsync(l => l.LearningPlanId == learningPlanId);
+            if (removeQuery.DeletedCount > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         private async Task<LearningPlan> UpsertLearningPlanAsync(LearningPlan learningPlan)
         {
             // preparing bulkwrite containers for each entity
@@ -113,7 +124,9 @@ namespace SME.Persistence
                 if (resource.ResourceId == null)
                 {
                     resource.ResourceId = Guid.NewGuid().ToString("N");
+                    resource._Id = new MongoDB.Bson.ObjectId(resource.ResourceId);
                 }
+                
                 var resFilter = "{ResourceId:\"" + resource.ResourceId + "\"}";
                 var upsertQuery = new ReplaceOneModel<Resource>(resFilter, resource) { IsUpsert = true };
 

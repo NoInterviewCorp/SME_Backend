@@ -50,10 +50,10 @@ namespace SME
             services.AddSingleton<MongoDbConnection>();
             services.AddSingleton<GraphDbConnection>();
             services.AddScoped<IResourceRepository, ResourceMongo>();
-            services.AddScoped<IConceptRepository, ConceptRepository>();
-            services.AddScoped<ITechnologyRepository, TechnologyRepository>();
+            services.AddScoped<IConceptRepository, ConceptMongo>();
+            services.AddScoped<ITechnologyRepository, TechnologyMongo>();
             services.AddScoped<IQuestionRepository, QuestionRepository>();
-            services.AddScoped<ILearningPlanRepository,LearningPlanRepository>();
+            services.AddScoped<ILearningPlanRepository,LearningPlanMongo>();
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>
             {

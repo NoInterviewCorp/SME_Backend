@@ -122,7 +122,7 @@ namespace SME.Controllers
             return BadRequest();
         }
 
-         /// <summary>
+        /// <summary>
         /// Deleted a Resource from the Database
         /// </summary>
         /// <response code="200">Deleted a Resource </response>

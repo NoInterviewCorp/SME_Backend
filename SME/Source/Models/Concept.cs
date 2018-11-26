@@ -6,6 +6,8 @@ namespace SME.Models
 {
     public class Concept
     {
+        [BsonId]
+        public ObjectId _Id { get; set; }
         public string Name { get; set; }
         [BsonIgnore]
         public List<Technology> Technologies { get; set; }

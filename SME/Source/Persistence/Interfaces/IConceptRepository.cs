@@ -9,7 +9,7 @@ namespace SME.Persistence
         // Concept
         Task<Concept> AddConceptAsync(Concept concept);
         Task<List<Concept>> GetConceptsAsync();
-        Task<Concept> GetConceptByNameAsync(string name);
+        Task<List<Concept>> GetConceptByNameAsync(string name);
         // Task<Concept> UpdateConceptAsync(Concept concept);
         Task<bool> DeleteConceptByNameAsync(string name);
     }

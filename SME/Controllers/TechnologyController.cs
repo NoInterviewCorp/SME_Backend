@@ -86,34 +86,34 @@ namespace SME.Controllers
             return BadRequest();
         }
 
-        /// <summary>
-        /// Updates a <paramref name="technology"/> into the database if it exists
-        /// </summary>
-        /// <param name="technology">Technology to be added. </param>
-        /// <param name="technologyId">technologyId of object which needs to be updated. </param>
-        /// <response code="201">Returns the newly updated Technology</response>
-        /// <response code="400">If the Technology does not exists or modelstate is invalid </response> 
-        // PUT SME/
-        [HttpPut("{technologyId}")]
-        [ProducesResponseType(201)]
-        [ProducesResponseType(400)]
-        public async Task<IActionResult> PutAsync(string technologyId, [FromBody] Technology technology)
-        {
-            if (ModelState.IsValid)
-            {
-                // TODO: FIGURE OUT IF WE NEED A PUT FOR THIS ENTITY
-                var technologyObj = await repository.AddTechnologyAsync(technology);
-                if (technologyObj == null)
-                {
-                    return NotFound(technology.Name + " was not found or You didn't include it's ID");
-                }
-                else
-                {
-                    return Created("/technology", technologyObj);
-                }
-            }
-            return BadRequest();
-        }
+        // /// <summary>
+        // /// Updates a <paramref name="technology"/> into the database if it exists
+        // /// </summary>
+        // /// <param name="technology">Technology to be added. </param>
+        // /// <param name="technologyId">technologyId of object which needs to be updated. </param>
+        // /// <response code="201">Returns the newly updated Technology</response>
+        // /// <response code="400">If the Technology does not exists or modelstate is invalid </response> 
+        // // PUT SME/
+        // [HttpPut("{technologyId}")]
+        // [ProducesResponseType(201)]
+        // [ProducesResponseType(400)]
+        // public async Task<IActionResult> PutAsync(string technologyId, [FromBody] Technology technology)
+        // {
+        //     if (ModelState.IsValid)
+        //     {
+        //         // TODO: FIGURE OUT IF WE NEED A PUT FOR THIS ENTITY
+        //         var technologyObj = await repository.AddTechnologyAsync(technology);
+        //         if (technologyObj == null)
+        //         {
+        //             return NotFound(technology.Name + " was not found or You didn't include it's ID");
+        //         }
+        //         else
+        //         {
+        //             return Created("/technology", technologyObj);
+        //         }
+        //     }
+        //     return BadRequest();
+        // }
 
         /// <summary>
         /// Deleted a Technology from the Database
