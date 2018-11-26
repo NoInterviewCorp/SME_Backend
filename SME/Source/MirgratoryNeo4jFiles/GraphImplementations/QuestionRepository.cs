@@ -8,7 +8,7 @@ using System.Dynamic;
 
 namespace SME.Persistence
 {
-    public class QuestionRepository : IQuestionRepository
+    public class QuestionRepository //: IQuestionRepository
     {
         private GraphClient graph;
         public QuestionRepository(GraphDbConnection graph)
@@ -16,32 +16,32 @@ namespace SME.Persistence
             this.graph = graph.Client;
         }
 
-        // Question
-        public async Task<List<Question>> AddQuestionsAsync(List<Question> questions)
-        {
-            //     var query = graph.Cypher;
-            //     var questionParams = new ExpandoObject() as IDictionary<string, object>;
-            //     for (int i = 0; i < questions.Count; i++)
-            //     {
-            //         var question = questions[i];
-            //         if (question.QuestionId == null || question.QuestionId == "")
-            //         {
-            //             question.QuestionId = Guid.NewGuid().ToString("N");
-            //         }
-            //         questionParams.Add("question"+i,question);
-            //         query = query
-            //             .Merge("(q:Question)")
-            //             .Where((Question q) => q.QuestionId == question.QuestionId)
-            //             .OnCreate()
-            //             .Set($"q={{question{i}}}")
-            //             .WithParams(questionParams)
-            //             .Return(q => q.As<Question>());
-            //     }
-            //     var result = await query;
-            //     var list = new List<Question>(result);
-            //     return (list.Count == 0) ? null : list;
-            return null;
-        }
+        // // Question
+        // public async Task<List<Question>> AddQuestionsAsync(List<Question> questions)
+        // {
+        //     //     var query = graph.Cypher;
+        //     //     var questionParams = new ExpandoObject() as IDictionary<string, object>;
+        //     //     for (int i = 0; i < questions.Count; i++)
+        //     //     {
+        //     //         var question = questions[i];
+        //     //         if (question.QuestionId == null || question.QuestionId == "")
+        //     //         {
+        //     //             question.QuestionId = Guid.NewGuid().ToString("N");
+        //     //         }
+        //     //         questionParams.Add("question"+i,question);
+        //     //         query = query
+        //     //             .Merge("(q:Question)")
+        //     //             .Where((Question q) => q.QuestionId == question.QuestionId)
+        //     //             .OnCreate()
+        //     //             .Set($"q={{question{i}}}")
+        //     //             .WithParams(questionParams)
+        //     //             .Return(q => q.As<Question>());
+        //     //     }
+        //     //     var result = await query;
+        //     //     var list = new List<Question>(result);
+        //     //     return (list.Count == 0) ? null : list;
+        //     return null;
+        // }
 
         public async Task<List<Question>> GetQuestionsAsync()
         {
@@ -69,10 +69,10 @@ namespace SME.Persistence
                 return list;
             }
         }
-        public async Task<Question> UpdateQuestionAsync(Question question)
-        {
-            return null;
-        }
+        // public async Task<Question> UpdateQuestionAsync(Question question)
+        // {
+        //     return null;
+        // }
         public async Task<bool> DeleteQuestionByIdAsync(string QuestionId)
         {
             var result = new List<Question>(await graph.Cypher
