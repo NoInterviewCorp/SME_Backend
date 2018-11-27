@@ -4,6 +4,7 @@ using SME.Models;
 using SME.Services;
 using MongoDB.Driver;
 using System;
+using MongoDB.Bson;
 
 namespace SME.Persistence
 {
@@ -16,6 +17,7 @@ namespace SME.Persistence
         }
         public async Task<LearningPlan> AddLearningPlanAsync(LearningPlan learningPlan)
         {
+
             // Adding LearningPlan to its collections
             var filter = "{Name:\"" + learningPlan.Name + "\",AuthorId:\"" + learningPlan.AuthorId + "\"}";
             var options = new UpdateOptions { IsUpsert = true };
@@ -28,6 +30,8 @@ namespace SME.Persistence
             {
                 return null;
             }
+
+            learningPlan.LearningPlanId = Guid.NewGuid().ToString("N");
 
             // Delegating the job of upserting to a helper function aynchronously
             learningPlan = await UpsertLearningPlanAsync(learningPlan);
@@ -79,7 +83,7 @@ namespace SME.Persistence
             // Delegating the job of upserting other entites to a function
             learningPlan = await UpsertLearningPlanAsync(learningPlan);
 
-            // finally updating this learning plan in it's own collection
+            // Finally updating this learning plan in it's own collection
             var filter = new FilterDefinitionBuilder<LearningPlan>().Eq("LearningPlanId", learningPlan.LearningPlanId);
             var plan = await dbConnection.LearningPlans.ReplaceOneAsync(
                 filter: filter,
@@ -89,7 +93,8 @@ namespace SME.Persistence
             return (plan.IsAcknowledged) ? learningPlan : null;
         }
 
-        public async Task<bool> DeleteLearningPlanAsync(string learningPlanId){
+        public async Task<bool> DeleteLearningPlanAsync(string learningPlanId)
+        {
             var removeQuery = await dbConnection.LearningPlans.DeleteOneAsync(l => l.LearningPlanId == learningPlanId);
             if (removeQuery.DeletedCount > 0)
             {
@@ -103,11 +108,11 @@ namespace SME.Persistence
 
         private async Task<LearningPlan> UpsertLearningPlanAsync(LearningPlan learningPlan)
         {
-            // preparing bulkwrite containers for each entity
+            // Preparing bulkwrite containers for each entity
             var resourceModels = new List<WriteModel<Resource>>();
             var questionModels = new List<WriteModel<Question>>();
-            var conceptModels = new List<WriteModel<Concept>>();
-            var technologyModels = new List<WriteModel<Technology>>();
+            var conceptModels = new List<ReplaceOneModel<Concept>>();
+            var technologyModels = new List<ReplaceOneModel<Technology>>();
 
             // Updating technology field used here in its own collection
             var techFilter = "{Name:\"" + learningPlan.Technology.Name + "\"}";
@@ -124,9 +129,8 @@ namespace SME.Persistence
                 if (resource.ResourceId == null)
                 {
                     resource.ResourceId = Guid.NewGuid().ToString("N");
-                    resource._Id = new MongoDB.Bson.ObjectId(resource.ResourceId);
                 }
-                
+
                 var resFilter = "{ResourceId:\"" + resource.ResourceId + "\"}";
                 var upsertQuery = new ReplaceOneModel<Resource>(resFilter, resource) { IsUpsert = true };
 
@@ -149,10 +153,13 @@ namespace SME.Persistence
                     {
                         var conceptFilter = "{Name:\"" + concept.Name + "\"}";
                         var conceptUpsertQuery = new ReplaceOneModel<Concept>(conceptFilter, concept) { IsUpsert = true };
-                        conceptModels.Add(conceptUpsertQuery);
+                        if (!conceptModels.Contains(conceptUpsertQuery))
+                        {
+                            conceptModels.Add(conceptUpsertQuery);
+                        };
                     }
 
-                    // scanning for the correct options
+                    // Scanning for the correct options
                     string correctId = "";
                     foreach (Option option in question.Options)
                     {
@@ -173,18 +180,24 @@ namespace SME.Persistence
                 {
                     var conceptFilter = "{Name:\"" + concept.Name + "\"}";
                     var conceptUpsertQuery = new ReplaceOneModel<Concept>(conceptFilter, concept) { IsUpsert = true };
-                    conceptModels.Add(conceptUpsertQuery);
+                    if (!conceptModels.Contains(conceptUpsertQuery))
+                    {
+                        conceptModels.Add(conceptUpsertQuery);
+                    }
                 }
 
-                // adding all technologies mentioned inside the resource
+                // Adding all technologies mentioned inside the resource
                 foreach (Technology technology in resource.Technologies)
                 {
                     var technologyFilter = "{Name:\"" + technology.Name + "\"}";
                     var technologyUpsertQuery = new ReplaceOneModel<Technology>(technologyFilter, technology) { IsUpsert = true };
-                    technologyModels.Add(technologyUpsertQuery);
+                    if (!technologyModels.Contains(technologyUpsertQuery))
+                    {
+                        technologyModels.Add(technologyUpsertQuery);
+                    }
                 }
 
-                // adding this resource inside the bulkwrite list
+                //Adding this resource inside the bulkwrite list
                 resourceModels.Add(upsertQuery);
             }
 

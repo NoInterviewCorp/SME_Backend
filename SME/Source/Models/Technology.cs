@@ -6,8 +6,8 @@ namespace SME.Models
 {
     public class Technology
     {
-        [BsonId]
-        public ObjectId _Id { get; set; }
+        [BsonIgnoreIfDefault]
+        public ObjectId _id { get; set; }
         public string Name { get; set; }
         [BsonIgnore]
         public List<Resource> Resources { get; set; }

@@ -6,8 +6,8 @@ namespace SME.Models
 {
     public class Resource
     {
-        [BsonId]
-        public ObjectId _Id { get; set; }
+        [BsonIgnoreIfDefault]
+        public ObjectId _id { get; set; }
         public string ResourceId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }

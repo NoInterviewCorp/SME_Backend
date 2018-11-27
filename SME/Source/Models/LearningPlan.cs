@@ -6,11 +6,12 @@ namespace SME.Models
 {
     public class LearningPlan
     {
-        [BsonId]
-        public ObjectId _Id { get; set; }
+        [BsonIgnoreIfDefault]
+        public ObjectId _id { get; set; }
         public string LearningPlanId { get; set; }
         public string AuthorId { get; set; }
         public string Name { get; set; }
+        public string Description { get; set; }
         public Technology Technology { get; set; }
         public List<Resource> Resources { get; set; }
         public bool HasPublished { get; set; }

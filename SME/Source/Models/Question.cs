@@ -6,7 +6,8 @@ namespace SME.Models
 {
     public class Question
     {
-
+        [BsonIgnoreIfDefault]
+        public ObjectId _id { get; set; }
         public string QuestionId { get; set; }
         public string ProblemStatement { get; set; }
         public List<Option> Options { get; set; }
