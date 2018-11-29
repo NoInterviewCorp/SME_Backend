@@ -49,6 +49,7 @@ namespace SME
             );
             services.AddSingleton<MongoDbConnection>();
             services.AddSingleton<GraphDbConnection>();
+            services.AddSingleton<RabbitMQConnection>();
             services.AddScoped<IResourceRepository, ResourceMongo>();
             services.AddScoped<IConceptRepository, ConceptMongo>();
             services.AddScoped<ITechnologyRepository, TechnologyMongo>();
@@ -110,7 +111,6 @@ namespace SME
                 c.RoutePrefix = string.Empty;
             });
             app.UseCors("CorsPolicy");
-            // app.UseHttpsRedirection();
             app.UseMvc();
         }
     }

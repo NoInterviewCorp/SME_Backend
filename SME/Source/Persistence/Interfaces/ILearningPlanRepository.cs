@@ -12,6 +12,7 @@ namespace SME.Persistence
         Task<LearningPlan> GetLearningPlanByIdAsync(string learningPlanId);
         Task<List<LearningPlan>> GetLearningPlansByUserNameAsync(string userName);
         Task<List<LearningPlan>> GetLearningPlansByTechnologyAsync(string technology);
+        
         Task<LearningPlan> UpdateLearningPlanAsync(LearningPlan learningPlan);
         Task<bool> DeleteLearningPlanAsync(string learningPlanId);
     }

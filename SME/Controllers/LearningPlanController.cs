@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 using SME.Models;
 using SME.Persistence;
 using Microsoft.AspNetCore.Mvc;
+using SME.Services;
+using System.Text;
+using RabbitMQ.Client;
 
 namespace SME.Controllers
 {
@@ -17,8 +20,11 @@ namespace SME.Controllers
         // with the database
         private ILearningPlanRepository repository;
 
-        public LearningPlanController(ILearningPlanRepository repository)
+        private RabbitMQConnection mQConnection;
+
+        public LearningPlanController(ILearningPlanRepository repository, RabbitMQConnection mQConnection)
         {
+            this.mQConnection = mQConnection;
             this.repository = repository;
         }
 
@@ -74,6 +80,13 @@ namespace SME.Controllers
                         return Ok("There are no Learning plans. You can create your own Learning plan");
                     }
                     return Ok(LearningPlansObj);
+                // case "saved":
+                //     var savedLearningPlans = await repository.GetSavedLearningPlansOfUser(text);
+                //     if (savedLearningPlans == null)
+                //     {
+                //         return Ok("There are no Learning plans. You can create your own Learning plan");
+                //     }
+                //     return Ok(savedLearningPlans);
                 default:
                     return BadRequest();
             }
@@ -102,6 +115,18 @@ namespace SME.Controllers
                 }
                 else
                 {
+                    // if (learningPlan.HasPublished)
+                    // {
+                        var lpWrapper = new LearningPlanWrapper(learningPlan);
+                        var body = ObjectSerialize.Serialize(lpWrapper);
+                        mQConnection.Model.BasicPublish(
+                            exchange: mQConnection.ExchangeNme,
+                            routingKey: "Models.LearningPlan",
+                            basicProperties: null,
+                            body: body
+                        );
+                        Console.WriteLine(" [x] Sent {0}", lpWrapper.LearningPlanId);
+                    // }
                     return Created("/learningplan", learningplanObj);
                 }
             }
