@@ -15,10 +15,6 @@ namespace SME
     {
         public static void Main(string[] args)
         {
-            // using (var greeter = new Neo4jRepository("bolt://localhost:7687", "neo4j", "qwertyuiop"))
-            // {
-            //     greeter.PrintGreeting("hello, world");
-            // }
             CreateWebHostBuilder(args).Build().Run();
         }
 

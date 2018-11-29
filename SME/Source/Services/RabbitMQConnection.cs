@@ -11,10 +11,12 @@ namespace SME.Services
         {
             get { return "KnowldegeGraphExchange"; }
         }
+        private MongoDbConnection dbConnection;
 
-
-        public RabbitMQConnection()
+        public RabbitMQConnection(MongoDbConnection dbConnection)
         {
+            this.dbConnection = dbConnection;
+            
             Factory = new ConnectionFactory
             {
                 HostName = "172.23.238.173",
@@ -23,17 +25,21 @@ namespace SME.Services
                 Password = "strongpassword",
                 DispatchConsumersAsync = true
             };
+
             Connection = Factory.CreateConnection();
             Model = Connection.CreateModel();
             Model.ExchangeDeclare("KnowldegeGraphExchange", "topic");
-            Model.QueueDeclare("Contributer_KnowledgeGraph", false, false, false, null);
-            Model.QueueBind("Contributer_KnowledgeGraph", ExchangeNme, "Models.LearningPlan");
-            // _model.QueueDeclare ("QuizEngine_KnowledgeGraph", false, false, false, null);
-            // _model.QueueDeclare ("KnowledgeGraph_IDs", false, false, false, null);
-            // _model.QueueDeclare ("Contributer_Questions", false, false, false, null);
-            // _model.QueueBind ("QuizEngine_KnowledgeGraph", ExchangeNme, "Models.Technology");
-            // _model.QueueBind ("KnowledgeGraph_IDs", ExchangeNme, "Models.QuestionId");
-            // _model.QueueBind ("Contributer_Questions", ExchangeNme, "Models.Queation");
+            Model.QueueDeclare("Contributer_KnowledgeGraph_LearningPlan", false, false, false, null);
+            Model.QueueDeclare("Contributer_KnowledgeGraph_Resources", false, false, false, null);
+            Model.QueueDeclare("Contributer_QuizEngine_Questions", false, false, false, null);
+            Model.QueueDeclare("KnowledgeGraph_Contributer_Ids", false, false, false, null);
+            Model.QueueBind("Contributer_KnowledgeGraph_LearningPlan", ExchangeNme, "Models.LearningPlan");
+            Model.QueueBind("Contributer_KnowledgeGraph_Resource", ExchangeNme, "Models.Resource");
+            Model.QueueBind("Contributer_QuizEngine_Questions", ExchangeNme, "Send.Question");
+            Model.QueueBind("KnowledgeGraph_Contributer_Ids", ExchangeNme, "Request.Question");
+            // Model.QueueDeclare("QuizEngine_KnowledgeGraph_Query", false, false, false, null);
+            // Model.QueueDeclare("QuizEngine_KnowledgeGraph_QuizUpdate", false, false, false, null);
+            // Model.QueueDeclare("QuizEngine_UserProfile_UserData", false, false, false, null);
         }
         // public void GetQuestions (byte[] message, string RoutingKey) {
         //     IBasicProperties props = _model.CreateBasicProperties ();

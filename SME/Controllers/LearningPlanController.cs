@@ -118,6 +118,7 @@ namespace SME.Controllers
                     // if (learningPlan.HasPublished)
                     // {
                         var lpWrapper = new LearningPlanWrapper(learningPlan);
+                        // var objectWrapper = new ObjectWrapper(MessageType.IsLearningPlan,lpWrapper as Object);
                         var body = ObjectSerialize.Serialize(lpWrapper);
                         mQConnection.Model.BasicPublish(
                             exchange: mQConnection.ExchangeNme,
