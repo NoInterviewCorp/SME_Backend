@@ -17,7 +17,7 @@ namespace SME.Services
             
             Factory = new ConnectionFactory
             {
-                HostName = "172.23.238.173",
+                HostName = "localhost",
                 // Port = 8080,
                 UserName = "achausername",
                 Password = "strongpassword",
@@ -26,15 +26,15 @@ namespace SME.Services
 	try{
             Connection = Factory.CreateConnection();
             Model = Connection.CreateModel();
-            /*Model.ExchangeDeclare("KnowldegeGraphExchange", "topic");
+            Model.ExchangeDeclare("KnowldegeGraphExchange", "topic");
             Model.QueueDeclare("Contributer_KnowledgeGraph_LearningPlan", false, false, false, null);
             Model.QueueDeclare("Contributer_KnowledgeGraph_Resources", false, false, false, null);
             Model.QueueDeclare("Contributer_QuizEngine_Questions", false, false, false, null);
             Model.QueueDeclare("KnowledgeGraph_Contributer_Ids", false, false, false, null);
             Model.QueueBind("Contributer_KnowledgeGraph_LearningPlan", ExchangeNme, "Models.LearningPlan");
-            Model.QueueBind("Contributer_KnowledgeGraph_Resource", ExchangeNme, "Models.Resource");
+            Model.QueueBind("Contributer_KnowledgeGraph_Resources", ExchangeNme, "Models.Resource");
             Model.QueueBind("Contributer_QuizEngine_Questions", ExchangeNme, "Send.Question");
-            Model.QueueBind("KnowledgeGraph_Contributer_Ids", ExchangeNme, "Request.Question");*/
+            Model.QueueBind("KnowledgeGraph_Contributer_Ids", ExchangeNme, "Request.Question");
 	}
 	catch(Exception e){
 		Console.WriteLine("--------------------------------------------------------------");
