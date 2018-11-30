@@ -7,10 +7,7 @@ namespace SME.Services
         private ConnectionFactory Factory;
         public IConnection Connection { get; set; }
         public IModel Model { get; set; }
-        public string ExchangeNme
-        {
-            get { return "KnowldegeGraphExchange"; }
-        }
+        public string ExchangeNme = "KnowldegeGraphExchange";
         private MongoDbConnection dbConnection;
 
         public RabbitMQConnection(MongoDbConnection dbConnection)
