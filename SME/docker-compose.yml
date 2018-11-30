@@ -5,8 +5,8 @@ services:
             - "5002:5002"
         depends_on:
             - mongodb
-        # environment:
-            # - CONNECTION_HOST_IP = 
+        environment:
+            - RUNNING_IN_DOCKER=true 
     mongodb:
         image: mongo
         volumes:
