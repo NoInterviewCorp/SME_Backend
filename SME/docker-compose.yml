@@ -12,8 +12,8 @@ services:
         image: mongo
         network_mode: host
         volumes:
-            - ${WEBAPP_STORAGE_HOME}/site:/data/db
-            # - ./data:/data/db
+            # - ${WEBAPP_STORAGE_HOME}/site:/data/db
+            - ./data:/data/db
         ports:
             - "27017:27017"
 version: "2"    
