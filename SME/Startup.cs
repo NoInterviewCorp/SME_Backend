@@ -45,7 +45,9 @@ namespace SME
                     options.IsDockerized = Configuration["RUNNING_IN_DOCKER"] != null;
                     Console.WriteLine(Configuration["RUNNING_IN_DOCKER"]);
                     Console.WriteLine("---------------------------------------------------");
-                    Console.WriteLine(options.IsDockerized);
+                    Console.WriteLine(options.IsInDevelopment);
+                    Console.WriteLine("---------------------------------------------------");
+                    Console.WriteLine(options.ConnectionString);
                     Console.WriteLine("---------------------------------------------------");
                     options.IsInDevelopment = HostingEnvironment.IsDevelopment();
                 }
