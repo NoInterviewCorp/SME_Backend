@@ -5,7 +5,7 @@ public class MongoSettings
     {
         get
         {
-            if (IsDockerized && IsInDevelopment)
+            if (IsDockerized)
             {
                 return Container;
             }
