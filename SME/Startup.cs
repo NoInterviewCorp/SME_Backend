@@ -43,6 +43,10 @@ namespace SME
                     options.Container = Configuration.GetSection("MongoDb:Container").Value;
                     options.Database = Configuration.GetSection("MongoDb:Database").Value;
                     options.IsDockerized = Configuration["RUNNING_IN_DOCKER"] != null;
+                    Console.WriteLine(Configuration["RUNNING_IN_DOCKER"]);
+                    Console.WriteLine("---------------------------------------------------");
+                    Console.WriteLine(options.IsDockerized);
+                    Console.WriteLine("---------------------------------------------------");
                     options.IsInDevelopment = HostingEnvironment.IsDevelopment();
                 }
             );
