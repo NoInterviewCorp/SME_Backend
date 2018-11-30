@@ -16,17 +16,21 @@ using Swashbuckle.AspNetCore.Swagger;
 using SME.Models;
 using SME.Persistence;
 using SME.Services;
+using Microsoft.AspNetCore.Hosting.Internal;
 
 namespace SME
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IHostingEnvironment env)
         {
             Configuration = configuration;
+            HostingEnvironment = env;
+
         }
 
         public IConfiguration Configuration { get; }
+        public IHostingEnvironment HostingEnvironment { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -36,19 +40,22 @@ namespace SME
                 options =>
                 {
                     options.ConnectionString = Configuration.GetSection("MongoDb:ConnectionString").Value;
+                    options.Container = Configuration.GetSection("MongoDb:Container").Value;
                     options.Database = Configuration.GetSection("MongoDb:Database").Value;
+                    options.IsDockerized = Configuration["RUNNING_IN_DOCKER"] != null;
+                    options.IsInDevelopment = HostingEnvironment.IsDevelopment();
                 }
             );
-            services.Configure<Neo4jSettings>(
-                options =>
-                {
-                    options.ConnectionString = Configuration.GetSection("Neo4j:ConnectionString").Value;
-                    options.UserId = Configuration.GetSection("Neo4j:UserId").Value;
-                    options.Password = Configuration.GetSection("Neo4j:Password").Value;
-                }
-            );
+            // services.Configure<Neo4jSettings>(
+            //     options =>
+            //     {
+            //         options.ConnectionString = Configuration.GetSection("Neo4j:ConnectionString").Value;
+            //         options.UserId = Configuration.GetSection("Neo4j:UserId").Value;
+            //         options.Password = Configuration.GetSection("Neo4j:Password").Value;
+            //     }
+            // );
             services.AddSingleton<MongoDbConnection>();
-            services.AddSingleton<GraphDbConnection>();
+            // services.AddSingleton<GraphDbConnection>();
             services.AddSingleton<RabbitMQConnection>();
             services.AddScoped<IResourceRepository, ResourceMongo>();
             services.AddScoped<IConceptRepository, ConceptMongo>();
