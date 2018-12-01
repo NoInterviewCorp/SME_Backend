@@ -1,6 +1,7 @@
 services:
     sme:
         build: .
+        network_mode: host
         ports:
             - 0.0.0.0:5002:5002
         depends_on:
@@ -11,4 +12,4 @@ services:
             - 0.0.0.0:27017:27017
         volumes:
             - ${WEBAPP_STORAGE_HOME}/site:/data/db
-version: "2"
+version: "3"
