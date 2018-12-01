@@ -7,8 +7,8 @@ services:
         depends_on:
             - mongodb
         labels:
-            - "SERVICE_5002_NAME=sme"
-            - "SERVICE_TAGS=smeTag"
+            - SERVICE_5002_NAME : sme
+            - SERVICE_TAGS : smeTag
     mongodb:
         image: mongo
         ports:
