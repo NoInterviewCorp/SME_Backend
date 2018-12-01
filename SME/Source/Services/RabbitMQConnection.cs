@@ -9,8 +9,6 @@ namespace SME.Services
         public IConnection Connection { get; set; }
         public IModel Model { get; set; }
         public string ExchangeNme = "KnowldegeGraphExchange";
-        // private MongoDbConnection dbConnection;
-
         public RabbitMQConnection()
         {
             // this.dbConnection = dbConnection;
@@ -44,28 +42,6 @@ namespace SME.Services
                 Console.WriteLine(e.StackTrace);
                 Console.WriteLine("--------------------------------------------------------------");
             }
-            // Model.QueueDeclare("QuizEngine_KnowledgeGraph_Query", false, false, false, null);
-            // Model.QueueDeclare("QuizEngine_KnowledgeGraph_QuizUpdate", false, false, false, null);
-            // Model.QueueDeclare("QuizEngine_UserProfile_UserData", false, false, false, null);
         }
-        // public void GetQuestions (byte[] message, string RoutingKey) {
-        //     IBasicProperties props = _model.CreateBasicProperties ();
-        //     props.Expiration = "10000";
-        //     _model.BasicPublish (ExchangeNme, RoutingKey, props, message);
-        // }
-        // public void FetchQuestions () {
-        //     var channel = connection.CreateModel ();
-        //     var consumer = new AsyncEventingBasicConsumer (channel);
-        //     consumer.Received += async (model, ea) => {
-        //         var body = ea.Body;
-        //         var json = Encoding.Default.GetString (body);
-        //         questions.Clear ();
-        //         questions.AddRange (JsonConvert.DeserializeObject<List<Question>> (json));
-        //         var routingKey = ea.RoutingKey;
-        //         Console.WriteLine (" - Routing Key <{0}>", routingKey);
-        //         channel.BasicAck (ea.DeliveryTag, false);
-        //         await Task.Yield ();
-        //     };
-        // }
     }
 }
