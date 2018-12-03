@@ -15,7 +15,7 @@ namespace SME.Services
 
             Factory = new ConnectionFactory
             {
-                HostName = "localhost",
+                HostName = "rabbitmq",
                 // Port = 8080,
                 UserName = "achausername",
                 Password = "strongpassword",

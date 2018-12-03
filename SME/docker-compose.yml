@@ -1,18 +1,23 @@
 services:
     sme:
         build: .
-        network_mode: host
         ports:
-            - 0.0.0.0:5002:5002
+            - 5002:5002
+        networks:
+            - potentiometer-network
         depends_on:
             - mongodb
         labels:
-            - SERVICE_5002_NAME : sme
-            - SERVICE_TAGS : smeTag
+            SERVICE_5002_NAME: sme
     mongodb:
         image: mongo
         ports:
-            - 0.0.0.0:27017:27017
+            - 27017:27017
+        networks:
+            - potentiometer-network
         volumes:
             - ${WEBAPP_STORAGE_HOME}/site:/data/db
-version: "3"
+networks:
+    potentiometer-network:
+        name: potentiometer-network
+version: "3.5"
