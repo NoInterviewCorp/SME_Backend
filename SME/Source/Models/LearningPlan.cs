@@ -8,8 +8,9 @@ namespace SME.Models
 {
     public class LearningPlan
     {
-        [BsonId(IdGenerator=typeof(StringObjectIdGenerator))]
-        public string LearningPlanId { get; set; }
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string LearningPlanId { get; set; } = ObjectId.GenerateNewId().ToString();
 
         public string AuthorId { get; set; }
         public string Name { get; set; }

@@ -8,12 +8,12 @@ namespace SME.Models
     {
         private string _id;
         
-        [BsonId(IdGenerator=typeof(StringObjectIdGenerator)), BsonRepresentation(BsonType.ObjectId)]
+        [BsonId, BsonRepresentation(BsonType.ObjectId)]
         public string TechnologyId
         {
             get;
             set;
-        }
+        } = ObjectId.GenerateNewId().ToString();
         public string Name { get; set; }
 
     }

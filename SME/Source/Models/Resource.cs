@@ -7,12 +7,12 @@ namespace SME.Models
 {
     public class Resource
     {
-        [BsonId(IdGenerator=typeof(StringObjectIdGenerator)),BsonRepresentation(BsonType.ObjectId)]
+        [BsonId,BsonRepresentation(BsonType.ObjectId)]
         public string ResourceId
         {
             get; 
             set;
-        }
+        } = ObjectId.GenerateNewId().ToString();
         public string Name { get; set; }
         public string Description { get; set; }
         public string ResourceLink { get; set; }
