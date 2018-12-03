@@ -15,8 +15,6 @@ services:
             - 27017:27017
         networks:
             - potentiometer-network
-        volumes:
-            - ${WEBAPP_STORAGE_HOME}/site:/data/db
 networks:
     potentiometer-network:
         name: potentiometer-network
