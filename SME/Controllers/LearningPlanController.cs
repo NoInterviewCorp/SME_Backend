@@ -121,7 +121,7 @@ namespace SME.Controllers
                         // var objectWrapper = new ObjectWrapper(MessageType.IsLearningPlan,lpWrapper as Object);
                         var body = ObjectSerialize.Serialize(lpWrapper);
                         mQConnection.Model.BasicPublish(
-                            exchange: mQConnection.ExchangeNme,
+                            exchange: mQConnection.ExchangeName,
                             routingKey: "Models.LearningPlan",
                             basicProperties: null,
                             body: body

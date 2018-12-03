@@ -46,7 +46,20 @@ namespace SME
                     Console.WriteLine("---------------------------------------------------");
                     Console.WriteLine(options.ConnectionString);
                     Console.WriteLine("---------------------------------------------------");
-                    options.IsInDevelopment = HostingEnvironment.IsDevelopment();
+                }
+            );
+            services.Configure<RabbitMQSettings>(
+                options =>
+                {
+                    options.ConnectionString = Configuration.GetSection("RabbitMQ:ConnectionString").Value;
+                    options.Container = Configuration.GetSection("RabbitMQ:Container").Value;
+                    options.Username = Configuration.GetSection("RabbitMQ:Username").Value;
+                    options.Password = Configuration.GetSection("RabbitMQ:Password").Value;
+                    options.IsDockerized = Configuration["DOTNET_RUNNING_IN_CONTAINER"] != null;
+                    Console.WriteLine(Configuration["DOTNET_RUNNING_IN_CONTAINER"]);
+                    Console.WriteLine("---------------------------------------------------");
+                    Console.WriteLine(options.ConnectionString);
+                    Console.WriteLine("---------------------------------------------------");
                 }
             );
             services.AddSingleton<MongoDbConnection>();
@@ -69,11 +82,6 @@ namespace SME
                         Name = "NoInterviewCorp",
                         Email = string.Empty,
                         Url = "https://github.com/NoInterviewCorp/"
-                    },
-                    License = new License
-                    {
-                        Name = "Use under LICX",
-                        Url = "https://example.com/license"
                     }
                 });
                 // Set the comments path for the Swagger JSON and UI.

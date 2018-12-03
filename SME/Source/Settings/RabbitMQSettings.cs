@@ -1,4 +1,4 @@
-public class MongoSettings
+public class RabbitMQSettings
 {
     private string connectionString = string.Empty;
     public string ConnectionString
@@ -20,6 +20,7 @@ public class MongoSettings
         }
     }
     public string Container { get; set; }
-    public string Database { get; set; }
+    public string Username { get; set; }
+    public string Password { get; set; }
     public bool IsDockerized { get; set; }
 }
