@@ -6,8 +6,8 @@ namespace SME.Models
 {
     public class Question
     {
-        [BsonId,BsonRepresentation(BsonType.ObjectId)]
         private string _id { get; set; }
+        [BsonId]
         public string QuestionId
         {
             get { return _id; }
