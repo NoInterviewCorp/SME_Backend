@@ -12,7 +12,7 @@ namespace SME.Models
         {
             get; 
             set;
-        } = new ObjectId().ToString();
+        }
         public string Name { get; set; }
         public string Description { get; set; }
         public string ResourceLink { get; set; }

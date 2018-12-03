@@ -13,7 +13,7 @@ namespace SME.Models
         {
             get;
             set;
-        } = new ObjectId().ToString();
+        }
         public string Name { get; set; }
 
     }
