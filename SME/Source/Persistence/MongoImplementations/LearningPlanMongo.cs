@@ -18,6 +18,9 @@ namespace SME.Persistence
         public async Task<LearningPlan> AddLearningPlanAsync(LearningPlan learningPlan)
         {
 
+            Console.WriteLine("Checking Learning Plan Id");
+            Console.WriteLine(learningPlan.LearningPlanId);
+            
             // Adding LearningPlan to its collections
             var filter = "{Name:\"" + learningPlan.Name + "\",AuthorId:\"" + learningPlan.AuthorId + "\"}";
             var options = new UpdateOptions { IsUpsert = true };
@@ -134,10 +137,10 @@ namespace SME.Persistence
                 // Allocate id if doesn't exist
                 // means this resource is newly added
                 // QUESTION: How do we know frontend sent an already existing resource without an id?
-                if (resource.ResourceId == null)
-                {
-                    resource.ResourceId = MongoDB.Bson.ObjectId.GenerateNewId().ToString();
-                }
+                // if (resource.ResourceId == null)
+                // {
+                //     resource.ResourceId = MongoDB.Bson.ObjectId.GenerateNewId().ToString();
+                // }
 
                 var resFilter = "{ResourceId:\"" + resource.ResourceId + "\"}";
                 var upsertQuery = new ReplaceOneModel<Resource>(resFilter, resource) { IsUpsert = true };
