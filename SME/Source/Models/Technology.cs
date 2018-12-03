@@ -4,7 +4,7 @@ using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson.Serialization.IdGenerators;
 namespace SME.Models
 {
-    public class Technology
+    public class Technology : IEntity
     {
         private string _id;
         

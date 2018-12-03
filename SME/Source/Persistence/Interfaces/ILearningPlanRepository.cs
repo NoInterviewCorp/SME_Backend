@@ -7,13 +7,13 @@ namespace SME.Persistence
     public interface ILearningPlanRepository
     {
         // Learning Plan
-        Task<LearningPlan> AddLearningPlanAsync(LearningPlan learningPlan);
+        Task AddLearningPlanAsync(LearningPlan learningPlan);
         Task<List<LearningPlan>> GetLearningPlansAsync();
         Task<LearningPlan> GetLearningPlanByIdAsync(string learningPlanId);
         Task<List<LearningPlan>> GetLearningPlansByUserNameAsync(string userName);
         Task<List<LearningPlan>> GetLearningPlansByTechnologyAsync(string technology);
         
-        Task<LearningPlan> UpdateLearningPlanAsync(LearningPlan learningPlan);
+        Task UpdateLearningPlanAsync(LearningPlan learningPlan);
         Task<bool> DeleteLearningPlanAsync(string learningPlanId);
     }
 }

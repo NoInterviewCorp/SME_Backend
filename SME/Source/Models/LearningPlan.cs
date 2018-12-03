@@ -6,7 +6,7 @@ using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 namespace SME.Models
 {
-    public class LearningPlan
+    public class LearningPlan : IEntity
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]

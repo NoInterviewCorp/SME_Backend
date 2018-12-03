@@ -108,28 +108,28 @@ namespace SME.Controllers
         {
             if (ModelState.IsValid)
             {
-                var learningplanObj = await repository.AddLearningPlanAsync(learningPlan);
-                if (learningplanObj == null)
-                {
-                    return BadRequest("Learning Plan submitted is invalid");
-                }
-                else
-                {
-                    // if (learningPlan.HasPublished)
-                    // {
-                        var lpWrapper = new LearningPlanWrapper(learningPlan);
-                        // var objectWrapper = new ObjectWrapper(MessageType.IsLearningPlan,lpWrapper as Object);
-                        var body = ObjectSerialize.Serialize(lpWrapper);
-                        mQConnection.Model.BasicPublish(
-                            exchange: mQConnection.ExchangeName,
-                            routingKey: "Models.LearningPlan",
-                            basicProperties: null,
-                            body: body
-                        );
-                        Console.WriteLine(" [x] Sent {0}", lpWrapper.LearningPlanId);
-                    // }
-                    return Created("/learningplan", learningplanObj);
-                }
+                await repository.AddLearningPlanAsync(learningPlan);
+                // if (learningplanObj == null)
+                // {
+                //     return BadRequest("Learning Plan submitted is invalid");
+                // }
+                // else
+                // {
+                //     // if (learningPlan.HasPublished)
+                //     // {
+                //         // var lpWrapper = new LearningPlanWrapper(learningPlan);
+                //         // var objectWrapper = new ObjectWrapper(MessageType.IsLearningPlan,lpWrapper as Object);
+                //         // var body = ObjectSerialize.Serialize(lpWrapper);
+                //         // mQConnection.Model.BasicPublish(
+                //         //     exchange: mQConnection.ExchangeName,
+                //         //     routingKey: "Models.LearningPlan",
+                //         //     basicProperties: null,
+                //         //     body: body
+                //         // );
+                //         // Console.WriteLine(" [x] Sent {0}", lpWrapper.LearningPlanId);
+                //     // }
+                //     return Created("/learningplan", learningplanObj);
+                // }
             }
             return BadRequest();
         }
@@ -149,15 +149,15 @@ namespace SME.Controllers
         {
             if (ModelState.IsValid)
             {
-                var learningPlanObj = await repository.UpdateLearningPlanAsync(learningPlan);
-                if (learningPlanObj == null)
-                {
-                    return NotFound(learningPlan.Name + " was not found or You didn't include it's ID");
-                }
-                else
-                {
-                    return Created("/learningplan", learningPlanObj);
-                }
+                await repository.UpdateLearningPlanAsync(learningPlan);
+                // if (learningPlanObj == null)
+                // {
+                //     return NotFound(learningPlan.Name + " was not found or You didn't include it's ID");
+                // }
+                // else
+                // {
+                //     return Created("/learningplan", learningPlanObj);
+                // }
             }
             return BadRequest();
         }

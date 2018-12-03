@@ -4,9 +4,8 @@ using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson.Serialization.IdGenerators;
 namespace SME.Models
 {
-    public class Concept
+    public class Concept: IEntity
     {
-        private string _id ;
         
         [BsonId, BsonRepresentation(BsonType.ObjectId)]
         public string ConceptId

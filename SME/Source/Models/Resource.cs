@@ -5,7 +5,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace SME.Models
 {
-    public class Resource
+    public class Resource : IEntity
     {
         [BsonId,BsonRepresentation(BsonType.ObjectId)]
         public string ResourceId

@@ -114,7 +114,7 @@ namespace SME.Persistence
                         correctId = option.OptionId;
                     }
                 }
-                question.CorrectOptionId = correctId;
+                // question.CorrectOptionId = correctId;
                 var questionFilter = "{QuestionId:\"" + question.QuestionId + "\"}";
                 var questionUpsertQuery = new ReplaceOneModel<Question>(questionFilter, question) { IsUpsert = true };
                 questionModels.Add(questionUpsertQuery);

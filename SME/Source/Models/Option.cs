@@ -7,6 +7,7 @@ namespace SME.Models
     {
         public string OptionId { get; set; }
         public string Content { get; set; }
+        
         [BsonIgnore]
         public bool IsCorrect { get; set; }
         

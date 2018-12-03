@@ -1,25 +1,37 @@
+using System.Linq;
 using System.Collections.Generic;
+
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
+
 namespace SME.Models
 {
     public class Question
     {
-        private string _id { get; set; }
         [BsonId,BsonRepresentation(BsonType.ObjectId)]
         public string QuestionId
         {
-            get { return _id; }
-            set { _id = value ?? new ObjectId().ToString(); }
-        }
+            get;
+            set;
+        } = ObjectId.GenerateNewId().ToString();
+
         public string ProblemStatement { get; set; }
         public List<Option> Options { get; set; }
-        public string CorrectOptionId { get; set; }
+        public Option CorrectOption 
+        { 
+            get 
+            { 
+                return Options.Where(o => o.IsCorrect == true).FirstOrDefault();
+            }
+        }
+        
         public BloomTaxonomy BloomLevel { get; set; }
         public bool HasPublished { get; set; }
+        
         [BsonIgnore]
         public Technology Technology { get; set; }
+        
         [BsonIgnore]
         public List<Concept> Concepts { get; set; }
     }
