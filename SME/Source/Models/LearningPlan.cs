@@ -8,12 +8,13 @@ namespace SME.Models
     {
         private string _id { get; set; }
         
-        [BsonId,BsonRepresentation(BsonType.ObjectId)]
+        [BsonId, BsonRepresentation(BsonType.ObjectId)]
         public string LearningPlanId
         {
             get { return _id; }
-            set { _id = value; }
+            set { _id = value ?? new ObjectId().ToString(); }
         }
+
         public string AuthorId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }

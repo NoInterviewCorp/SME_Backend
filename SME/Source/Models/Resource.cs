@@ -11,7 +11,7 @@ namespace SME.Models
         public string ResourceId
         {
             get { return _id; }
-            set { _id = value; }
+            set { _id = value ?? new ObjectId().ToString(); }
         }
         public string Name { get; set; }
         public string Description { get; set; }

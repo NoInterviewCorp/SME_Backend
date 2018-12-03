@@ -11,7 +11,7 @@ namespace SME.Models
         public string QuestionId
         {
             get { return _id; }
-            set { _id = value; }
+            set { _id = value ?? new ObjectId().ToString(); }
         }
         public string ProblemStatement { get; set; }
         public List<Option> Options { get; set; }
