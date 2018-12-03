@@ -7,7 +7,7 @@ namespace SME.Models
     public class Technology
     {
         private string _id;
-        [BsonRepresentation(BsonType.ObjectId)]
+        [BsonId,BsonRepresentation(BsonType.ObjectId)]
         public string TechnologyId
         {
             get { return _id; }
