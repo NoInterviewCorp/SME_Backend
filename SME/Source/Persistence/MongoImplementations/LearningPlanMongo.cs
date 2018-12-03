@@ -31,7 +31,7 @@ namespace SME.Persistence
                 return null;
             }
 
-            learningPlan.LearningPlanId = Guid.NewGuid().ToString("N");
+            learningPlan.LearningPlanId = MongoDB.Bson.ObjectId.GenerateNewId().ToString();
 
             // Delegating the job of upserting to a helper function aynchronously
             learningPlan = await UpsertLearningPlanAsync(learningPlan);
@@ -110,7 +110,7 @@ namespace SME.Persistence
         {
             if (t.TechnologyId == null)
             {
-                t.TechnologyId = Guid.NewGuid().ToString("N");
+                t.TechnologyId = MongoDB.Bson.ObjectId.GenerateNewId().ToString();
             }
             var techFilter = "{Name:\"" + t.Name + "\"}";
             return new ReplaceOneModel<Technology>(techFilter, t) { IsUpsert = true };
@@ -125,7 +125,7 @@ namespace SME.Persistence
             var technologyModels = new List<ReplaceOneModel<Technology>>();
 
             // Updating technology field used here in its own collection
-            learningPlan.Technology.TechnologyId = Guid.NewGuid().ToString("N");
+            learningPlan.Technology.TechnologyId = MongoDB.Bson.ObjectId.GenerateNewId().ToString();
             technologyModels.Add(ReplaceOneTechnology(learningPlan.Technology));
             // Updating subsequent entities used inside this learning plan
 
@@ -136,7 +136,7 @@ namespace SME.Persistence
                 // QUESTION: How do we know frontend sent an already existing resource without an id?
                 if (resource.ResourceId == null)
                 {
-                    resource.ResourceId = Guid.NewGuid().ToString("N");
+                    resource.ResourceId = MongoDB.Bson.ObjectId.GenerateNewId().ToString();
                 }
 
                 var resFilter = "{ResourceId:\"" + resource.ResourceId + "\"}";
@@ -153,7 +153,7 @@ namespace SME.Persistence
                 {
                     if (question.QuestionId == null)
                     {
-                        question.QuestionId = Guid.NewGuid().ToString("N");
+                        question.QuestionId = MongoDB.Bson.ObjectId.GenerateNewId().ToString();
                     }
 
                     // Adding concepts mentioned inside a question
@@ -161,7 +161,7 @@ namespace SME.Persistence
                     {
                         if (concept.ConceptId == null)
                         {
-                            concept.ConceptId = Guid.NewGuid().ToString("N");
+                            concept.ConceptId = MongoDB.Bson.ObjectId.GenerateNewId().ToString();
                         }
                         var conceptFilter = "{Name:\"" + concept.Name + "\"}";
                         var conceptUpsertQuery = new ReplaceOneModel<Concept>(conceptFilter, concept) { IsUpsert = true };
@@ -175,7 +175,7 @@ namespace SME.Persistence
                     string correctId = "";
                     foreach (Option option in question.Options)
                     {
-                        option.OptionId = Guid.NewGuid().ToString("N");
+                        option.OptionId = MongoDB.Bson.ObjectId.GenerateNewId().ToString();
                         if (option.IsCorrect)
                         {
                             correctId = option.OptionId;
@@ -192,7 +192,7 @@ namespace SME.Persistence
                 {
                     if (concept.ConceptId == null)
                     {
-                        concept.ConceptId = Guid.NewGuid().ToString("N");
+                        concept.ConceptId = MongoDB.Bson.ObjectId.GenerateNewId().ToString();
                     }   
                     var conceptFilter = "{Name:\"" + concept.Name + "\"}";
                     var conceptUpsertQuery = new ReplaceOneModel<Concept>(conceptFilter, concept) { IsUpsert = true };
@@ -207,7 +207,7 @@ namespace SME.Persistence
                 {
                     if (t.TechnologyId == null)
                     {
-                        t.TechnologyId = Guid.NewGuid().ToString("N");
+                        t.TechnologyId = MongoDB.Bson.ObjectId.GenerateNewId().ToString();
                     }
                     var techFilter = "{Name:\"" + t.Name + "\"}";
                     var technologyUpsertQuery = new ReplaceOneModel<Technology>(techFilter, t) { IsUpsert = true };

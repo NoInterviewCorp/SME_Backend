@@ -22,7 +22,7 @@
 //         {
 //             if (skipFind || context.Concepts.FirstOrDefault(c => c.Name == concept.Name) == null)
 //             {
-//                 concept.ConceptId = Guid.NewGuid().ToString("N");
+//                 concept.ConceptId = MongoDB.Bson.ObjectId.GenerateNewId().ToString();
 //                 context.Concepts.Add(concept);
 //                 if (!skipFind) { context.SaveChanges(); }
 //                 return concept;
@@ -60,7 +60,7 @@
 //         {
 //             if (context.Resources.FirstOrDefault(r => r.ResourceLink == resource.ResourceLink) == null)
 //             {
-//                 resource.ResourceId = Guid.NewGuid().ToString("N");
+//                 resource.ResourceId = MongoDB.Bson.ObjectId.GenerateNewId().ToString();
 //                 context.Resources.Add(resource);
 //                 context.SaveChanges();
 //                 return resource;
@@ -112,10 +112,10 @@
 //         {
 //             if (context.LearningPlan.FirstOrDefault(lp => (lp.UserName == learningPlan.UserName) && (lp.Name == learningPlan.Name)) == null)
 //             {
-//                 learningPlan.LearningPlanId = Guid.NewGuid().ToString("N");
+//                 learningPlan.LearningPlanId = MongoDB.Bson.ObjectId.GenerateNewId().ToString();
 //                 foreach (Topic topic in learningPlan.Topics)
 //                 {
-//                     topic.TopicId = Guid.NewGuid().ToString("N");
+//                     topic.TopicId = MongoDB.Bson.ObjectId.GenerateNewId().ToString();
 //                 }
 //                 context.LearningPlan.Add(learningPlan);
 //                 context.SaveChanges();
@@ -172,7 +172,7 @@
 //         {
 //             if (context.Technologies.FirstOrDefault(t => t.Name == technology.Name) == null)
 //             {
-//                 technology.TechnologyId = Guid.NewGuid().ToString("N");
+//                 technology.TechnologyId = MongoDB.Bson.ObjectId.GenerateNewId().ToString();
 //                 context.Technologies.Add(technology);
 //                 context.SaveChanges();
 //                 return technology;
@@ -196,7 +196,7 @@
 //         {
 //             if (context.Questions.FirstOrDefault(q => q.ProblemStatement == question.ProblemStatement) == null)
 //             {
-//                 question.QuestionId = Guid.NewGuid().ToString("N");
+//                 question.QuestionId = MongoDB.Bson.ObjectId.GenerateNewId().ToString();
 //                 context.Questions.Add(question);
 //                 context.SaveChanges();
 //                 return question;

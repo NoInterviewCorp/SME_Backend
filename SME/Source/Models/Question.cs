@@ -7,7 +7,7 @@ namespace SME.Models
     public class Question
     {
         private string _id { get; set; }
-        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
         public string QuestionId
         {
             get { return _id; }

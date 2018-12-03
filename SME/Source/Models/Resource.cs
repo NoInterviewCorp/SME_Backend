@@ -7,7 +7,7 @@ namespace SME.Models
     public class Resource
     {
         private string _id { get; set; }
-        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
         public string ResourceId
         {
             get { return _id; }

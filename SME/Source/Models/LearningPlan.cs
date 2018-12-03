@@ -7,7 +7,8 @@ namespace SME.Models
     public class LearningPlan
     {
         private string _id { get; set; }
-        [BsonId]
+        
+        [BsonRepresentation(BsonType.ObjectId)]
         public string LearningPlanId
         {
             get { return _id; }

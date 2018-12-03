@@ -26,7 +26,7 @@
 //         //     //         var question = questions[i];
 //         //     //         if (question.QuestionId == null || question.QuestionId == "")
 //         //     //         {
-//         //     //             question.QuestionId = Guid.NewGuid().ToString("N");
+//         //     //             question.QuestionId = MongoDB.Bson.ObjectId.GenerateNewId().ToString();
 //         //     //         }
 //         //     //         questionParams.Add("question"+i,question);
 //         //     //         query = query

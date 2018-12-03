@@ -21,7 +21,7 @@ namespace SME.Persistence
             // QUESTION: How do we know frontend sent an already existing resource without an id?
             if (resource.ResourceId == null)
             {
-                resource.ResourceId = Guid.NewGuid().ToString("N");
+                resource.ResourceId = MongoDB.Bson.ObjectId.GenerateNewId().ToString();
                 // resource._id = new MongoDB.Bson.ObjectId(resource.ResourceId);
             }
             resource = await UpsertResourceHelper(resource);
@@ -70,7 +70,7 @@ namespace SME.Persistence
         {
             if (t.TechnologyId == null)
             {
-                t.TechnologyId = Guid.NewGuid().ToString("N");
+                t.TechnologyId = MongoDB.Bson.ObjectId.GenerateNewId().ToString();
             }
             var techFilter = "{Name:\"" + t.Name + "\"}";
             return new ReplaceOneModel<Technology>(techFilter, t) { IsUpsert = true };
@@ -93,7 +93,7 @@ namespace SME.Persistence
             {
                 if (question.QuestionId == null)
                 {
-                    question.QuestionId = Guid.NewGuid().ToString("N");
+                    question.QuestionId = MongoDB.Bson.ObjectId.GenerateNewId().ToString();
                 }
 
                 // Adding concepts mentioned inside a question
@@ -108,7 +108,7 @@ namespace SME.Persistence
                 string correctId = "";
                 foreach (Option option in question.Options)
                 {
-                    option.OptionId = Guid.NewGuid().ToString("N");
+                    option.OptionId = MongoDB.Bson.ObjectId.GenerateNewId().ToString();
                     if (option.IsCorrect)
                     {
                         correctId = option.OptionId;
@@ -133,7 +133,7 @@ namespace SME.Persistence
             {
                 if (t.TechnologyId == null)
                 {
-                    t.TechnologyId = Guid.NewGuid().ToString("N");
+                    t.TechnologyId = MongoDB.Bson.ObjectId.GenerateNewId().ToString();
                 }
                 var techFilter = "{Name:\"" + t.Name + "\"}";
                 var technologyUpsertQuery = new ReplaceOneModel<Technology>(techFilter, t) { IsUpsert = true };

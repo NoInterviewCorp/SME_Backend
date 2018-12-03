@@ -19,7 +19,7 @@
 //         public async Task<Resource> AddResourceAsync(Resource resource)
 //         {
 //             // Add an unique id to resource
-//             resource.ResourceId = Guid.NewGuid().ToString("N");
+//             resource.ResourceId = MongoDB.Bson.ObjectId.GenerateNewId().ToString();
 //             // Linking technologies between resource and each of its concepts
 //             List<Concept> concepts = new List<Concept>();
 //             List<Technology> technologies = new List<Technology>();
