@@ -106,6 +106,12 @@ namespace SME.Persistence
             }
         }
 
+        private ReplaceOneModel<Technology> ReplaceOneTechnology(Technology t)
+        {
+            var techFilter = "{Name:\"" + t.Name + "\"}";
+            return new ReplaceOneModel<Technology>(techFilter, t) { IsUpsert = true };
+        }
+
         private async Task<LearningPlan> UpsertLearningPlanAsync(LearningPlan learningPlan)
         {
             // Preparing bulkwrite containers for each entity
@@ -115,10 +121,7 @@ namespace SME.Persistence
             var technologyModels = new List<ReplaceOneModel<Technology>>();
 
             // Updating technology field used here in its own collection
-            var techFilter = "{Name:\"" + learningPlan.Technology.Name + "\"}";
-            var techUpsertQuery = new ReplaceOneModel<Technology>(techFilter, learningPlan.Technology) { IsUpsert = true };
-            technologyModels.Add(techUpsertQuery);
-
+            technologyModels.Add(ReplaceOneTechnology(learningPlan.Technology));
             // Updating subsequent entities used inside this learning plan
 
             foreach (Resource resource in learningPlan.Resources)
@@ -202,16 +205,19 @@ namespace SME.Persistence
             }
 
             // Adding all the changes asynchronously into mongo db
-            await dbConnection.Technologies.BulkWriteAsync(technologyModels);
-            await dbConnection.Concepts.BulkWriteAsync(conceptModels);
-            await dbConnection.Resources.BulkWriteAsync(resourceModels);
+            var writeTech = dbConnection.Technologies.BulkWriteAsync(technologyModels);
+            var writeConc = dbConnection.Concepts.BulkWriteAsync(conceptModels);
+            var writeRes = dbConnection.Resources.BulkWriteAsync(resourceModels);
 
             // Upsert questions only if they're provided
             if (questionModels.Count > 0)
             {
-                await dbConnection.Questions.BulkWriteAsync(questionModels);
+                var writeQue = dbConnection.Questions.BulkWriteAsync(questionModels);
+                await writeQue;
             }
-
+            await writeTech;
+            await writeConc;
+            await writeRes;
             return learningPlan;
         }
     }

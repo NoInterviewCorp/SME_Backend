@@ -131,18 +131,19 @@ namespace SME.Persistence
             var resFilter = " { ResourceId:\"" + resource.ResourceId + "\"}";
             var upsertQuery = await dbConnection.Resources.ReplaceOneAsync(resFilter, resource, new UpdateOptions { IsUpsert = true });
 
+            var writeConc = dbConnection.Concepts.BulkWriteAsync(conceptModels);
+
+            // if (technologyModels.Count > 0)
+            // {
+            // }
+
+            var writeTech = dbConnection.Technologies.BulkWriteAsync(technologyModels);
             if (questionModels.Count > 0)
             {
                 await dbConnection.Questions.BulkWriteAsync(questionModels);
             }
-
-            if (technologyModels.Count > 0)
-            {
-                await dbConnection.Technologies.BulkWriteAsync(technologyModels);
-            }
-
-            await dbConnection.Concepts.BulkWriteAsync(conceptModels);
-
+            await writeConc;
+            await writeTech;
             return resource;
         }
     }

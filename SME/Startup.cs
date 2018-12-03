@@ -28,7 +28,6 @@ namespace SME
             HostingEnvironment = env;
 
         }
-
         public IConfiguration Configuration { get; }
         public IHostingEnvironment HostingEnvironment { get; }
 
@@ -50,16 +49,7 @@ namespace SME
                     options.IsInDevelopment = HostingEnvironment.IsDevelopment();
                 }
             );
-            // services.Configure<Neo4jSettings>(
-            //     options =>
-            //     {
-            //         options.ConnectionString = Configuration.GetSection("Neo4j:ConnectionString").Value;
-            //         options.UserId = Configuration.GetSection("Neo4j:UserId").Value;
-            //         options.Password = Configuration.GetSection("Neo4j:Password").Value;
-            //     }
-            // );
             services.AddSingleton<MongoDbConnection>();
-            // services.AddSingleton<GraphDbConnection>();
             services.AddSingleton<RabbitMQConnection>();
             services.AddScoped<IResourceRepository, ResourceMongo>();
             services.AddScoped<IConceptRepository, ConceptMongo>();
@@ -99,7 +89,6 @@ namespace SME
                     .AllowAnyOrigin();
             }));
         }
-
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, RabbitMQConnection rmq)
         {
