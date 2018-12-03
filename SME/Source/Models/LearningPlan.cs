@@ -7,15 +7,11 @@ namespace SME.Models
     public class LearningPlan
     {
         [BsonIgnore]
-        private string _id { get; set; }
+        // private string _id { get; set; }
         
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
-        public string LearningPlanId
-        {
-            get { return _id; }
-            set { _id = value ?? new ObjectId().ToString(); }
-        }
+        public string LearningPlanId { get; set; } = new ObjectId().ToString();
 
         public string AuthorId { get; set; }
         public string Name { get; set; }

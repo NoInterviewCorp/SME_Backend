@@ -10,9 +10,9 @@ namespace SME.Models
         [BsonId,BsonRepresentation(BsonType.ObjectId)]
         public string ResourceId
         {
-            get { return _id; }
-            set { _id = value ?? new ObjectId().ToString(); }
-        }
+            get; 
+            set;
+        } = new ObjectId().ToString();
         public string Name { get; set; }
         public string Description { get; set; }
         public string ResourceLink { get; set; }
