@@ -31,7 +31,7 @@ namespace SME.Persistence
                 return null;
             }
 
-            learningPlan.LearningPlanId = MongoDB.Bson.ObjectId.GenerateNewId().ToString();
+            // learningPlan.LearningPlanId = MongoDB.Bson.ObjectId.GenerateNewId().ToString();
 
             // Delegating the job of upserting to a helper function aynchronously
             learningPlan = await UpsertLearningPlanAsync(learningPlan);
@@ -108,10 +108,10 @@ namespace SME.Persistence
 
         private ReplaceOneModel<Technology> ReplaceOneTechnology(Technology t)
         {
-            if (t.TechnologyId == null)
-            {
-                t.TechnologyId = MongoDB.Bson.ObjectId.GenerateNewId().ToString();
-            }
+            // if (t.TechnologyId == null)
+            // {
+            //     t.TechnologyId = MongoDB.Bson.ObjectId.GenerateNewId().ToString();
+            // }
             var techFilter = "{Name:\"" + t.Name + "\"}";
             return new ReplaceOneModel<Technology>(techFilter, t) { IsUpsert = true };
         }
@@ -125,7 +125,7 @@ namespace SME.Persistence
             var technologyModels = new List<ReplaceOneModel<Technology>>();
 
             // Updating technology field used here in its own collection
-            learningPlan.Technology.TechnologyId = MongoDB.Bson.ObjectId.GenerateNewId().ToString();
+            // learningPlan.Technology.TechnologyId = MongoDB.Bson.ObjectId.GenerateNewId().ToString();
             technologyModels.Add(ReplaceOneTechnology(learningPlan.Technology));
             // Updating subsequent entities used inside this learning plan
 
@@ -159,10 +159,10 @@ namespace SME.Persistence
                     // Adding concepts mentioned inside a question
                     foreach (Concept concept in question.Concepts)
                     {
-                        if (concept.ConceptId == null)
-                        {
-                            concept.ConceptId = MongoDB.Bson.ObjectId.GenerateNewId().ToString();
-                        }
+                        // if (concept.ConceptId == null)
+                        // {
+                        //     concept.ConceptId = MongoDB.Bson.ObjectId.GenerateNewId().ToString();
+                        // }
                         var conceptFilter = "{Name:\"" + concept.Name + "\"}";
                         var conceptUpsertQuery = new ReplaceOneModel<Concept>(conceptFilter, concept) { IsUpsert = true };
                         if (!conceptModels.Contains(conceptUpsertQuery))
@@ -190,10 +190,10 @@ namespace SME.Persistence
                 // Adding the concepts mentioned in the corresponding resource
                 foreach (Concept concept in resource.Concepts)
                 {
-                    if (concept.ConceptId == null)
-                    {
-                        concept.ConceptId = MongoDB.Bson.ObjectId.GenerateNewId().ToString();
-                    }   
+                    // if (concept.ConceptId == null)
+                    // {
+                    //     concept.ConceptId = MongoDB.Bson.ObjectId.GenerateNewId().ToString();
+                    // }   
                     var conceptFilter = "{Name:\"" + concept.Name + "\"}";
                     var conceptUpsertQuery = new ReplaceOneModel<Concept>(conceptFilter, concept) { IsUpsert = true };
                     if (!conceptModels.Contains(conceptUpsertQuery))
@@ -205,10 +205,10 @@ namespace SME.Persistence
                 // Adding all technologies mentioned inside the resource
                 foreach (Technology t in resource.Technologies)
                 {
-                    if (t.TechnologyId == null)
-                    {
-                        t.TechnologyId = MongoDB.Bson.ObjectId.GenerateNewId().ToString();
-                    }
+                    // if (t.TechnologyId == null)
+                    // {
+                    //     t.TechnologyId = MongoDB.Bson.ObjectId.GenerateNewId().ToString();
+                    // }
                     var techFilter = "{Name:\"" + t.Name + "\"}";
                     var technologyUpsertQuery = new ReplaceOneModel<Technology>(techFilter, t) { IsUpsert = true };
                     if (!technologyModels.Contains(technologyUpsertQuery))
