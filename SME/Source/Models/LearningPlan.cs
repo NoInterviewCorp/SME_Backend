@@ -6,7 +6,7 @@ namespace SME.Models
 {
     public class LearningPlan
     {
-        [BsonIgnoreIfDefault]
+        [BsonIgnoreIfDefault][JsonIgnore]
         public ObjectId _id { get; set; }
         public string LearningPlanId { get; set; }
         public string AuthorId { get; set; }
