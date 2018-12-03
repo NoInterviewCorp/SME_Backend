@@ -108,6 +108,10 @@ namespace SME.Persistence
 
         private ReplaceOneModel<Technology> ReplaceOneTechnology(Technology t)
         {
+            if (t.TechnologyId == null)
+            {
+                t.TechnologyId = Guid.NewGuid().ToString("N");
+            }
             var techFilter = "{Name:\"" + t.Name + "\"}";
             return new ReplaceOneModel<Technology>(techFilter, t) { IsUpsert = true };
         }
@@ -121,6 +125,7 @@ namespace SME.Persistence
             var technologyModels = new List<ReplaceOneModel<Technology>>();
 
             // Updating technology field used here in its own collection
+            learningPlan.Technology.TechnologyId = Guid.NewGuid().ToString("N");
             technologyModels.Add(ReplaceOneTechnology(learningPlan.Technology));
             // Updating subsequent entities used inside this learning plan
 
@@ -154,6 +159,10 @@ namespace SME.Persistence
                     // Adding concepts mentioned inside a question
                     foreach (Concept concept in question.Concepts)
                     {
+                        if (concept.ConceptId == null)
+                        {
+                            concept.ConceptId = Guid.NewGuid().ToString("N");
+                        }
                         var conceptFilter = "{Name:\"" + concept.Name + "\"}";
                         var conceptUpsertQuery = new ReplaceOneModel<Concept>(conceptFilter, concept) { IsUpsert = true };
                         if (!conceptModels.Contains(conceptUpsertQuery))
@@ -181,6 +190,10 @@ namespace SME.Persistence
                 // Adding the concepts mentioned in the corresponding resource
                 foreach (Concept concept in resource.Concepts)
                 {
+                    if (concept.ConceptId == null)
+                    {
+                        concept.ConceptId = Guid.NewGuid().ToString("N");
+                    }   
                     var conceptFilter = "{Name:\"" + concept.Name + "\"}";
                     var conceptUpsertQuery = new ReplaceOneModel<Concept>(conceptFilter, concept) { IsUpsert = true };
                     if (!conceptModels.Contains(conceptUpsertQuery))
@@ -190,10 +203,14 @@ namespace SME.Persistence
                 }
 
                 // Adding all technologies mentioned inside the resource
-                foreach (Technology technology in resource.Technologies)
+                foreach (Technology t in resource.Technologies)
                 {
-                    var technologyFilter = "{Name:\"" + technology.Name + "\"}";
-                    var technologyUpsertQuery = new ReplaceOneModel<Technology>(technologyFilter, technology) { IsUpsert = true };
+                    if (t.TechnologyId == null)
+                    {
+                        t.TechnologyId = Guid.NewGuid().ToString("N");
+                    }
+                    var techFilter = "{Name:\"" + t.Name + "\"}";
+                    var technologyUpsertQuery = new ReplaceOneModel<Technology>(techFilter, t) { IsUpsert = true };
                     if (!technologyModels.Contains(technologyUpsertQuery))
                     {
                         technologyModels.Add(technologyUpsertQuery);

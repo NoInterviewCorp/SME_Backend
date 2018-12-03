@@ -17,7 +17,7 @@ namespace SME.Persistence
         public async Task<Concept> AddConceptAsync(Concept concept)
         {
             concept.Name = concept.Name.ToUpper();
-            concept._id = Guid.NewGuid().ToString("N");
+            concept.ConceptId = Guid.NewGuid().ToString("N");
             var conceptFilter = "{Name:\"" + concept.Name + "\"}";
             var result = await dbConnection.Concepts
                 .ReplaceOneAsync(conceptFilter, concept, new UpdateOptions { IsUpsert = true });

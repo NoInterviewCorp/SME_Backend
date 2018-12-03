@@ -66,6 +66,15 @@ namespace SME.Persistence
             return resource;
         }
 
+        private ReplaceOneModel<Technology> ReplaceOneTechnology(Technology t)
+        {
+            if (t.TechnologyId == null)
+            {
+                t.TechnologyId = Guid.NewGuid().ToString("N");
+            }
+            var techFilter = "{Name:\"" + t.Name + "\"}";
+            return new ReplaceOneModel<Technology>(techFilter, t) { IsUpsert = true };
+        }
         private async Task<Resource> UpsertResourceHelper(Resource resource)
         {
             // preparing bulkwrite containers for each entity
@@ -120,10 +129,14 @@ namespace SME.Persistence
             }
 
             // adding all technologies mentioned inside the resource
-            foreach (Technology technology in resource.Technologies)
+            foreach (Technology t in resource.Technologies)
             {
-                var technologyFilter = "{Name:\"" + technology.Name + "\"}";
-                var technologyUpsertQuery = new ReplaceOneModel<Technology>(technologyFilter, technology) { IsUpsert = true };
+                if (t.TechnologyId == null)
+                {
+                    t.TechnologyId = Guid.NewGuid().ToString("N");
+                }
+                var techFilter = "{Name:\"" + t.Name + "\"}";
+                var technologyUpsertQuery = new ReplaceOneModel<Technology>(techFilter, t) { IsUpsert = true };
                 technologyModels.Add(technologyUpsertQuery);
             }
 

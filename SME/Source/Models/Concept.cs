@@ -6,8 +6,13 @@ namespace SME.Models
 {
     public class Concept
     {
+        private string _id ;
         [BsonId,BsonRepresentation(BsonType.ObjectId)]
-        public string _id { get; set; }
+        public string ConceptId
+        {
+            get { return _id; }
+            set { _id = value; }
+        }
         public string Name { get; set; }
 
     }
