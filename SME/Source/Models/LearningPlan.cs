@@ -1,17 +1,15 @@
+using System;
 using System.Collections.Generic;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization.IdGenerators;
 using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 namespace SME.Models
 {
     public class LearningPlan
     {
-        [BsonIgnore]
-        // private string _id { get; set; }
-        
-        [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)]
-        public string LearningPlanId { get; set; } = new ObjectId().ToString();
+        [BsonId(IdGenerator=typeof(StringObjectIdGenerator))]
+        public string LearningPlanId { get; set; }
 
         public string AuthorId { get; set; }
         public string Name { get; set; }

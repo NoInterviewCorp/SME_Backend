@@ -1,13 +1,13 @@
 using System.Collections.Generic;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization.IdGenerators;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace SME.Models
 {
     public class Resource
     {
-        private string _id { get; set; }
-        [BsonId,BsonRepresentation(BsonType.ObjectId)]
+        [BsonId(IdGenerator=typeof(StringObjectIdGenerator)),BsonRepresentation(BsonType.ObjectId)]
         public string ResourceId
         {
             get; 
