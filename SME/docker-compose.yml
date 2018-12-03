@@ -1,17 +1,18 @@
 services:
     sme:
         build: .
+        network_mode: host
         ports:
             - 0.0.0.0:5002:5002
         depends_on:
             - mongodb
         labels:
-            - "SERVICE_5002_NAME=sme"
-            - "SERVICE_TAGS=smeTag"
+            - SERVICE_5002_NAME : sme
+            - SERVICE_TAGS : smeTag
     mongodb:
         image: mongo
         ports:
             - 0.0.0.0:27017:27017
         volumes:
             - ${WEBAPP_STORAGE_HOME}/site:/data/db
-version: "2"
+version: "3"
