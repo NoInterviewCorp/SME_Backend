@@ -6,9 +6,13 @@ namespace SME.Models
 {
     public class Resource
     {
-        [BsonIgnoreIfDefault]
-        public ObjectId _id { get; set; }
-        public string ResourceId { get; set; }
+        [BsonId,BsonRepresentation(BsonType.ObjectId)]
+        private string _id { get; set; }
+        public string ResourceId
+        {
+            get { return _id; }
+            set { _id = value; }
+        }
         public string Name { get; set; }
         public string Description { get; set; }
         public string ResourceLink { get; set; }

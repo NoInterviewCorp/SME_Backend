@@ -17,7 +17,7 @@ namespace SME.Persistence
         public async Task<Technology> AddTechnologyAsync(Technology technology)
         {
             technology.Name = technology.Name.ToUpper();
-            technology._id = new MongoDB.Bson.ObjectId(Guid.NewGuid().ToString("N"));
+            technology._id = Guid.NewGuid().ToString("N");
             var techFilter = "{Name:\"" + technology.Name + "\"}";
             var result = await dbConnection.Technologies
                 .ReplaceOneAsync(techFilter, technology, new UpdateOptions { IsUpsert = true });

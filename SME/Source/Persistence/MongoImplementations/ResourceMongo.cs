@@ -22,7 +22,7 @@ namespace SME.Persistence
             if (resource.ResourceId == null)
             {
                 resource.ResourceId = Guid.NewGuid().ToString("N");
-                resource._id = new MongoDB.Bson.ObjectId(resource.ResourceId);
+                // resource._id = new MongoDB.Bson.ObjectId(resource.ResourceId);
             }
             resource = await UpsertResourceHelper(resource);
             return resource;
