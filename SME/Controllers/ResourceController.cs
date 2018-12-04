@@ -29,12 +29,12 @@ namespace SME.Controllers
         /// <response code="200">Returns all Resources </response>
         /// <response code="404">Didn't find any resource</response>
         // GET Resource/
-        [HttpGet]
+        [HttpGet("{authorId}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> GetResourcesAsync()
+        public async Task<IActionResult> GetResourcesAsync(string authorId)
         {
-            var resources = await repository.GetResourcesAsync();
+            var resources = await repository.GetResourceByAuthorIdAsync(authorId);
             if (resources == null)
             {
                 NotFound();

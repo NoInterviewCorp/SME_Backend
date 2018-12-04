@@ -49,9 +49,9 @@ namespace SME.Persistence
             return (plans.Count == 0) ? null : plans;
         }
 
-        public async Task<List<Resource>> GetResourcesAsync()
+        public async Task<List<Resource>> GetResourceByAuthorIdAsync(string authorId)
         {
-            var filter = new FilterDefinitionBuilder<Resource>().Empty;
+            var filter = new FilterDefinitionBuilder<Resource>().Eq(r=>r.AuthorId, authorId);
             var plans = await dbConnection.Resources.Find(filter).ToListAsync();
             return (plans.Count > 0) ? plans : null;
         }
