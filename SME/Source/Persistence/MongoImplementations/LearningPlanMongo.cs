@@ -19,7 +19,7 @@ namespace SME.Persistence
         {
             this.dbConnection = dbConnection;
         }
-        public async Task AddLearningPlanAsync(LearningPlan learningPlan)
+        public async Task<ReplaceOneResult> AddLearningPlanAsync(LearningPlan learningPlan)
         {
             // TODO: Throw 400 BadRequest when the user tries 
             // to update a Learning Plan which doesn't exist
@@ -42,7 +42,7 @@ namespace SME.Persistence
             // learningPlan.LearningPlanId = MongoDB.Bson.ObjectId.GenerateNewId().ToString();
 
             // Delegating the job of upserting to a helper function aynchronously
-            await UpsertLearningPlanAsync(learningPlan);
+            return await UpsertLearningPlanAsync(learningPlan);
         }
 
         public async Task<LearningPlan> GetLearningPlanByIdAsync(string learningPlanId)
@@ -107,7 +107,7 @@ namespace SME.Persistence
             return new ReplaceOneModel<Question>(questionFilter, question) { IsUpsert = true };
         }
 
-        private async Task UpsertLearningPlanAsync(LearningPlan learningPlan)
+        private async Task<ReplaceOneResult> UpsertLearningPlanAsync(LearningPlan learningPlan)
         {
             var learningPlanFilter = "{Name:\"" + learningPlan.Name + "\",AuthorId:\"" + learningPlan.AuthorId + "\"}";
             var insertLearningPlan = dbConnection.LearningPlans.ReplaceOneAsync(learningPlanFilter, learningPlan, new UpdateOptions() { IsUpsert = true });
@@ -146,11 +146,11 @@ namespace SME.Persistence
             ? dbConnection.Questions.BulkWriteAsync(questions)
             : Task.CompletedTask;
 
-            await insertLearningPlan;
             await bulkWriteResources;
             await bulkWriteTechnologies;
             await bulkWriteConcepts;
             await bulkWriteQuestions;
+            return await insertLearningPlan;
         }
     }
 }

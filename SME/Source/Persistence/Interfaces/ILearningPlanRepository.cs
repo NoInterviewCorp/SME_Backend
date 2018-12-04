@@ -2,12 +2,14 @@ using SME.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
+using MongoDB.Driver;
+
 namespace SME.Persistence
 {
     public interface ILearningPlanRepository
     {
         // Learning Plan
-        Task AddLearningPlanAsync(LearningPlan learningPlan);
+        Task<ReplaceOneResult> AddLearningPlanAsync(LearningPlan learningPlan);
         Task<List<LearningPlan>> GetLearningPlansAsync();
         Task<LearningPlan> GetLearningPlanByIdAsync(string learningPlanId);
         Task<List<LearningPlan>> GetLearningPlansByUserNameAsync(string userName);

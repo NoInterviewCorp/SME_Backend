@@ -108,7 +108,15 @@ namespace SME.Controllers
         {
             if (ModelState.IsValid)
             {
-                await repository.AddLearningPlanAsync(learningPlan);
+                var replaceLearningPlanResult = await repository.AddLearningPlanAsync(learningPlan);
+
+                if (replaceLearningPlanResult.IsAcknowledged)
+                {
+                    Console.WriteLine(replaceLearningPlanResult.UpsertedId);
+                    learningPlan.LearningPlanId = replaceLearningPlanResult.UpsertedId.ToString();
+                    return Ok(learningPlan);
+                } 
+
                 // if (learningplanObj == null)
                 // {
                 //     return BadRequest("Learning Plan submitted is invalid");
@@ -128,7 +136,8 @@ namespace SME.Controllers
                 //         // );
                 //         // Console.WriteLine(" [x] Sent {0}", lpWrapper.LearningPlanId);
                 //     // }
-                //     return Created("/learningplan", learningplanObj);
+
+                    // return Created("/learningplan", learningplanObj);
                 // }
             }
             return BadRequest();

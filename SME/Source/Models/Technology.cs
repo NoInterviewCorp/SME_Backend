@@ -6,14 +6,12 @@ namespace SME.Models
 {
     public class Technology : IEntity
     {
-        private string _id;
+        // private string _id;
         
-        [BsonId, BsonRepresentation(BsonType.ObjectId)]
-        public string TechnologyId
-        {
-            get;
-            set;
-        } = ObjectId.GenerateNewId().ToString();
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        [BsonIgnoreIfDefault]
+        public string TechnologyId { get; set; }
         public string Name { get; set; }
 
     }

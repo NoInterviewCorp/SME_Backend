@@ -3,18 +3,21 @@ using System.Collections.Generic;
 
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Bson.Serialization.IdGenerators;
 using Newtonsoft.Json;
 
 namespace SME.Models
 {
     public class Question
     {
-        [BsonId,BsonRepresentation(BsonType.ObjectId)]
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        [BsonIgnoreIfDefault]
         public string QuestionId
         {
             get;
             set;
-        } = ObjectId.GenerateNewId().ToString();
+        }
 
         public string ProblemStatement { get; set; }
         public List<Option> Options { get; set; }

@@ -7,12 +7,14 @@ namespace SME.Models
     public class Concept: IEntity
     {
         
-        [BsonId, BsonRepresentation(BsonType.ObjectId)]
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        [BsonIgnoreIfDefault]
         public string ConceptId
         {
             get;
             set;
-        } = ObjectId.GenerateNewId().ToString();
+        }
         public string Name { get; set; }
 
     }

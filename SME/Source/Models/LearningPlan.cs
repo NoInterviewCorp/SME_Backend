@@ -10,7 +10,9 @@ namespace SME.Models
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
-        public string LearningPlanId { get; set; } = ObjectId.GenerateNewId().ToString();
+        [BsonIgnoreIfDefault]
+        public string LearningPlanId { get; set; }
+
 
         public string AuthorId { get; set; }
         public string Name { get; set; }
