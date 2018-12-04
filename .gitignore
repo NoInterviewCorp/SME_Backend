@@ -1,9 +1,11 @@
 *.swp
 *.*~
+*.chhap
 project.lock.json
 .DS_Store
 *.pyc
 nupkg/
+:quit
 
 # Visual Studio Code
 .vscode

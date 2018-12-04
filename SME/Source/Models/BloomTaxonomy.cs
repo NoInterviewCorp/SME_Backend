@@ -1,6 +1,6 @@
 namespace SME.Models
 {
-    public enum BloomTaxonomy : byte
+    public enum BloomTaxonomy
     {
         Knowledge = 1,
         Comprehension,

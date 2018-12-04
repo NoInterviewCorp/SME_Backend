@@ -1,0 +1,25 @@
+services:
+    sme:
+        build: .
+        ports:
+            - 5002:5002
+        networks:
+            - potentiometer-network
+        depends_on:
+            - mongodb
+        labels:
+            SERVICE_5002_NAME: sme
+    mongodb:
+        image: mongo
+        ports:
+            - 27017:27017
+        networks:
+            - potentiometer-network
+        volumes:
+            - ${WEBAPP_STORAGE_HOME}/site:/data/db
+networks:
+    potentiometer-network:
+        name: potentiometer-network
+        external: true
+
+version: "3.5"

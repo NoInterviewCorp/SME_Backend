@@ -15,24 +15,59 @@ using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.Swagger;
 using SME.Models;
 using SME.Persistence;
+using SME.Services;
+using Microsoft.AspNetCore.Hosting.Internal;
 
 namespace SME
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IHostingEnvironment env)
         {
             Configuration = configuration;
-        }
+            HostingEnvironment = env;
 
+        }
         public IConfiguration Configuration { get; }
+        public IHostingEnvironment HostingEnvironment { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-            services.AddDbContext<SMEContext>();
-            services.AddScoped<IDatabaseRepository, DatabaseRepository>();
+            services.Configure<MongoSettings>(
+                options =>
+                {
+                    options.ConnectionString = Configuration.GetSection("MongoDb:ConnectionString").Value;
+                    options.Container = Configuration.GetSection("MongoDb:Container").Value;
+                    options.Database = Configuration.GetSection("MongoDb:Database").Value;
+                    options.IsDockerized = Configuration["DOTNET_RUNNING_IN_CONTAINER"] != null;
+                    Console.WriteLine(Configuration["DOTNET_RUNNING_IN_CONTAINER"]);
+                    Console.WriteLine("---------------------------------------------------");
+                    Console.WriteLine(options.ConnectionString);
+                    Console.WriteLine("---------------------------------------------------");
+                }
+            );
+            services.Configure<RabbitMQSettings>(
+                options =>
+                {
+                    options.ConnectionString = Configuration.GetSection("RabbitMQ:ConnectionString").Value;
+                    options.Container = Configuration.GetSection("RabbitMQ:Container").Value;
+                    options.Username = Configuration.GetSection("RabbitMQ:Username").Value;
+                    options.Password = Configuration.GetSection("RabbitMQ:Password").Value;
+                    options.IsDockerized = Configuration["DOTNET_RUNNING_IN_CONTAINER"] != null;
+                    Console.WriteLine(Configuration["DOTNET_RUNNING_IN_CONTAINER"]);
+                    Console.WriteLine("---------------------------------------------------");
+                    Console.WriteLine(options.ConnectionString);
+                    Console.WriteLine("---------------------------------------------------");
+                }
+            );
+            services.AddSingleton<MongoDbConnection>();
+            services.AddSingleton<RabbitMQConnection>();
+            services.AddScoped<IResourceRepository, ResourceMongo>();
+            services.AddScoped<IConceptRepository, ConceptMongo>();
+            services.AddScoped<ITechnologyRepository, TechnologyMongo>();
+            services.AddScoped<ILearningPlanRepository,LearningPlanMongo>();
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>
             {
@@ -47,11 +82,6 @@ namespace SME
                         Name = "NoInterviewCorp",
                         Email = string.Empty,
                         Url = "https://github.com/NoInterviewCorp/"
-                    },
-                    License = new License
-                    {
-                        Name = "Use under LICX",
-                        Url = "https://example.com/license"
                     }
                 });
                 // Set the comments path for the Swagger JSON and UI.
@@ -67,9 +97,8 @@ namespace SME
                     .AllowAnyOrigin();
             }));
         }
-
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, RabbitMQConnection rmq)
         {
             if (env.IsDevelopment())
             {
@@ -90,7 +119,6 @@ namespace SME
                 c.RoutePrefix = string.Empty;
             });
             app.UseCors("CorsPolicy");
-            app.UseHttpsRedirection();
             app.UseMvc();
         }
     }

@@ -1,14 +1,14 @@
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using System.Collections.Generic;
+using MongoDB.Bson.Serialization.Attributes;
+using Newtonsoft.Json;
 namespace SME.Models
 {
     public class Option
     {
-        [Key]
-        public int OptionId { get; set; }
-        [Required]
+        public string OptionId { get; set; }
         public string Content { get; set; }
+        [BsonIgnore]
         public bool IsCorrect { get; set; }
-        public int QuestionId { get; set; }
+        
     }
 }

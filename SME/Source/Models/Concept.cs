@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 
 namespace SME.Models
 {
-    public class Technology
+    public class Concept
     {
         [BsonIgnoreIfDefault][JsonIgnore]
         public ObjectId _id { get; set; }
