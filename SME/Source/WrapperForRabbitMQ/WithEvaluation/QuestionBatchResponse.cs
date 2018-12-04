@@ -4,11 +4,11 @@ namespace SME.Models
     public class QuestionBatchResponse
     {
         public string Username { get; set; }
-        public Dictionary<string, List<Question>> RequestDictionary { get; set; }
-        public QuestionBatchResponse(string Username, Dictionary<string, List<Question>> response)
+        public Dictionary<string, List<Question>> ResponseDictionary { get; set; }
+        public QuestionBatchResponse(string Username, Dictionary<string, List<Question>> responseDictionary)
         {
             this.Username = Username;
-            RequestDictionary = new Dictionary<string, List<Question>>();
+            ResponseDictionary = responseDictionary;
         }
     }
 }

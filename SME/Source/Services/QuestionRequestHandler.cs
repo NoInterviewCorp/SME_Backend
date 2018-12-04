@@ -20,7 +20,7 @@ namespace SME.Services
         public QuestionBatchResponse ProvideQuestionsFromId(QuestionBatchRequest batchRequest)
         {
             var response = new Dictionary<string, List<Question>>();
-            foreach (var request in batchRequest.RequestDictionary)
+            foreach (var request in batchRequest.IdRequestDictionary)
             {
                 // figure out how to pass an array here to query all documents
                 var filter = "{ QuestionId: { $in: " + request.Value.ToArray() + " } }";
