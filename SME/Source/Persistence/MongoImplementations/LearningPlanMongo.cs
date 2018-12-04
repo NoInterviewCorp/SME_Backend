@@ -149,7 +149,7 @@ namespace SME.Persistence
             var bulkWriteQuestions = questions.Count > 0
                 ? dbConnection.Questions.BulkWriteAsync(questions)
                 : Task.CompletedTask;
-            await AddConceptsToTechnologies(learningPlan);
+            // await AddConceptsToTechnologies(learningPlan);
             await bulkWriteResources;
             await bulkWriteTechnologies;
             await bulkWriteConcepts;
