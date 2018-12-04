@@ -38,12 +38,15 @@ namespace SME.Persistence
             }
         }
 
-        public async Task<List<Concept>> GetConceptByNameAsync(string name)
+        public async Task<List<Concept>> GetConceptByTechnologyAsync(string techname)
         {
-            var plans = await dbConnection.Concepts
-                .Find("{$text : { $search : \"" + name + "\"} }")
+            var technology = await dbConnection.Technologies
+                .Find(t => t.Name == techname)
                 .ToListAsync();
-            return plans;
+            var concepts = (technology.Count == 1)
+                ? technology[0].Concepts
+                : null;
+            return concepts;
         }
 
         public async Task<List<Concept>> GetConceptsAsync()

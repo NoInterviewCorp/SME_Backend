@@ -115,6 +115,7 @@ namespace SME.Persistence
             var resources =
                 learningPlan.Resources.Select(ReplaceOneEntity)
                 .ToList();
+
             var bulkWriteResources = resources.Count > 0
                 ? dbConnection.Resources.BulkWriteAsync(resources)
                 : Task.CompletedTask;
@@ -124,6 +125,7 @@ namespace SME.Persistence
                 .Union(new List<Technology>() { learningPlan.Technology })
                 .Select(ReplaceOneEntity)
                 .ToList();
+
             var bulkWriteTechnologies = technologies.Count > 0
                 ? dbConnection.Technologies.BulkWriteAsync(technologies)
                 : Task.CompletedTask;
@@ -134,23 +136,41 @@ namespace SME.Persistence
                 .SelectMany(q => q.Concepts))
                 .Select(ReplaceOneEntity)
                 .ToList();
+
             var bulkWriteConcepts = concepts.Count > 0
-            ? dbConnection.Concepts.BulkWriteAsync(concepts)
-            : Task.CompletedTask;
+                ? dbConnection.Concepts.BulkWriteAsync(concepts)
+                : Task.CompletedTask;
 
             var questions =
                 learningPlan.Resources.SelectMany(q => q.Questions)
                 .Select(ReplaceOneQuestion)
                 .ToList();
-            var bulkWriteQuestions = questions.Count > 0
-            ? dbConnection.Questions.BulkWriteAsync(questions)
-            : Task.CompletedTask;
 
+            var bulkWriteQuestions = questions.Count > 0
+                ? dbConnection.Questions.BulkWriteAsync(questions)
+                : Task.CompletedTask;
+            await AddConceptsToTechnologies(learningPlan);
             await bulkWriteResources;
             await bulkWriteTechnologies;
             await bulkWriteConcepts;
             await bulkWriteQuestions;
             return await insertLearningPlan;
+        }
+
+        private async Task AddConceptsToTechnologies(LearningPlan learningPlan)
+        {
+            var conceptsOfTechnology =
+                learningPlan.Resources.SelectMany(r => r.Concepts)
+                .Union(learningPlan.Resources.SelectMany(r => r.Questions)
+                .SelectMany(q => q.Concepts))
+                .ToList();
+            var technologyName = learningPlan.Technology.Name;
+            var filter = Builders<Technology>.Filter.Where(t => t.Name == technologyName);
+            var technologyUpdateDefinition = Builders<Technology>.Update
+                .PushEach(t => t.Concepts, conceptsOfTechnology)
+                .SetOnInsert(t => t.Name, technologyName)
+                .SetOnInsert(t => t.Concepts, conceptsOfTechnology);
+            await dbConnection.Technologies.UpdateOneAsync(filter, technologyUpdateDefinition, new UpdateOptions { IsUpsert = true });
         }
     }
 }

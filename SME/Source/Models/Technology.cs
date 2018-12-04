@@ -7,12 +7,13 @@ namespace SME.Models
     public class Technology : IEntity
     {
         // private string _id;
-        
+
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         [BsonIgnoreIfDefault]
         public string TechnologyId { get; set; }
         public string Name { get; set; }
+        public List<Concept> Concepts { get; set; }
 
     }
 }

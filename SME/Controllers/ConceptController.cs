@@ -45,12 +45,12 @@ namespace SME.Controllers
         /// <response code="200">Returns all concepts </response>
         /// <response code="404">Concept not found </response>
         // GET Concept/
-        [HttpGet("{conceptName}")]
+        [HttpGet("{techName}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> GetConceptsAsync(string conceptName)
+        public async Task<IActionResult> GetConceptsAsync(string techName)
         {
-            var concepts = await repository.GetConceptByNameAsync(conceptName);
+            var concepts = await repository.GetConceptByTechnologyAsync(techName);
             if (concepts == null)
             {
                 return NotFound();
