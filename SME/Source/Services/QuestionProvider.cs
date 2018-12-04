@@ -31,7 +31,7 @@ namespace SME.Services
 
         private async Task<QuestionBatchResponse> GetQuestionsFromIdsAsync(QuestionBatchRequest questionBatch)
         {
-            foreach(var request in questionBatch.RequestDictionary){
+            foreach(var request in questionBatch.IdRequestDictionary){
 
             }
             await Task.Yield();

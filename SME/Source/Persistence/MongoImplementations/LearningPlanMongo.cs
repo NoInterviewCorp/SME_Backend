@@ -25,22 +25,19 @@ namespace SME.Persistence
             // to update a Learning Plan which doesn't exist
             Console.WriteLine("Checking Learning Plan Id");
             Console.WriteLine(learningPlan.LearningPlanId);
-            
+
             // Adding LearningPlan to its collections
             var filter = "{Name:\"" + learningPlan.Name + "\",AuthorId:\"" + learningPlan.AuthorId + "\"}";
             var options = new UpdateOptions { IsUpsert = true };
 
             // Checking if a particular user had already added a learningplan with the same name
-            // var plan = await dbConnection.LearningPlans.Find(filter).Limit(1).SingleOrDefaultAsync();
-            // // We do not allow two leaning plans with the same name submitted by the same user
-            // // to avoid ambiguity
-            // if (plan != null)
-            // {
-            //     return null;
-            // }
-
-            // learningPlan.LearningPlanId = MongoDB.Bson.ObjectId.GenerateNewId().ToString();
-
+            var plan = await dbConnection.LearningPlans.Find(filter).Limit(1).SingleOrDefaultAsync();
+            // We do not allow two learning plans with the same name submitted by the same user
+            // to avoid ambiguity
+            if (plan != null)
+            {
+                throw new Exception("The same user cannot add two Learning Plans of the same name.");
+            }
             // Delegating the job of upserting to a helper function aynchronously
             return await UpsertLearningPlanAsync(learningPlan);
         }
@@ -77,7 +74,10 @@ namespace SME.Persistence
         {
             // TODO: Throw 400 BadRequest when the user tries 
             // to update a Learning Plan which doesn't exist
-
+            if (learningPlan.LearningPlanId == null)
+            {
+                throw new Exception("Cannot update a learning plan which doesn't exist. Please provide an ID if you wish to update a LearningPlan");
+            }
             // Delegating the job of upserting other entites to a function
             await UpsertLearningPlanAsync(learningPlan);
         }
@@ -111,34 +111,34 @@ namespace SME.Persistence
         {
             var learningPlanFilter = "{Name:\"" + learningPlan.Name + "\",AuthorId:\"" + learningPlan.AuthorId + "\"}";
             var insertLearningPlan = dbConnection.LearningPlans.ReplaceOneAsync(learningPlanFilter, learningPlan, new UpdateOptions() { IsUpsert = true });
-            
+
             var resources =
                 learningPlan.Resources.Select(ReplaceOneEntity)
                 .ToList();
-            var bulkWriteResources = resources.Count > 0 
+            var bulkWriteResources = resources.Count > 0
                 ? dbConnection.Resources.BulkWriteAsync(resources)
                 : Task.CompletedTask;
 
-            var technologies = 
+            var technologies =
                 learningPlan.Resources.SelectMany(r => r.Technologies)
                 .Union(new List<Technology>() { learningPlan.Technology })
                 .Select(ReplaceOneEntity)
                 .ToList();
-            var bulkWriteTechnologies = technologies.Count > 0 
+            var bulkWriteTechnologies = technologies.Count > 0
                 ? dbConnection.Technologies.BulkWriteAsync(technologies)
                 : Task.CompletedTask;
-            
-            var concepts = 
+
+            var concepts =
                 learningPlan.Resources.SelectMany(r => r.Concepts)
                 .Union(learningPlan.Resources.SelectMany(r => r.Questions)
                 .SelectMany(q => q.Concepts))
                 .Select(ReplaceOneEntity)
                 .ToList();
-            var bulkWriteConcepts = concepts.Count > 0 
-            ? dbConnection.Concepts.BulkWriteAsync(concepts) 
+            var bulkWriteConcepts = concepts.Count > 0
+            ? dbConnection.Concepts.BulkWriteAsync(concepts)
             : Task.CompletedTask;
 
-            var questions = 
+            var questions =
                 learningPlan.Resources.SelectMany(q => q.Questions)
                 .Select(ReplaceOneQuestion)
                 .ToList();

@@ -108,37 +108,33 @@ namespace SME.Controllers
         {
             if (ModelState.IsValid)
             {
-                var replaceLearningPlanResult = await repository.AddLearningPlanAsync(learningPlan);
-
-                if (replaceLearningPlanResult.IsAcknowledged)
+                try
                 {
-                    Console.WriteLine(replaceLearningPlanResult.UpsertedId);
-                    learningPlan.LearningPlanId = replaceLearningPlanResult.UpsertedId.ToString();
-                    return Ok(learningPlan);
-                } 
-
-                // if (learningplanObj == null)
-                // {
-                //     return BadRequest("Learning Plan submitted is invalid");
-                // }
-                // else
-                // {
-                //     // if (learningPlan.HasPublished)
-                //     // {
-                //         // var lpWrapper = new LearningPlanWrapper(learningPlan);
-                //         // var objectWrapper = new ObjectWrapper(MessageType.IsLearningPlan,lpWrapper as Object);
-                //         // var body = ObjectSerialize.Serialize(lpWrapper);
-                //         // mQConnection.Model.BasicPublish(
-                //         //     exchange: mQConnection.ExchangeName,
-                //         //     routingKey: "Models.LearningPlan",
-                //         //     basicProperties: null,
-                //         //     body: body
-                //         // );
-                //         // Console.WriteLine(" [x] Sent {0}", lpWrapper.LearningPlanId);
-                //     // }
-
-                    // return Created("/learningplan", learningplanObj);
-                // }
+                    var replaceLearningPlanResult = await repository.AddLearningPlanAsync(learningPlan);
+                    if (replaceLearningPlanResult.IsAcknowledged)
+                    {
+                        Console.WriteLine(replaceLearningPlanResult.UpsertedId);
+                        learningPlan.LearningPlanId = replaceLearningPlanResult.UpsertedId.ToString();
+                        var lpWrapper = new LearningPlanWrapper(learningPlan);
+                        // var objectWrapper = new ObjectWrapper(MessageType.IsLearningPlan,lpWrapper as Object);
+                        var body = ObjectSerialize.Serialize(lpWrapper);
+                        mQConnection.Model.BasicPublish(
+                            exchange: mQConnection.ExchangeName,
+                            routingKey: "Models.LearningPlan",
+                            basicProperties: null,
+                            body: body
+                        );
+                        Console.WriteLine(" [x] Sent Learning Plan with the name -> {0}", learningPlan.Name);
+                        return Created("/learningplan/" + learningPlan.LearningPlanId, learningPlan);
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("--------------------------------------------------------------");
+                    Console.WriteLine(e.Message);
+                    Console.WriteLine("--------------------------------------------------------------");
+                    return BadRequest(e);
+                }
             }
             return BadRequest();
         }
@@ -158,15 +154,15 @@ namespace SME.Controllers
         {
             if (ModelState.IsValid)
             {
-                await repository.UpdateLearningPlanAsync(learningPlan);
-                // if (learningPlanObj == null)
-                // {
-                //     return NotFound(learningPlan.Name + " was not found or You didn't include it's ID");
-                // }
-                // else
-                // {
-                //     return Created("/learningplan", learningPlanObj);
-                // }
+                try
+                {
+                    await repository.UpdateLearningPlanAsync(learningPlan);
+                    return Created("/learningplan/" + learningPlan.LearningPlanId, learningPlan);
+                }
+                catch (Exception e)
+                {
+                    return BadRequest(e.Message);
+                }
             }
             return BadRequest();
         }
@@ -185,7 +181,7 @@ namespace SME.Controllers
             var hasDeleted = await repository.DeleteLearningPlanAsync(learningPlanId);
             if (hasDeleted)
             {
-                return Ok("LearningPlan has been deleted");
+                return Ok($"LearningPlan : {learningPlanId} has been deleted");
             }
             else
             {
