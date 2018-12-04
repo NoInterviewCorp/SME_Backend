@@ -130,8 +130,14 @@ namespace SME.Controllers
                 }
                 catch (Exception e)
                 {
+                    StringBuilder sb = new StringBuilder();
+                    sb.Append(e.Message);
+                    sb.Append("\n");
+                    sb.Append(e.StackTrace);
+                    sb.Append("\n");
+                    sb.Append(e.InnerException);
                     Console.WriteLine("--------------------------------------------------------------");
-                    Console.WriteLine(e.Message);
+                    Console.WriteLine(sb);
                     Console.WriteLine("--------------------------------------------------------------");
                     return BadRequest(e);
                 }
@@ -161,7 +167,16 @@ namespace SME.Controllers
                 }
                 catch (Exception e)
                 {
-                    return BadRequest(e.Message);
+                    StringBuilder sb = new StringBuilder();
+                    sb.Append(e.Message);
+                    sb.Append("\n");
+                    sb.Append(e.StackTrace);
+                    sb.Append("\n");
+                    sb.Append(e.InnerException);
+                    Console.WriteLine("--------------------------------------------------------------");
+                    Console.WriteLine(sb);
+                    Console.WriteLine("--------------------------------------------------------------");
+                    return BadRequest(e);
                 }
             }
             return BadRequest();
