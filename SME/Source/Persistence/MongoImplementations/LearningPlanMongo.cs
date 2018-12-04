@@ -119,7 +119,7 @@ namespace SME.Persistence
             var questionModels = new List<WriteModel<Question>>();
             var conceptModels = new List<ReplaceOneModel<Concept>>();
             var technologyModels = new List<ReplaceOneModel<Technology>>();
-
+            learningPlan.Technology.Name = learningPlan.Technology.Name.ToUpper();
             // Updating technology field used here in its own collection
             technologyModels.Add(ReplaceOneTechnology(learningPlan.Technology));
             // Updating subsequent entities used inside this learning plan
@@ -154,6 +154,7 @@ namespace SME.Persistence
                     // Adding concepts mentioned inside a question
                     foreach (Concept concept in question.Concepts)
                     {
+                        concept.Name = concept.Name.ToUpper();
                         var conceptFilter = "{Name:\"" + concept.Name + "\"}";
                         var conceptUpsertQuery = new ReplaceOneModel<Concept>(conceptFilter, concept) { IsUpsert = true };
                         if (!conceptModels.Contains(conceptUpsertQuery))
@@ -181,6 +182,7 @@ namespace SME.Persistence
                 // Adding the concepts mentioned in the corresponding resource
                 foreach (Concept concept in resource.Concepts)
                 {
+                    concept.Name = concept.Name.ToUpper();
                     var conceptFilter = "{Name:\"" + concept.Name + "\"}";
                     var conceptUpsertQuery = new ReplaceOneModel<Concept>(conceptFilter, concept) { IsUpsert = true };
                     if (!conceptModels.Contains(conceptUpsertQuery))
@@ -192,6 +194,7 @@ namespace SME.Persistence
                 // Adding all technologies mentioned inside the resource
                 foreach (Technology technology in resource.Technologies)
                 {
+                    technology.Name = technology.Name.ToUpper();
                     var technologyFilter = "{Name:\"" + technology.Name + "\"}";
                     var technologyUpsertQuery = new ReplaceOneModel<Technology>(technologyFilter, technology) { IsUpsert = true };
                     if (!technologyModels.Contains(technologyUpsertQuery))

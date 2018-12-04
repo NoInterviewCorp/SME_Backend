@@ -6,7 +6,7 @@ namespace SME.Models
 {
     public class Question
     {
-        [BsonIgnoreIfDefault][JsonIgnore]
+        [BsonIgnore][JsonIgnore]
         public ObjectId _id { get; set; }
         public string QuestionId { get; set; }
         public string ProblemStatement { get; set; }
