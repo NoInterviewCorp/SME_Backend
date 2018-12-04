@@ -149,11 +149,11 @@ namespace SME.Persistence
             var bulkWriteQuestions = questions.Count > 0
                 ? dbConnection.Questions.BulkWriteAsync(questions)
                 : Task.CompletedTask;
-            // await AddConceptsToTechnologies(learningPlan);
             await bulkWriteResources;
             await bulkWriteTechnologies;
             await bulkWriteConcepts;
             await bulkWriteQuestions;
+            await AddConceptsToTechnologies(learningPlan);
             return await insertLearningPlan;
         }
 
@@ -163,6 +163,7 @@ namespace SME.Persistence
                 learningPlan.Resources.SelectMany(r => r.Concepts)
                 .Union(learningPlan.Resources.SelectMany(r => r.Questions)
                 .SelectMany(q => q.Concepts))
+                .Distinct()
                 .ToList();
             var technologyName = learningPlan.Technology.Name;
             var filter = Builders<Technology>.Filter.Where(t => t.Name == technologyName);
@@ -170,7 +171,8 @@ namespace SME.Persistence
                 .PushEach(t => t.Concepts, conceptsOfTechnology)
                 .SetOnInsert(t => t.Name, technologyName)
                 .SetOnInsert(t => t.Concepts, conceptsOfTechnology);
-            await dbConnection.Technologies.UpdateOneAsync(filter, technologyUpdateDefinition, new UpdateOptions { IsUpsert = true });
+                await dbConnection.Technologies.FindOneAndUpdateAsync(filter, technologyUpdateDefinition, new FindOneAndUpdateOptions<Technology>() { IsUpsert = true });
+            // await dbConnection.Technologies.UpdateOneAsync(filter, technologyUpdateDefinition, new UpdateOptions { IsUpsert = true });
         }
     }
 }
