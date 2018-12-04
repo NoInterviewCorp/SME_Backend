@@ -13,6 +13,7 @@ namespace SME.Models
         [BsonIgnoreIfDefault]
         public string TechnologyId { get; set; }
         public string Name { get; set; }
+        [BsonIgnoreIfNull]
         public List<Concept> Concepts { get; set; }
 
     }

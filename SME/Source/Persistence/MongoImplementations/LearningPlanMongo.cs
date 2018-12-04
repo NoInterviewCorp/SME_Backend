@@ -168,9 +168,9 @@ namespace SME.Persistence
             var technologyName = learningPlan.Technology.Name;
             var filter = Builders<Technology>.Filter.Where(t => t.Name == technologyName);
             var technologyUpdateDefinition = Builders<Technology>.Update
-                .PushEach(t => t.Concepts, conceptsOfTechnology)
-                .SetOnInsert(t => t.Name, technologyName)
-                .SetOnInsert(t => t.Concepts, conceptsOfTechnology);
+                .PushEach(t => t.Concepts, conceptsOfTechnology);
+                //.SetOnInsert(t => t.Name, technologyName)
+                //.SetOnInsert(t => t.Concepts, conceptsOfTechnology);
                 await dbConnection.Technologies.FindOneAndUpdateAsync(filter, technologyUpdateDefinition, new FindOneAndUpdateOptions<Technology>() { IsUpsert = true });
             // await dbConnection.Technologies.UpdateOneAsync(filter, technologyUpdateDefinition, new UpdateOptions { IsUpsert = true });
         }
