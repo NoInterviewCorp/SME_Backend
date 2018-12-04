@@ -7,7 +7,7 @@ namespace SME.Models
 {
     public class Concept
     {
-        [BsonIgnore][JsonIgnore]
+        [BsonIgnoreIfDefault][JsonIgnore]
         public ObjectId _id { get; set; }
         public string Name { get; set; }
 
