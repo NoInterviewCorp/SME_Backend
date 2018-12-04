@@ -5,7 +5,7 @@ namespace SME.Models
     {
         public string Username { get; set; }
         public Dictionary<string, List<Question>> RequestDictionary { get; set; }
-        public QuestionBatchResponse(string Username)
+        public QuestionBatchResponse(string Username, Dictionary<string, List<Question>> response)
         {
             this.Username = Username;
             RequestDictionary = new Dictionary<string, List<Question>>();
