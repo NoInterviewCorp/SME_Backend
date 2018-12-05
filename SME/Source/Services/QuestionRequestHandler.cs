@@ -44,10 +44,13 @@ namespace SME.Services
                 channel.BasicAck(ea.DeliveryTag, false);
                 var body = ea.Body;
                 var request = (QuestionBatchRequest)body.DeSerialize(typeof(QuestionBatchRequest));
+                Console.WriteLine("Request Username is " + request.Username);
                 var routingKey = ea.RoutingKey;
                 Console.WriteLine("-----------------------------------------------------------------------");
                 Console.WriteLine(" - Routing Key <{0}>", routingKey);
-                var response = ObjectSerialize.Serialize(ProvideQuestionsFromId(request));
+                var qbr = ProvideQuestionsFromId(request);
+                Console.WriteLine("Reponse Username is "+ qbr.Username);
+                var response = ObjectSerialize.Serialize(qbr);
                 Console.WriteLine("Sending Questions to Quiz Engine ");
                 // Send a message back to QuizEngine with the necessary question as response
                 rabbit.Model.BasicPublish(
