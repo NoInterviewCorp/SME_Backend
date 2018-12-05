@@ -36,6 +36,7 @@ namespace SME.Services
         {
             var channel = rabbit.Connection.CreateModel();
             var consumer = new AsyncEventingBasicConsumer(channel);
+            Console.WriteLine("----------------------------------------------------------------");
             consumer.Received += async (model, ea) =>
             {
                 Console.WriteLine("-----------------------------------------------------------------------");
@@ -58,7 +59,7 @@ namespace SME.Services
                 Console.WriteLine("Publishing to Question Response QuizEngine");
                 await Task.Yield();
             };
-            Console.WriteLine("Listening to Knowledge Graph microservice ");
+            Console.WriteLine("Listening to Knowledge Graph microservice for Question ID request ");
             channel.BasicConsume("KnowledgeGraph_Contributer_Ids", false, consumer);
         }
     }

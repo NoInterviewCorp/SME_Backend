@@ -93,6 +93,7 @@ namespace SME
             services.AddCors(o => o.AddPolicy("CorsPolicy", builder =>
             {
                 builder
+                    .AllowCredentials()
                     .AllowAnyMethod()
                     .AllowAnyHeader()
                     .AllowAnyOrigin();
