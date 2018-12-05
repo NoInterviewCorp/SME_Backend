@@ -49,6 +49,7 @@ namespace SME.Persistence
 
         public async Task<List<Technology>> GetTechnologyByNameAsync(string name)
         {
+            name = name.ToUpper();
             var plans = await dbConnection.Technologies
                     .Find("{$text : { $search : \"" + name + "\"} }")
                     .ToListAsync();

@@ -40,6 +40,7 @@ namespace SME.Persistence
 
         public async Task<List<Concept>> GetConceptByTechnologyAsync(string techname)
         {
+            techname = techname.ToUpper();
             var technology = await dbConnection.Technologies
                 .Find(t => t.Name == techname)
                 .ToListAsync();

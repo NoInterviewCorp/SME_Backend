@@ -132,6 +132,7 @@ namespace SME.Persistence
             var technologies =
                 learningPlan.Resources.SelectMany(r => r.Technologies)
                 .Union(new List<Technology>() { learningPlan.Technology })
+                .Select(t => { t.Name = t.Name.ToUpper(); return t; })
                 .Select(ReplaceOneEntity)
                 .ToList();
 
@@ -143,6 +144,7 @@ namespace SME.Persistence
                 learningPlan.Resources.SelectMany(r => r.Concepts)
                 .Union(learningPlan.Resources.SelectMany(r => r.Questions)
                 .SelectMany(q => q.Concepts))
+                .Select(c => { c.Name = c.Name.ToUpper(); return c; })
                 .Select(ReplaceOneEntity)
                 .ToList();
 
