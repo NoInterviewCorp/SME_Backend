@@ -103,7 +103,7 @@ namespace SME
             IApplicationBuilder app,
             IHostingEnvironment env,
             RabbitMQConnection rabbitMQConnection,
-            QuestionRequestHandler questionRequestHandler
+            IQuestionRequestHandler questionRequestHandler
         )
         {
             if (env.IsDevelopment())

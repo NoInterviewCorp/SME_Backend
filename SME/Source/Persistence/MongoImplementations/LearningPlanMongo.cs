@@ -113,7 +113,16 @@ namespace SME.Persistence
             var insertLearningPlan = dbConnection.LearningPlans.ReplaceOneAsync(learningPlanFilter, learningPlan, new UpdateOptions() { IsUpsert = true });
 
             var resources =
-                learningPlan.Resources.Select(ReplaceOneEntity)
+                learningPlan.Resources
+		.Select(
+                    (r) 
+                        =>
+                    {
+                        r.ResourceId = ObjectId.GenerateNewId().ToString();
+                        return r;
+                    }
+                )
+		.Select(ReplaceOneEntity)
                 .ToList();
 
             var bulkWriteResources = resources.Count > 0
@@ -142,7 +151,16 @@ namespace SME.Persistence
                 : Task.CompletedTask;
 
             var questions =
-                learningPlan.Resources.SelectMany(q => q.Questions)
+                learningPlan.Resources
+		.SelectMany(q => q.Questions)
+		.Select(
+                    (q)
+                        =>
+                    {
+                        q.QuestionId = ObjectId.GenerateNewId().ToString();
+                        return q;
+                    }
+                )
                 .Select(ReplaceOneQuestion)
                 .ToList();
 
