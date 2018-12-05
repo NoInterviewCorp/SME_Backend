@@ -12,7 +12,7 @@ namespace SME.Services
     {
         private MongoDbConnection db;
         private RabbitMQConnection rabbit;
-        public QuestionRequestHandler(MongoDbConnection db,RabbitMQConnection rabbit)
+        public QuestionRequestHandler(MongoDbConnection db, RabbitMQConnection rabbit)
         {
             this.db = db;
             this.rabbit = rabbit;
@@ -20,14 +20,18 @@ namespace SME.Services
         }
         public QuestionBatchResponse ProvideQuestionsFromId(QuestionBatchRequest batchRequest)
         {
-            var response = new Dictionary<string, List<Question>>();
-            foreach (var request in batchRequest.IdRequestDictionary)
+            var response = new List<Question>();
+            foreach (var request in batchRequest.IdRequestList)
             {
                 // figure out how to pass an array here to query all documents
                 // var filter = "{ QuestionId: { $in: " + request.Value.ToArray() + " } }";
                 // var result = db.Questions.FindSync(filter).ToList();
-                var result = db.Questions.Find(q=>request.Value.Find(q2=>q2 == q.QuestionId)!= null).ToList();
-                response.Add(request.Key, result);
+                var result = db.Questions.Find(request).SingleOrDefault();
+                if (result == null)
+                {
+                    throw new Exception($"Question with the QuestionId {request} does not exist inside SME MongoDB");
+                }
+                response.Add(result);
             }
             return new QuestionBatchResponse(batchRequest.Username, response);
         }
@@ -44,14 +48,14 @@ namespace SME.Services
                 channel.BasicAck(ea.DeliveryTag, false);
                 var body = ea.Body;
                 var request = (QuestionBatchRequest)body.DeSerialize(typeof(QuestionBatchRequest));
-                Console.WriteLine("Request Username is " + request.Username);
+                Console.WriteLine("Username " + request.Username + " is requesting " + request.IdRequestList.Count + " Questions");
                 var routingKey = ea.RoutingKey;
                 Console.WriteLine("-----------------------------------------------------------------------");
                 Console.WriteLine(" - Routing Key <{0}>", routingKey);
                 var qbr = ProvideQuestionsFromId(request);
-                Console.WriteLine("Reponse Username is "+ qbr.Username);
+                Console.WriteLine("Reponse Username is " + qbr.Username);
                 var response = ObjectSerialize.Serialize(qbr);
-                Console.WriteLine("Sending Questions to Quiz Engine ");
+                Console.WriteLine($"Sending " + qbr.ResponseList.Count + " Questions to Quiz Engine ");
                 // Send a message back to QuizEngine with the necessary question as response
                 rabbit.Model.BasicPublish(
                             exchange: rabbit.ExchangeName,
@@ -59,7 +63,7 @@ namespace SME.Services
                             basicProperties: null,
                             body: response
                         );
-                Console.WriteLine("Publishing to Question Response QuizEngine");
+                Console.WriteLine("Published to Question Response QuizEngine");
                 await Task.Yield();
             };
             Console.WriteLine("Listening to Knowledge Graph microservice for Question ID request ");
