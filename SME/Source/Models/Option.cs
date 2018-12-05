@@ -5,7 +5,7 @@ namespace SME.Models
 {
     public class Option
     {
-        public string OptionId { get; set; }
+        public int OptionId { get; set; }
         public string Content { get; set; }
         
         [BsonIgnore]

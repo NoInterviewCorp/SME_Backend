@@ -114,15 +114,15 @@ namespace SME.Persistence
 
             var resources =
                 learningPlan.Resources
-		.Select(
-                    (r) 
-                        =>
-                    {
-                        r.ResourceId = ObjectId.GenerateNewId().ToString();
-                        return r;
-                    }
-                )
-		.Select(ReplaceOneEntity)
+                .Select(
+                            (r)
+                                =>
+                            {
+                                r.ResourceId = ObjectId.GenerateNewId().ToString();
+                                return r;
+                            }
+                        )
+                .Select(ReplaceOneEntity)
                 .ToList();
 
             var bulkWriteResources = resources.Count > 0
@@ -152,12 +152,23 @@ namespace SME.Persistence
 
             var questions =
                 learningPlan.Resources
-		.SelectMany(q => q.Questions)
-		.Select(
+                .SelectMany(q => q.Questions)
+                .Select(
                     (q)
                         =>
                     {
                         q.QuestionId = ObjectId.GenerateNewId().ToString();
+                        var i = 1;
+                        q.Options = q.Options
+                            .Select(
+                                o
+                                =>
+                                {
+                                    o.OptionId = i;
+                                    i++;
+                                    return o;
+                                }
+                            ).ToList();
                         return q;
                     }
                 )
