@@ -21,10 +21,11 @@ namespace SME.Models
 
         public string ProblemStatement { get; set; }
         public List<Option> Options { get; set; }
+        
         public Option CorrectOption 
         { 
             get 
-            { 
+            {
                 return Options.Where(o => o.IsCorrect == true).FirstOrDefault();
             }
         }
@@ -35,7 +36,7 @@ namespace SME.Models
         [BsonIgnore]
         public Technology Technology { get; set; }
         
-        [BsonIgnore]
+        // [BsonIgnore]
         public List<Concept> Concepts { get; set; }
     }
 }

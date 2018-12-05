@@ -1,6 +1,7 @@
 using System;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 using SME.Models;
 namespace SME.Services
@@ -11,6 +12,7 @@ namespace SME.Services
         private readonly MongoClient client;
         public MongoDbConnection(IOptions<MongoSettings> options)
         {
+            BsonClassMap.RegisterClassMap<Question>().MapProperty(t => t.CorrectOption);
             this.client = new MongoClient(options.Value.ConnectionString);
             _db = client.GetDatabase(options.Value.Database);
             Concepts.Indexes.CreateOne(new CreateIndexModel<Concept>("{ Name : \"text\" }"));
