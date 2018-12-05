@@ -108,10 +108,10 @@ namespace SME.Persistence
                 string correctId = "";
                 foreach (Option option in question.Options)
                 {
-                    option.OptionId = MongoDB.Bson.ObjectId.GenerateNewId().ToString();
+                    // option.OptionId = MongoDB.Bson.ObjectId.GenerateNewId().ToString();
                     if (option.IsCorrect)
                     {
-                        correctId = option.OptionId;
+                        correctId = option.OptionId.ToString();
                     }
                 }
                 // question.CorrectOptionId = correctId;
