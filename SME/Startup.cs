@@ -67,7 +67,7 @@ namespace SME
             services.AddScoped<IResourceRepository, ResourceMongo>();
             services.AddScoped<IConceptRepository, ConceptMongo>();
             services.AddScoped<ITechnologyRepository, TechnologyMongo>();
-            services.AddScoped<ILearningPlanRepository,LearningPlanMongo>();
+            services.AddScoped<ILearningPlanRepository, LearningPlanMongo>();
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>
             {
@@ -98,8 +98,11 @@ namespace SME
             }));
         }
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env
-        // , RabbitMQConnection rmq
+        public void Configure(
+            IApplicationBuilder app,
+            IHostingEnvironment env,
+            RabbitMQConnection rabbitMQConnection,
+            QuestionRequestHandler questionRequestHandler
         )
         {
             if (env.IsDevelopment())
