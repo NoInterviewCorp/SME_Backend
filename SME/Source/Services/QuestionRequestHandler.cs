@@ -8,7 +8,7 @@ using RabbitMQ.Client.Events;
 using SME.Models;
 namespace SME.Services
 {
-    public class QuestionRequestHandler
+    public class QuestionRequestHandler : IQuestionRequestHandler
     {
         private MongoDbConnection db;
         private RabbitMQConnection rabbit;
