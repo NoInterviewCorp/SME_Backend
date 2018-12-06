@@ -143,7 +143,7 @@ namespace SME.Controllers
                     return BadRequest(e);
                 }
             }
-            return BadRequest();
+            return BadRequest(ModelState);
         }
 
         /// <summary>

@@ -9,7 +9,7 @@ namespace SME.Services
         private ConnectionFactory Factory;
         public IConnection Connection { get; set; }
         public IModel Model { get; set; }
-        public string ExchangeName = "KnowldegeGraphExchange";
+        public string ExchangeName = "KnowledgeGraphExchange";
         public RabbitMQConnection(IOptions<RabbitMQSettings> options)
         {
             // this.dbConnection = dbConnection;
