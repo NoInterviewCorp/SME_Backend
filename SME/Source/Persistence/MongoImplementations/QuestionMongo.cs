@@ -3,6 +3,9 @@ using System.Threading.Tasks;
 using SME.Models;
 using SME.Services;
 using MongoDB.Driver;
+using System.Linq;
+using System;
+using System.Text;
 
 namespace SME.Persistence
 {
@@ -13,10 +16,35 @@ namespace SME.Persistence
         {
             this.dbConnection = dbConnection;
         }
-        public async Task<List<Question>> AddQuestionsAsync(List<Question> question)
+        public async Task<List<Question>> AddQuestionsAsync(List<Question> questions, string resourceId)
         {
-            await Task.Yield();
-            throw new System.NotImplementedException();
+            // Adding resource Id to quesitons and changing case of 
+            // every concept and technology to upper case
+            questions = questions
+                .Select(q => {
+                    q.ResourceId = resourceId; 
+                    q.Concepts = q.Concepts
+                        .Select(c=>{
+                            c.Name = c.Name.ToUpper();
+                            return c;
+                        })
+                        .ToList();
+                    q.Technology.Name = q.Technology.Name.ToUpper();
+                    return q; 
+                })
+                .ToList();
+            var filter = Builders<Resource>.Filter.Where(r => r.ResourceId == resourceId);
+            var resourceUpdateDefinition = Builders<Resource>.Update
+                .PushEach(r => r.Questions, questions);
+            var resourceUpdate = dbConnection.Resources.FindOneAndUpdateAsync(
+                filter,
+                resourceUpdateDefinition,
+                new FindOneAndUpdateOptions<Resource>() { IsUpsert = true }
+            );
+            var questionsInsert = dbConnection.Questions.InsertManyAsync(questions);
+            await questionsInsert;
+            await resourceUpdate;
+            return questions;
         }
 
         public async Task<bool> DeleteQuestionByIdAsync(string questionId)

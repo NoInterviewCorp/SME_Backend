@@ -43,28 +43,35 @@ namespace SME.Services
             Console.WriteLine("----------------------------------------------------------------");
             consumer.Received += async (model, ea) =>
             {
-                Console.WriteLine("-----------------------------------------------------------------------");
-                Console.WriteLine("Consuming from KnowledgeGraph ");
-                channel.BasicAck(ea.DeliveryTag, false);
-                var body = ea.Body;
-                var request = (QuestionBatchRequest)body.DeSerialize(typeof(QuestionBatchRequest));
-                Console.WriteLine("Username " + request.Username + " is requesting " + request.IdRequestList.Count + " Questions");
-                var routingKey = ea.RoutingKey;
-                Console.WriteLine("-----------------------------------------------------------------------");
-                Console.WriteLine(" - Routing Key <{0}>", routingKey);
-                var qbr = ProvideQuestionsFromId(request);
-                Console.WriteLine("Reponse Username is " + qbr.Username);
-                var response = ObjectSerialize.Serialize(qbr);
-                Console.WriteLine($"Sending " + qbr.ResponseList.Count + " Questions to Quiz Engine ");
-                // Send a message back to QuizEngine with the necessary question as response
-                rabbit.Model.BasicPublish(
-                            exchange: rabbit.ExchangeName,
-                            routingKey: "Send.Question",
-                            basicProperties: null,
-                            body: response
-                        );
-                Console.WriteLine("Published to Question Response QuizEngine");
-                await Task.Yield();
+                try
+                {
+                    Console.WriteLine("-----------------------------------------------------------------------");
+                    Console.WriteLine("Consuming from KnowledgeGraph ");
+                    channel.BasicAck(ea.DeliveryTag, false);
+                    var body = ea.Body;
+                    var request = (QuestionBatchRequest)body.DeSerialize(typeof(QuestionBatchRequest));
+                    Console.WriteLine("Username " + request.Username + " is requesting " + request.IdRequestList.Count + " Questions");
+                    var routingKey = ea.RoutingKey;
+                    Console.WriteLine("-----------------------------------------------------------------------");
+                    Console.WriteLine(" - Routing Key <{0}>", routingKey);
+                    var qbr = ProvideQuestionsFromId(request);
+                    Console.WriteLine("Reponse Username is " + qbr.Username);
+                    var response = ObjectSerialize.Serialize(qbr);
+                    Console.WriteLine($"Sending " + qbr.ResponseList.Count + " Questions to Quiz Engine ");
+                    // Send a message back to QuizEngine with the necessary question as response
+                    rabbit.Model.BasicPublish(
+                                exchange: rabbit.ExchangeName,
+                                routingKey: "Send.Question",
+                                basicProperties: null,
+                                body: response
+                            );
+                    Console.WriteLine("Published to Question Response QuizEngine");
+                    await Task.Yield();
+                }
+                catch (Exception e)
+                {
+                    ConsoleWriter.ConsoleAnException(e);
+                }
             };
             Console.WriteLine("Listening to Knowledge Graph microservice for Question ID request ");
             channel.BasicConsume("KnowledgeGraph_Contributer_Ids", false, consumer);

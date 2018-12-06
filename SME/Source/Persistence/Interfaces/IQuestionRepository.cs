@@ -6,7 +6,7 @@ namespace SME.Persistence
     public interface IQuestionRepository
     {
         // Question
-        Task<List<Question>> AddQuestionsAsync(List<Question> question);
+        Task<List<Question>> AddQuestionsAsync(List<Question> questions, string resourceId);
         Task<List<Question>> GetQuestionsAsync();
         Task<List<Question>> GetQuestionsByResourceAsync(string resourceId);
         Task<Question> UpdateQuestionAsync(Question question);
