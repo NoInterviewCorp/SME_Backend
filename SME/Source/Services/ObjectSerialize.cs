@@ -19,6 +19,7 @@ namespace SME.Services
         public static object DeSerialize(this byte[] arrBytes, Type type)
         {
             var json = Encoding.Default.GetString(arrBytes);
+            Console.WriteLine("Json Object is\n" + json);
             return JsonConvert.DeserializeObject(json, type);
         }
 
