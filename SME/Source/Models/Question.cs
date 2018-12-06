@@ -14,7 +14,12 @@ namespace SME.Models
         public string QuestionId { get; set; }
         public string ProblemStatement { get; set; }
         public List<Option> Options { get; set; }
-        public Option CorrectOption { get; set; }
+        public Option CorrectOption
+        {
+            get{
+                return Options.Where(o=>o.IsCorrect).FirstOrDefault();
+            }
+        }
         public BloomTaxonomy BloomLevel { get; set; }
         public bool HasPublished { get; set; }
         [BsonIgnore]
