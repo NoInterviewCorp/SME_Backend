@@ -160,6 +160,7 @@ namespace SME.Persistence
                         =>
                     {
                         q.QuestionId = ObjectId.GenerateNewId().ToString();
+			q.Technology.Name = q.Technology.Name.ToUpper();
                         var i = 1;
                         q.Options = q.Options
                             .Select(
