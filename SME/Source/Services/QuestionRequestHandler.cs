@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using MongoDB.Driver;
 using MongoDB.Driver.Core.Connections;
+using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using SME.Models;
@@ -23,9 +24,6 @@ namespace SME.Services
             var response = new List<Question>();
             foreach (var request in batchRequest.IdRequestList)
             {
-                // figure out how to pass an array here to query all documents
-                // var filter = "{ QuestionId: { $in: " + request.Value.ToArray() + " } }";
-                // var result = db.Questions.FindSync(filter).ToList();
                 var result = db.Questions.Find(q => q.QuestionId == request).SingleOrDefault();
                 if (result == null)
                 {
@@ -53,14 +51,13 @@ namespace SME.Services
                     Console.WriteLine("Username " + request.Username + " is requesting " + request.IdRequestList.Count + " Questions");
                     var routingKey = ea.RoutingKey;
                     Console.WriteLine("-----------------------------------------------------------------------");
-                    Console.WriteLine("QuestionIds requested are->");
-                    foreach (var item in request.IdRequestList)
-                    {
-                        Console.WriteLine(item);
-                    }
                     var qbr = ProvideQuestionsFromId(request);
-                    Console.WriteLine("Reponse Username is " + qbr.Username);
                     var response = ObjectSerialize.Serialize(qbr);
+                    Console.WriteLine("Questions requested are->");
+                    foreach (var item in qbr.ResponseList)
+                    {
+                        Console.WriteLine(JsonConvert.SerializeObject(item));
+                    }
                     Console.WriteLine($"Sending " + qbr.ResponseList.Count + " Questions to Quiz Engine ");
                     // Send a message back to QuizEngine with the necessary question as response
                     rabbit.Model.BasicPublish(
