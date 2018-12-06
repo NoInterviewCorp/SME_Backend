@@ -5,6 +5,9 @@ namespace SME.Models
     {
         public string Username { get; set; }
         public List<string> IdRequestList;
+        public QuestionBatchRequest(){
+            IdRequestList = new List<string>();
+        }
         public QuestionBatchRequest(string Username)
         {
             this.Username = Username;

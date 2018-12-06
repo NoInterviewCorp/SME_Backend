@@ -5,6 +5,10 @@ namespace SME.Models
     {
         public string Username { get; set; }
         public List<Question> ResponseList { get; set; }
+        public QuestionBatchResponse()
+        {
+            ResponseList = new List<Question>();
+        }
         public QuestionBatchResponse(string Username, List<Question> responseList)
         {
             this.Username = Username;

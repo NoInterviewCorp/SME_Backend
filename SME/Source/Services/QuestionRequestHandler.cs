@@ -53,7 +53,11 @@ namespace SME.Services
                     Console.WriteLine("Username " + request.Username + " is requesting " + request.IdRequestList.Count + " Questions");
                     var routingKey = ea.RoutingKey;
                     Console.WriteLine("-----------------------------------------------------------------------");
-                    Console.WriteLine(" - Routing Key <{0}>", routingKey);
+                    Console.WriteLine("QuestionIds requested are->");
+                    foreach (var item in request.IdRequestList)
+                    {
+                        Console.WriteLine(item);
+                    }
                     var qbr = ProvideQuestionsFromId(request);
                     Console.WriteLine("Reponse Username is " + qbr.Username);
                     var response = ObjectSerialize.Serialize(qbr);
