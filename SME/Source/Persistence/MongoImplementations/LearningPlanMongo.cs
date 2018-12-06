@@ -120,8 +120,9 @@ namespace SME.Persistence
                                 =>
                             {
                                 r.ResourceId = ObjectId.GenerateNewId().ToString();
-                                r.Questions
-                                    .Select(q => { q.ResourceId = r.ResourceId; return q; });
+                                r.Questions = r.Questions
+                                    .Select(q => { q.ResourceId = r.ResourceId; return q; })
+                                    .ToList();
                                 return r;
                             }
                         )
@@ -167,7 +168,7 @@ namespace SME.Persistence
                         =>
                     {
                         q.QuestionId = ObjectId.GenerateNewId().ToString();
-			q.Technology.Name = q.Technology.Name.ToUpper();
+                        q.Technology.Name = q.Technology.Name.ToUpper();
                         var i = 1;
                         q.Options = q.Options
                             .Select(
