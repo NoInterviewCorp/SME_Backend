@@ -133,21 +133,6 @@ namespace SME.Persistence
                 ? dbConnection.Resources.BulkWriteAsync(resources)
                 : Task.CompletedTask;
 
-            var technologies =
-                learningPlan.Resources.SelectMany(r => r.Technologies)
-                .Union(new List<Technology>() { learningPlan.Technology })
-                .Select(t =>
-                {
-                    t.Name = t.Name.ToUpper();
-                    return t;
-                })
-                .Select(ReplaceOneEntity)
-                .ToList();
-
-            var bulkWriteTechnologies = technologies.Count > 0
-                ? dbConnection.Technologies.BulkWriteAsync(technologies)
-                : Task.CompletedTask;
-
             var concepts =
                 learningPlan.Resources.SelectMany(r => r.Concepts)
                 .Union(learningPlan.Resources.SelectMany(r => r.Questions)
@@ -191,7 +176,6 @@ namespace SME.Persistence
                 ? dbConnection.Questions.BulkWriteAsync(questions)
                 : Task.CompletedTask;
             await bulkWriteResources;
-            await bulkWriteTechnologies;
             await bulkWriteConcepts;
             await bulkWriteQuestions;
             await AddConceptsToTechnologies(learningPlan);
@@ -200,18 +184,38 @@ namespace SME.Persistence
 
         private async Task AddConceptsToTechnologies(LearningPlan learningPlan)
         {
-            IEqualityComparer<Concept> comparer = new ConceptComparer();
             var conceptsOfTechnology =
                 learningPlan.Resources.SelectMany(r => r.Concepts)
                 .Union(learningPlan.Resources.SelectMany(r => r.Questions)
                     .SelectMany(q => q.Concepts))
-                .Distinct(comparer)
+                .Distinct(new EntityComparer<Concept>())
                 .ToList();
-            var technologyName = learningPlan.Technology.Name.ToUpper();
+
+            var technologies =
+                learningPlan.Resources.SelectMany(r => r.Technologies)
+                .Union(new List<Technology>() { learningPlan.Technology })
+                .Select(t =>
+                {
+                    t.Name = t.Name.ToUpper();
+                    return t;
+                })
+                .Distinct(new EntityComparer<Technology>())
+                .ToList();
+
+            Console.WriteLine(technologies.Count + " technologies were added");
+
+            var technologyName = technologies[0].Name;
+
             var filter = Builders<Technology>.Filter.Where(t => t.Name == technologyName);
             var technologyUpdateDefinition = Builders<Technology>.Update
-                .PushEach(t => t.Concepts, conceptsOfTechnology);
-            await dbConnection.Technologies.FindOneAndUpdateAsync(filter, technologyUpdateDefinition, new FindOneAndUpdateOptions<Technology>() { IsUpsert = true });
+                // .PushEach(t => t.Concepts, conceptsOfTechnology);
+                .AddToSetEach(t => t.Concepts, conceptsOfTechnology);
+
+            await dbConnection.Technologies.FindOneAndUpdateAsync(
+                filter, 
+                technologyUpdateDefinition, 
+                new FindOneAndUpdateOptions<Technology>() { IsUpsert = true }
+            );
         }
     }
 }

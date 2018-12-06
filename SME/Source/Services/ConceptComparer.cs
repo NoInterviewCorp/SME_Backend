@@ -3,9 +3,9 @@ using SME.Models;
 
 namespace SME.Services
 {
-    public class ConceptComparer : IEqualityComparer<Concept>
+    public class EntityComparer<T> : IEqualityComparer<T> where T : IEntity 
     {
-        public bool Equals(Concept x, Concept y)
+        public bool Equals(T x, T y)
         {
             if (x == null && y == null)
                 return true;
@@ -16,7 +16,7 @@ namespace SME.Services
             else
                 return false;
         }
-        public int GetHashCode(Concept obj)
+        public int GetHashCode(T obj)
         {
             return (obj == null) ? 0 : 0;
         }
