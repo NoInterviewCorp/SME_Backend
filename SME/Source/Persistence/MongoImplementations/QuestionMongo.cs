@@ -21,16 +21,18 @@ namespace SME.Persistence
             // Adding resource Id to quesitons and changing case of 
             // every concept and technology to upper case
             questions = questions
-                .Select(q => {
-                    q.ResourceId = resourceId; 
+                .Select(q =>
+                {
+                    q.ResourceId = resourceId;
                     q.Concepts = q.Concepts
-                        .Select(c=>{
+                        .Select(c =>
+                        {
                             c.Name = c.Name.ToUpper();
                             return c;
                         })
                         .ToList();
                     q.Technology.Name = q.Technology.Name.ToUpper();
-                    return q; 
+                    return q;
                 })
                 .ToList();
             var filter = Builders<Resource>.Filter.Where(r => r.ResourceId == resourceId);
@@ -78,8 +80,8 @@ namespace SME.Persistence
 
         public async Task<Question> UpdateQuestionAsync(Question question)
         {
-            await Task.Yield();
-            throw new System.NotImplementedException();
+            var filter = Builders<Question>.Filter.Eq(q => q.QuestionId, question.QuestionId);
+            return await dbConnection.Questions.FindOneAndReplaceAsync(filter,question);
         }
     }
 }

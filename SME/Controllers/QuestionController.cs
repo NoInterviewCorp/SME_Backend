@@ -46,22 +46,52 @@ namespace SME.Controllers
         /// </summary>
         /// <param name="questions"> Object of type question which needs to be posted
         /// to the database </param>
-        /// <param name="resourceId"> resource id of the resource to which question which needs to be posted
+        /// <param name="questionId"> question id of the question to which question which needs to be posted
         /// to the database </param>
         /// <response code="201">Returns the newly created question</response>
         /// <response code="400">If the question already exists or modelstate is invalid </response> 
         // POST SME/
-        [HttpPost("{resourceId}")]
+        [HttpPost("{questionId}")]
         [ProducesResponseType(201)]
         [ProducesResponseType(400)]
-        public async Task<IActionResult> PostAsync(string resourceId, [FromBody] List<Question> questions)
+        public async Task<IActionResult> PostAsync(string questionId, [FromBody] List<Question> questions)
         {
             if (ModelState.IsValid)
             {
-                var questionObj = await repository.AddQuestionsAsync(questions, resourceId);
+                var questionObj = await repository.AddQuestionsAsync(questions, questionId);
                 if (questionObj == null)
                 {
                     return BadRequest("question submitted is invalid");
+                }
+                else
+                {
+                    return Created("/question", questionObj);
+                }
+            }
+            return BadRequest();
+        }
+
+        /// <summary>
+        /// Updates a <paramref name="question"/> into the database if it
+        /// exists
+        /// </summary>
+        /// <param name="question">question to be added. </param>
+        /// <param name="questionId">questionId of object which needs to be updated. </param>
+        /// <response code="201">Returns the newly updated question</response>
+        /// <response code="400">If the question does not exists or modelstate is invalid </response> 
+        // PUT SME/
+        [HttpPut("{questionId}")]
+        [ProducesResponseType(201)]
+        [ProducesResponseType(400)]
+        public async Task<IActionResult> PutAsync(string questionId, [FromBody] Question question)
+        {
+            // question.questionId = questionId;
+            if (ModelState.IsValid)
+            {
+                var questionObj = await repository.UpdateQuestionAsync(question);
+                if (questionObj == null)
+                {
+                    return NotFound("question was not found or You didn't include it's ID");
                 }
                 else
                 {

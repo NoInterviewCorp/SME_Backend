@@ -14,10 +14,10 @@ namespace SME.Models
         public string QuestionId { get; set; }
         public string ProblemStatement { get; set; }
         public List<Option> Options { get; set; }
-        public Option CorrectOption
+        public int CorrectOptionId
         {
             get{
-                return Options.Where(o=>o.IsCorrect).FirstOrDefault();
+                return Options.Where(o=>o.IsCorrect).FirstOrDefault().OptionId;
             }
         }
         public BloomTaxonomy BloomLevel { get; set; }
