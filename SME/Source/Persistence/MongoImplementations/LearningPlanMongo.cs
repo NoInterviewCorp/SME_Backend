@@ -110,7 +110,8 @@ namespace SME.Persistence
         private async Task<ReplaceOneResult> UpsertLearningPlanAsync(LearningPlan learningPlan)
         {
             var learningPlanFilter = "{Name:\"" + learningPlan.Name + "\",AuthorId:\"" + learningPlan.AuthorId + "\"}";
-            var insertLearningPlan = dbConnection.LearningPlans.ReplaceOneAsync(learningPlanFilter, learningPlan, new UpdateOptions() { IsUpsert = true });
+            var insertLearningPlan = dbConnection.LearningPlans
+                .ReplaceOneAsync(learningPlanFilter, learningPlan, new UpdateOptions() { IsUpsert = true });
 
             var resources =
                 learningPlan.Resources
@@ -119,6 +120,8 @@ namespace SME.Persistence
                                 =>
                             {
                                 r.ResourceId = ObjectId.GenerateNewId().ToString();
+                                r.Questions
+                                    .Select(q => { q.ResourceId = r.ResourceId; return q; });
                                 return r;
                             }
                         )
@@ -132,7 +135,11 @@ namespace SME.Persistence
             var technologies =
                 learningPlan.Resources.SelectMany(r => r.Technologies)
                 .Union(new List<Technology>() { learningPlan.Technology })
-                .Select(t => { t.Name = t.Name.ToUpper(); return t; })
+                .Select(t =>
+                {
+                    t.Name = t.Name.ToUpper();
+                    return t;
+                })
                 .Select(ReplaceOneEntity)
                 .ToList();
 
@@ -143,7 +150,7 @@ namespace SME.Persistence
             var concepts =
                 learningPlan.Resources.SelectMany(r => r.Concepts)
                 .Union(learningPlan.Resources.SelectMany(r => r.Questions)
-                .SelectMany(q => q.Concepts))
+                    .SelectMany(q => q.Concepts))
                 .Select(c => { c.Name = c.Name.ToUpper(); return c; })
                 .Select(ReplaceOneEntity)
                 .ToList();
@@ -195,10 +202,10 @@ namespace SME.Persistence
             var conceptsOfTechnology =
                 learningPlan.Resources.SelectMany(r => r.Concepts)
                 .Union(learningPlan.Resources.SelectMany(r => r.Questions)
-                .SelectMany(q => q.Concepts))
+                    .SelectMany(q => q.Concepts))
                 .Distinct(comparer)
                 .ToList();
-            var technologyName = learningPlan.Technology.Name;
+            var technologyName = learningPlan.Technology.Name.ToUpper();
             var filter = Builders<Technology>.Filter.Where(t => t.Name == technologyName);
             var technologyUpdateDefinition = Builders<Technology>.Update
                 .PushEach(t => t.Concepts, conceptsOfTechnology);

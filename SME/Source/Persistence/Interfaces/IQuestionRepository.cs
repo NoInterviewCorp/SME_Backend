@@ -8,7 +8,7 @@ namespace SME.Persistence
         // Question
         Task<List<Question>> AddQuestionsAsync(List<Question> question);
         Task<List<Question>> GetQuestionsAsync();
-        Task<List<Question>> GetQuestionsByConceptOfATechAsync(string technology, string concept);
+        Task<List<Question>> GetQuestionsByResourceAsync(string resourceId);
         Task<Question> UpdateQuestionAsync(Question question);
         Task<bool> DeleteQuestionByIdAsync(string questionId);
     }
