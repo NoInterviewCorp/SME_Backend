@@ -12,7 +12,7 @@ namespace SME.Services
         private readonly MongoClient client;
         public MongoDbConnection(IOptions<MongoSettings> options)
         {
-            BsonClassMap.RegisterClassMap<Question>().MapProperty(t => t.CorrectOptionId);
+            // BsonClassMap.RegisterClassMap<Question>().MapProperty(t => t.CorrectOptionId);
             this.client = new MongoClient(options.Value.ConnectionString);
             _db = client.GetDatabase(options.Value.Database);
             Concepts.Indexes.CreateOne(new CreateIndexModel<Concept>("{ Name : \"text\" }"));

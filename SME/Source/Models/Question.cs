@@ -16,9 +16,8 @@ namespace SME.Models
         public List<Option> Options { get; set; }
         public int CorrectOptionId
         {
-            get{
-                return Options.Where(o=>o.IsCorrect).FirstOrDefault().OptionId;
-            }
+            get;
+            set;
         }
         public BloomTaxonomy BloomLevel { get; set; }
         public bool HasPublished { get; set; }

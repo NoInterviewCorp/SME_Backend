@@ -24,6 +24,10 @@ namespace SME.Persistence
                 .Select(q =>
                 {
                     q.ResourceId = resourceId;
+                    q.CorrectOptionId = q.Options
+                        .Where(o => o.IsCorrect)
+                        .SingleOrDefault()
+                        .OptionId;
                     q.Concepts = q.Concepts
                         .Select(c =>
                         {
@@ -80,8 +84,9 @@ namespace SME.Persistence
 
         public async Task<Question> UpdateQuestionAsync(Question question)
         {
+            question.CorrectOptionId = question.Options.Where(o => o.IsCorrect).SingleOrDefault().OptionId;
             var filter = Builders<Question>.Filter.Eq(q => q.QuestionId, question.QuestionId);
-            return await dbConnection.Questions.FindOneAndReplaceAsync(filter,question);
+            return await dbConnection.Questions.FindOneAndReplaceAsync(filter, question);
         }
     }
 }
