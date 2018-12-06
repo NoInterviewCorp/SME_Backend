@@ -26,7 +26,7 @@ namespace SME.Services
                 // figure out how to pass an array here to query all documents
                 // var filter = "{ QuestionId: { $in: " + request.Value.ToArray() + " } }";
                 // var result = db.Questions.FindSync(filter).ToList();
-                var result = db.Questions.Find(request).SingleOrDefault();
+                var result = db.Questions.Find(q => q.QuestionId == request).SingleOrDefault();
                 if (result == null)
                 {
                     throw new Exception($"Question with the QuestionId {request} does not exist inside SME MongoDB");
