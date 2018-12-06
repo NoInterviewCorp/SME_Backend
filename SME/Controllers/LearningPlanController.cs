@@ -110,7 +110,7 @@ namespace SME.Controllers
             {
                 try
                 {
-		    Console.WriteLine(learningPlan.Resources[0].ResourceId);
+                    Console.WriteLine(learningPlan.Resources[0].ResourceId);
                     var replaceLearningPlanResult = await repository.AddLearningPlanAsync(learningPlan);
                     if (replaceLearningPlanResult.IsAcknowledged)
                     {

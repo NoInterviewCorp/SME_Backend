@@ -11,7 +11,7 @@ namespace SME.Services
                 return true;
             else if (y == null | x == null)
                 return false;
-            else if (y.Name.ToLower() == x.Name.ToLower())
+            else if (y.Name.ToUpper() == x.Name.ToUpper())
                 return true;
             else
                 return false;
