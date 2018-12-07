@@ -57,16 +57,19 @@ namespace SME.Services
             // Initialising the reciever
             consumer.Received += async (model, ea) =>
             {
+                Console.WriteLine("Response Recieved");
                 var body = ea.Body;
                 var response = (List<LearningPlanInfo>)body.DeSerialize(typeof(List<LearningPlanInfo>));
                 if (ea.BasicProperties.CorrelationId == correlationId)
                 {
+                    Console.WriteLine($"Adding reponse to the queue with {response.Count} objects");
                     responseQueue.Add(response);
                 }
                 await Task.Yield();
             };
 
             // Preparing message and publishing it
+            Console.WriteLine($"Sending Request for {learningPlanIds.Count} Ids");
             var messageBytes = learningPlanIds.Serialize();
             Model.BasicPublish(
                 exchange: ExchangeName,
@@ -79,7 +82,7 @@ namespace SME.Services
                 consumer: consumer,
                 queue: replyQueueName,
                 autoAck: true);
-
+            Console.Write("Taking from BlockingCollection");
             return responseQueue.Take();
         }
         public void Close()

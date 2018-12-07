@@ -42,8 +42,11 @@ namespace SME.Controllers
             {
                 return NotFound("There are no Learning plans. You can create your own Learning plan");
             }
+            Console.WriteLine("RPC to get LP Info");
             var learningPlanIds = LearningPlans.Select(lp => lp.LearningPlanId).ToList();
+            Console.WriteLine(learningPlanIds.Count);
             var lpInfos = mQConnection.GetLearningPlanInfo(learningPlanIds);
+            
             var result = AddInfoToPlans(lpInfos, LearningPlans);
             return Ok(result);
         }
