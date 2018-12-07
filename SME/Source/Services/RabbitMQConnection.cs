@@ -34,12 +34,6 @@ namespace SME.Services
                 Connection = Factory.CreateConnection();
                 Model = Connection.CreateModel();
                 Model.ExchangeDeclare(ExchangeName, "topic");
-                Model.QueueDeclare("Contributer_QuizEngine_Questions", false, false, false, null);
-                Model.QueueBind("Contributer_QuizEngine_Questions", ExchangeName, "Send.Question");
-                Model.QueueDeclare("AverageRating_TotalSubs_Request", false, false, false, null);
-                Model.QueueBind("AverageRating_TotalSubs_Request", ExchangeName, "Request.LP");
-                Model.QueueDeclare(replyQueueName, false, false, false, null);
-                Model.QueueBind(replyQueueName, ExchangeName, "Response.LP");
             }
             catch (Exception e)
             {
