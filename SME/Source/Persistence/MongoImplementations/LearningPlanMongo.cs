@@ -151,7 +151,6 @@ namespace SME.Persistence
                         =>
                     {
                         q.QuestionId = ObjectId.GenerateNewId().ToString();
-                        q.CorrectOptionId = q.Options.Where(o => o.IsCorrect).SingleOrDefault().OptionId;
                         q.Technology.Name = q.Technology.Name.ToUpper();
                         var i = 1;
                         q.Options = q.Options
@@ -164,6 +163,7 @@ namespace SME.Persistence
                                     return o;
                                 }
                             ).ToList();
+                        q.CorrectOptionId = q.Options.Where(o => o.IsCorrect).SingleOrDefault().OptionId;
                         return q;
                     }
                 )
