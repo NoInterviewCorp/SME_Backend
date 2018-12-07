@@ -58,12 +58,19 @@ namespace SME.Services
             consumer.Received += async (model, ea) =>
             {
                 Console.WriteLine("Response Recieved");
-                var body = ea.Body;
-                var response = (List<LearningPlanInfo>)body.DeSerialize(typeof(List<LearningPlanInfo>));
-                if (ea.BasicProperties.CorrelationId == correlationId)
+                try
                 {
-                    Console.WriteLine($"Adding reponse to the queue with {response.Count} objects");
-                    responseQueue.Add(response);
+                    var body = ea.Body;
+                    var response = (List<LearningPlanInfo>)body.DeSerialize(typeof(List<LearningPlanInfo>));
+                    if (ea.BasicProperties.CorrelationId == correlationId)
+                    {
+                        Console.WriteLine($"Adding reponse to the queue with {response.Count} objects");
+                        responseQueue.Add(response);
+                    }
+                }
+                catch (Exception e)
+                {
+                    ConsoleWriter.ConsoleAnException(e);
                 }
                 await Task.Yield();
             };
