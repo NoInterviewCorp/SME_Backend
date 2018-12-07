@@ -51,7 +51,7 @@ namespace SME.Persistence
         {
             name = name.ToUpper();
             var plans = await dbConnection.Technologies
-                    .Find("{$text : { $search : \"" + name + "\"} }")
+                    .Find(t=>t.Name == name)
                     .ToListAsync();
             return plans;
         }
