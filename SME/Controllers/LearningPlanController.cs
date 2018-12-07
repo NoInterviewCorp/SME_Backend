@@ -42,7 +42,26 @@ namespace SME.Controllers
             {
                 return NotFound("There are no Learning plans. You can create your own Learning plan");
             }
-            return Ok(LearningPlans);
+            var learningPlanIds = LearningPlans.Select(lp => lp.LearningPlanId).ToList();
+            var lpInfos = mQConnection.GetLearningPlanInfo(learningPlanIds);
+            var result = AddInfoToPlans(lpInfos, LearningPlans);
+            return Ok(result);
+        }
+
+        private List<LearningPlan> AddInfoToPlans(List<LearningPlanInfo> infos, List<LearningPlan> lps)
+        {
+            var result = new List<LearningPlan>();
+            foreach (var info in infos)
+            {
+                var plan = lps.FirstOrDefault(lp => lp.LearningPlanId == info.LearningPlanId);
+                if (plan != null)
+                {
+                    plan.AverageRating = info.AverageRating;
+                    plan.TotalSubscribers = info.TotalSubscribers;
+                    result.Add(plan);
+                }
+            }
+            return result;
         }
 
         /// <summary>
@@ -65,13 +84,19 @@ namespace SME.Controllers
                     {
                         return Ok("There are no Learning plans. You can create your own Learning plan");
                     }
-                    return Ok(LearningPlans);
+                    var learningPlanIds = LearningPlans.Select(lp => lp.LearningPlanId).ToList();
+                    var lpInfos = mQConnection.GetLearningPlanInfo(learningPlanIds);
+                    var result = AddInfoToPlans(lpInfos, LearningPlans);
+                    return Ok(result);
                 case "id":
                     var LearningPlan = await repository.GetLearningPlanByIdAsync(text);
                     if (LearningPlan == null)
                     {
                         return Ok("There are no Learning plans. You can create your own Learning plan");
                     }
+                    var lpInfos2 = mQConnection.GetLearningPlanInfo(new List<string> { LearningPlan.LearningPlanId });
+                    LearningPlan.AverageRating = lpInfos2[0].AverageRating;
+                    LearningPlan.TotalSubscribers = lpInfos2[0].TotalSubscribers;
                     return Ok(LearningPlan);
                 case "tech":
                     var LearningPlansObj = await repository.GetLearningPlansByTechnologyAsync(text);
@@ -79,7 +104,10 @@ namespace SME.Controllers
                     {
                         return Ok("There are no Learning plans. You can create your own Learning plan");
                     }
-                    return Ok(LearningPlansObj);
+                    var learningPlanIds3 = LearningPlansObj.Select(lp => lp.LearningPlanId).ToList();
+                    var lpInfos3 = mQConnection.GetLearningPlanInfo(learningPlanIds3);
+                    var result3 = AddInfoToPlans(lpInfos3, LearningPlansObj);
+                    return Ok(result3);
                 default:
                     return BadRequest();
             }

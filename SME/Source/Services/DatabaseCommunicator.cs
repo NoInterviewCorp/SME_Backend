@@ -60,6 +60,7 @@ namespace SME.Services
                         Console.WriteLine(JsonConvert.SerializeObject(item));
                     }
                     Console.WriteLine("Sending " + qbr.ResponseList.Count + " Questions to Quiz Engine ");
+
                     // Send a message back to QuizEngine with the necessary question as response
                     rabbit.Model.BasicPublish(
                                 exchange: rabbit.ExchangeName,
@@ -78,10 +79,5 @@ namespace SME.Services
             Console.WriteLine("Listening to Knowledge Graph microservice for Question ID request ");
             channel.BasicConsume("KnowledgeGraph_Contributer_Ids", false, consumer);
         }
-
-       
-
-
-
     }
 }

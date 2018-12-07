@@ -18,5 +18,9 @@ namespace SME.Models
         public Technology Technology { get; set; }
         public List<Resource> Resources { get; set; }
         public bool HasPublished { get; set; }
+        [BsonIgnore]
+        public float AverageRating { get; set; }
+        [BsonIgnore]
+        public int TotalSubscribers { get; set; }
     }
 }

@@ -4,6 +4,7 @@ using RabbitMQ.Client.Events;
 using SME.Models;
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -16,7 +17,7 @@ namespace SME.Services
         public IModel Model { get; set; }
         private AsyncEventingBasicConsumer consumer;
         private IBasicProperties properties;
-        private BlockingCollection<LearningPlanInfo> responseQueue = new BlockingCollection<LearningPlanInfo>();
+        private BlockingCollection<List<LearningPlanInfo>> responseQueue = new BlockingCollection<List<LearningPlanInfo>>();
         public string ExchangeName = "KnowledgeGraphExchange";
         private string replyQueueName = "AverageRating_TotalSubs_Response";
         public RabbitMQConnection(IOptions<RabbitMQSettings> options)
@@ -44,7 +45,7 @@ namespace SME.Services
             }
         }
 
-        public LearningPlanInfo GetLearningPlanInfo(string learningPlanId)
+        public List<LearningPlanInfo> GetLearningPlanInfo(List<string> learningPlanIds)
         {
             // Initializing the connection
             consumer = new AsyncEventingBasicConsumer(Model);
@@ -57,7 +58,7 @@ namespace SME.Services
             consumer.Received += async (model, ea) =>
             {
                 var body = ea.Body;
-                var response = (LearningPlanInfo)body.DeSerialize(typeof(LearningPlanInfo));
+                var response = (List<LearningPlanInfo>)body.DeSerialize(typeof(List<LearningPlanInfo>));
                 if (ea.BasicProperties.CorrelationId == correlationId)
                 {
                     responseQueue.Add(response);
@@ -66,9 +67,9 @@ namespace SME.Services
             };
 
             // Preparing message and publishing it
-            var messageBytes = Encoding.UTF8.GetBytes(learningPlanId);
+            var messageBytes = learningPlanIds.Serialize();
             Model.BasicPublish(
-                exchange: "",
+                exchange: ExchangeName,
                 routingKey: "Request.LP",
                 basicProperties: properties,
                 body: messageBytes);
