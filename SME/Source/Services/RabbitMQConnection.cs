@@ -15,7 +15,7 @@ namespace SME.Services
         private ConnectionFactory Factory;
         public IConnection Connection { get; set; }
         public IModel Model { get; set; }
-        private AsyncEventingBasicConsumer consumer;
+        private EventingBasicConsumer consumer;
         private IBasicProperties properties;
         private BlockingCollection<List<LearningPlanInfo>> responseQueue = new BlockingCollection<List<LearningPlanInfo>>();
         public string ExchangeName = "KnowledgeGraphExchange";
@@ -48,14 +48,14 @@ namespace SME.Services
         public List<LearningPlanInfo> GetLearningPlanInfo(List<string> learningPlanIds)
         {
             // Initializing the connection
-            consumer = new AsyncEventingBasicConsumer(Model);
+            consumer = new EventingBasicConsumer(Model);
             properties = Model.CreateBasicProperties();
             var correlationId = Guid.NewGuid().ToString("N");
             properties.CorrelationId = correlationId;
             properties.ReplyTo = replyQueueName;
 
             // Initialising the reciever
-            consumer.Received += async (model, ea) =>
+            consumer.Received += (model, ea) =>
             {
                 Console.WriteLine("Response Recieved");
                 try
@@ -72,7 +72,6 @@ namespace SME.Services
                 {
                     ConsoleWriter.ConsoleAnException(e);
                 }
-                await Task.Yield();
             };
 
             // Preparing message and publishing it
@@ -89,7 +88,7 @@ namespace SME.Services
                 consumer: consumer,
                 queue: replyQueueName,
                 autoAck: true);
-            Console.Write("Taking from BlockingCollection");
+            Console.Write("Taking from BlockingCollection with count " + responseQueue.Count);
             return responseQueue.Take();
         }
         public void Close()
