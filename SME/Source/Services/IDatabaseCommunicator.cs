@@ -1,7 +1,7 @@
 using SME.Models;
 
 namespace SME.Services{
-    public interface IQuestionRequestHandler
+    public interface IDatabaseCommunicator
     {
         QuestionBatchResponse ProvideQuestionsFromId(QuestionBatchRequest batchRequest);
         void HandleQuestionRequestFromQueue();

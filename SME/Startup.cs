@@ -69,7 +69,7 @@ namespace SME
             services.AddScoped<ITechnologyRepository, TechnologyMongo>();
             services.AddScoped<ILearningPlanRepository, LearningPlanMongo>();
             services.AddScoped<IQuestionRepository, QuestionMongo>();
-            services.AddScoped<IQuestionRequestHandler, QuestionRequestHandler>();
+            services.AddScoped<IDatabaseCommunicator, DatabaseCommunicator>();
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>
             {
@@ -105,7 +105,7 @@ namespace SME
             IApplicationBuilder app,
             IHostingEnvironment env,
             RabbitMQConnection rabbitMQConnection,
-            IQuestionRequestHandler questionRequestHandler
+            IDatabaseCommunicator DatabaseCommunicator
         )
         {
             if (env.IsDevelopment())

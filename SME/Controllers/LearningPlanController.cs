@@ -80,13 +80,6 @@ namespace SME.Controllers
                         return Ok("There are no Learning plans. You can create your own Learning plan");
                     }
                     return Ok(LearningPlansObj);
-                // case "saved":
-                //     var savedLearningPlans = await repository.GetSavedLearningPlansOfUser(text);
-                //     if (savedLearningPlans == null)
-                //     {
-                //         return Ok("There are no Learning plans. You can create your own Learning plan");
-                //     }
-                //     return Ok(savedLearningPlans);
                 default:
                     return BadRequest();
             }

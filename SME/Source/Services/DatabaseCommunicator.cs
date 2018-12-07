@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 using MongoDB.Driver;
 using MongoDB.Driver.Core.Connections;
@@ -9,11 +11,12 @@ using RabbitMQ.Client.Events;
 using SME.Models;
 namespace SME.Services
 {
-    public class QuestionRequestHandler : IQuestionRequestHandler
+    public class DatabaseCommunicator : IDatabaseCommunicator
     {
         private MongoDbConnection db;
         private RabbitMQConnection rabbit;
-        public QuestionRequestHandler(MongoDbConnection db, RabbitMQConnection rabbit)
+        
+        public DatabaseCommunicator(MongoDbConnection db, RabbitMQConnection rabbit)
         {
             this.db = db;
             this.rabbit = rabbit;
@@ -41,16 +44,14 @@ namespace SME.Services
             Console.WriteLine("----------------------------------------------------------------");
             consumer.Received += async (model, ea) =>
             {
+                Console.WriteLine("-----------------------------------------------------------------------");
+                Console.WriteLine("Consuming from KnowledgeGraph ");
                 try
                 {
-                    Console.WriteLine("-----------------------------------------------------------------------");
-                    Console.WriteLine("Consuming from KnowledgeGraph ");
                     channel.BasicAck(ea.DeliveryTag, false);
                     var body = ea.Body;
                     var request = (QuestionBatchRequest)body.DeSerialize(typeof(QuestionBatchRequest));
                     Console.WriteLine("Username " + request.Username + " is requesting " + request.IdRequestList.Count + " Questions");
-                    var routingKey = ea.RoutingKey;
-                    Console.WriteLine("-----------------------------------------------------------------------");
                     var qbr = ProvideQuestionsFromId(request);
                     var response = ObjectSerialize.Serialize(qbr);
                     Console.WriteLine("Questions requested are->");
@@ -58,7 +59,7 @@ namespace SME.Services
                     {
                         Console.WriteLine(JsonConvert.SerializeObject(item));
                     }
-                    Console.WriteLine($"Sending " + qbr.ResponseList.Count + " Questions to Quiz Engine ");
+                    Console.WriteLine("Sending " + qbr.ResponseList.Count + " Questions to Quiz Engine ");
                     // Send a message back to QuizEngine with the necessary question as response
                     rabbit.Model.BasicPublish(
                                 exchange: rabbit.ExchangeName,
@@ -77,5 +78,10 @@ namespace SME.Services
             Console.WriteLine("Listening to Knowledge Graph microservice for Question ID request ");
             channel.BasicConsume("KnowledgeGraph_Contributer_Ids", false, consumer);
         }
+
+       
+
+
+
     }
 }

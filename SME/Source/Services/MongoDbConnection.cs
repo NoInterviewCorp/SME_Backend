@@ -12,15 +12,11 @@ namespace SME.Services
         private readonly MongoClient client;
         public MongoDbConnection(IOptions<MongoSettings> options)
         {
-            // BsonClassMap.RegisterClassMap<Question>().MapProperty(t => t.CorrectOptionId);
             this.client = new MongoClient(options.Value.ConnectionString);
             _db = client.GetDatabase(options.Value.Database);
             Concepts.Indexes.CreateOne(new CreateIndexModel<Concept>("{ Name : \"text\" }"));
             Technologies.Indexes.CreateOne(new CreateIndexModel<Technology>("{ Name : \"text\" }"));
             Resources.Indexes.CreateOne(new CreateIndexModel<Resource>("{ Name : \"text\", Description: \"text\" }"));
-            // Resources.Indexes.CreateOne(new CreateIndexModel<Resource>("{ ResourceId : 1 }"));
-            // LearningPlans.Indexes.CreateOne(new CreateIndexModel<LearningPlan>("{ LearningPlanId : 1 }"));
-            // Questions.Indexes.CreateOne(new CreateIndexModel<Question>("{ QuestionId : 1 }"));
         }
         public IMongoCollection<Resource> Resources => _db.GetCollection<Resource>("Resources");
         public IMongoCollection<LearningPlan> LearningPlans => _db.GetCollection<LearningPlan>("LearningPlans");

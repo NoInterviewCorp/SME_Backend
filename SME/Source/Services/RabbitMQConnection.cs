@@ -1,6 +1,11 @@
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
+using RabbitMQ.Client.Events;
+using SME.Models;
 using System;
+using System.Collections.Concurrent;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace SME.Services
 {
@@ -9,10 +14,13 @@ namespace SME.Services
         private ConnectionFactory Factory;
         public IConnection Connection { get; set; }
         public IModel Model { get; set; }
+        private AsyncEventingBasicConsumer consumer;
+        private IBasicProperties properties;
+        private BlockingCollection<LearningPlanInfo> responseQueue = new BlockingCollection<LearningPlanInfo>();
         public string ExchangeName = "KnowledgeGraphExchange";
+        private string replyQueueName = "AverageRating_TotalSubs_Response";
         public RabbitMQConnection(IOptions<RabbitMQSettings> options)
         {
-            // this.dbConnection = dbConnection;
             var settings = options.Value;
             Factory = new ConnectionFactory
             {
@@ -28,6 +36,10 @@ namespace SME.Services
                 Model.ExchangeDeclare(ExchangeName, "topic");
                 Model.QueueDeclare("Contributer_QuizEngine_Questions", false, false, false, null);
                 Model.QueueBind("Contributer_QuizEngine_Questions", ExchangeName, "Send.Question");
+                Model.QueueDeclare("AverageRating_TotalSubs_Request", false, false, false, null);
+                Model.QueueBind("AverageRating_TotalSubs_Request", ExchangeName, "Request.LP");
+                Model.QueueDeclare(replyQueueName, false, false, false, null);
+                Model.QueueBind(replyQueueName, ExchangeName, "Response.LP");
             }
             catch (Exception e)
             {
@@ -36,6 +48,49 @@ namespace SME.Services
                 Console.WriteLine(e.StackTrace);
                 Console.WriteLine("--------------------------------------------------------------");
             }
+        }
+
+        public LearningPlanInfo GetLearningPlanInfo(string learningPlanId)
+        {
+            // Initializing the connection
+            consumer = new AsyncEventingBasicConsumer(Model);
+            properties = Model.CreateBasicProperties();
+            var correlationId = Guid.NewGuid().ToString("N");
+            properties.CorrelationId = correlationId;
+            properties.ReplyTo = replyQueueName;
+
+            // Initialising the reciever
+            consumer.Received += async (model, ea) =>
+            {
+                var body = ea.Body;
+                var response = (LearningPlanInfo)body.DeSerialize(typeof(LearningPlanInfo));
+                if (ea.BasicProperties.CorrelationId == correlationId)
+                {
+                    responseQueue.Add(response);
+                }
+                await Task.Yield();
+            };
+
+            // Preparing message and publishing it
+            var messageBytes = Encoding.UTF8.GetBytes(learningPlanId);
+            Model.BasicPublish(
+                exchange: "",
+                routingKey: "Request.LP",
+                basicProperties: properties,
+                body: messageBytes);
+
+            // Starting to listen for the response
+            Model.BasicConsume(
+                consumer: consumer,
+                queue: replyQueueName,
+                autoAck: true);
+
+            return responseQueue.Take();
+        }
+        public void Close()
+        {
+            Connection.Close();
+            responseQueue.Dispose();
         }
     }
 }

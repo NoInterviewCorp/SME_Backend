@@ -21,8 +21,6 @@ namespace SME.Persistence
         }
         public async Task<ReplaceOneResult> AddLearningPlanAsync(LearningPlan learningPlan)
         {
-            // TODO: Throw 400 BadRequest when the user tries 
-            // to update a Learning Plan which doesn't exist
             Console.WriteLine("Checking Learning Plan Id");
             Console.WriteLine(learningPlan.LearningPlanId);
 
@@ -208,7 +206,6 @@ namespace SME.Persistence
 
             var filter = Builders<Technology>.Filter.Where(t => t.Name == technologyName);
             var technologyUpdateDefinition = Builders<Technology>.Update
-                // .PushEach(t => t.Concepts, conceptsOfTechnology);
                 .AddToSetEach(t => t.Concepts, conceptsOfTechnology);
 
             await dbConnection.Technologies.FindOneAndUpdateAsync(
