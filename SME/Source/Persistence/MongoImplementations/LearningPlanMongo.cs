@@ -8,7 +8,7 @@ using MongoDB.Bson;
 
 using SME.Models;
 using SME.Services;
-
+using Newtonsoft.Json;
 
 namespace SME.Persistence
 {
@@ -70,9 +70,13 @@ namespace SME.Persistence
 
         public async Task<List<LearningPlan>> GetLearningPlansByInfos(List<LearningPlanInfo> infos)
         {
-            var plans = await dbConnection.LearningPlans
-                .Find(lp => infos.FirstOrDefault(lp2 => lp2.LearningPlanId == lp.LearningPlanId) != null)
-                .ToListAsync();
+            var lpIds = infos.Select(lp => new ObjectId(lp.LearningPlanId)).ToList();
+            var id = JsonConvert.ToString(lpIds);
+            var filter = "{ \"_id\" : { \"$in\" :" + id + "}}";
+            var plans = await dbConnection.LearningPlans.Find(filter).ToListAsync();
+            // var plans = await dbConnection.LearningPlans
+            //     .Find(lp => infos.FirstOrDefault(lp2 => lp2.LearningPlanId == lp.LearningPlanId) != null)
+            //     .ToListAsync();
             return plans;
         }
 
