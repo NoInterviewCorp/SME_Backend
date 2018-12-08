@@ -18,6 +18,8 @@ namespace SME.Services
         private AsyncEventingBasicConsumer consumer;
         private IBasicProperties properties;
         private BlockingCollection<List<LearningPlanInfo>> responseQueue = new BlockingCollection<List<LearningPlanInfo>>();
+        private BlockingCollection<List<LearningPlanInfo>> popularPlansQueue = new BlockingCollection<List<LearningPlanInfo>>();
+        private BlockingCollection<List<LearningPlanInfo>> subscriptionsQueue = new BlockingCollection<List<LearningPlanInfo>>();
         public string ExchangeName = "KnowledgeGraphExchange";
         private string replyQueueName = "AverageRating_TotalSubs_Response";
         public RabbitMQConnection(IOptions<RabbitMQSettings> options)
@@ -50,14 +52,14 @@ namespace SME.Services
             // Initializing the connection
             consumer = new AsyncEventingBasicConsumer(Model);
             properties = Model.CreateBasicProperties();
-            var correlationId = Guid.NewGuid().ToString("N");
+            var correlationId = " 1" ;//Guid.NewGuid().ToString("N");
             properties.CorrelationId = correlationId;
-            properties.ReplyTo = replyQueueName;
+            properties.ReplyTo = "Response.LP";
 
             // Initialising the reciever
             consumer.Received += async (model, ea) =>
             {
-                Console.WriteLine("Response Recieved");
+                Console.WriteLine("Response Recieved LearningPlan Info");
                 try
                 {
                     var body = ea.Body;
@@ -92,6 +94,103 @@ namespace SME.Services
             Console.Write("Taking from BlockingCollection with count " + responseQueue.Count);
             return responseQueue.Take();
         }
+
+        public List<LearningPlanInfo> GetPopularPlans(string techName)
+        {
+            // Initializing the connection
+            var consumer2 = new AsyncEventingBasicConsumer(Model);
+            properties = Model.CreateBasicProperties();
+            var correlationId = " 1"; // Guid.NewGuid().ToString("N");
+            properties.CorrelationId = correlationId;
+            properties.ReplyTo = "Response.PopularPlans";
+
+            // Initialising the reciever
+            consumer2.Received += async (model, ea) =>
+            {
+                Console.WriteLine("Response Recieved for Popular plans");
+                try
+                {
+                    var body = ea.Body;
+                    var response = (List<LearningPlanInfo>)body.DeSerialize(typeof(List<LearningPlanInfo>));
+                    if (ea.BasicProperties.CorrelationId == correlationId)
+                    {
+                        Console.WriteLine($"Adding reponse to the queue with {response.Count} objects");
+                        popularPlansQueue.Add(response);
+                    }
+                }
+                catch (Exception e)
+                {
+                    ConsoleWriter.ConsoleAnException(e);
+                }
+                await Task.Yield();
+            };
+
+            // Preparing message and publishing it
+            Console.WriteLine($"Sending Request for Popular plans for {techName}");
+            var messageBytes = techName.Serialize();
+            Model.BasicPublish(
+                exchange: ExchangeName,
+                routingKey: "Request.PopularPlans",
+                basicProperties: properties,
+                body: messageBytes);
+
+            // Starting to listen for the response
+            Model.BasicConsume(
+                consumer: consumer2,
+                queue: "KnowledgeGraph_Contributer_PopularPlans",
+                autoAck: true);
+            Console.Write("Taking from Popular Plans Queue with count " + responseQueue.Count);
+            return popularPlansQueue.Take();
+        }
+
+        public List<LearningPlanInfo> GetSubscriptions(string user)
+        {
+            // Initializing the connection
+            var consumer3 = new AsyncEventingBasicConsumer(Model);
+            properties = Model.CreateBasicProperties();
+            var correlationId = " 1"; // Guid.NewGuid().ToString("N");
+            properties.CorrelationId = correlationId;
+            properties.ReplyTo = "Response.Subscriptions";
+
+            // Initialising the reciever
+            consumer3.Received += async (model, ea) =>
+            {
+                Console.WriteLine("Response Recieved for Subscriptions of user -> "+user);
+                try
+                {
+                    var body = ea.Body;
+                    var response = (List<LearningPlanInfo>)body.DeSerialize(typeof(List<LearningPlanInfo>));
+                    if (ea.BasicProperties.CorrelationId == correlationId)
+                    {
+                        Console.WriteLine($"Adding reponse to the queue with {response.Count} objects");
+                        subscriptionsQueue.Add(response);
+                    }
+                }
+                catch (Exception e)
+                {
+                    ConsoleWriter.ConsoleAnException(e);
+                }
+                await Task.Yield();
+            };
+
+            // Preparing message and publishing it
+            Console.WriteLine($"Sending Request for Subscription for {user}");
+            var messageBytes = user.Serialize();
+            Model.BasicPublish(
+                exchange: ExchangeName,
+                routingKey: "Request.Subscriptions",
+                basicProperties: properties,
+                body: messageBytes);
+
+            // Starting to listen for the response
+            Model.BasicConsume(
+                consumer: consumer3,
+                queue: "KnowledgeGraph_Contributer_Subscriptions",
+                autoAck: true);
+            Console.Write("Taking from Popular Plans Queue with count " + responseQueue.Count);
+            return popularPlansQueue.Take();
+        }
+
         public void Close()
         {
             Connection.Close();

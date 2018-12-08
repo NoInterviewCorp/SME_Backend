@@ -46,7 +46,7 @@ namespace SME.Controllers
             var learningPlanIds = LearningPlans.Select(lp => lp.LearningPlanId).ToList();
             Console.WriteLine(learningPlanIds.Count);
             var lpInfos = mQConnection.GetLearningPlanInfo(learningPlanIds);
-            
+
             var result = AddInfoToPlans(lpInfos, LearningPlans);
             return Ok(result);
         }
@@ -111,6 +111,16 @@ namespace SME.Controllers
                     var lpInfos3 = mQConnection.GetLearningPlanInfo(learningPlanIds3);
                     var result3 = AddInfoToPlans(lpInfos3, LearningPlansObj);
                     return Ok(result3);
+                case "popular":
+                    var resp = mQConnection.GetPopularPlans(text);
+                    var popularPlans = await repository.GetLearningPlansByInfos(resp);
+                    var resultPopular = AddInfoToPlans(resp, popularPlans);
+                    return Ok(resultPopular);
+                case "subscriptions":
+                    var subs = mQConnection.GetSubscriptions(text);
+                    var subscriptions = await repository.GetLearningPlansByInfos(subs);
+                    var resultSubs = AddInfoToPlans(subs, subscriptions);
+                    return Ok(resultSubs);
                 default:
                     return BadRequest();
             }

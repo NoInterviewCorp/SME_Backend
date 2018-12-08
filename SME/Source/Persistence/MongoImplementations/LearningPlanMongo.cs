@@ -68,6 +68,14 @@ namespace SME.Persistence
             return (plans.Count > 0) ? plans : null;
         }
 
+        public async Task<List<LearningPlan>> GetLearningPlansByInfos(List<LearningPlanInfo> infos)
+        {
+            var plans = await dbConnection.LearningPlans
+                .Find(lp => infos.FirstOrDefault(lp2 => lp2.LearningPlanId == lp.LearningPlanId) != null)
+                .ToListAsync();
+            return plans;
+        }
+
         public async Task UpdateLearningPlanAsync(LearningPlan learningPlan)
         {
             // TODO: Throw 400 BadRequest when the user tries 
@@ -209,8 +217,8 @@ namespace SME.Persistence
                 .AddToSetEach(t => t.Concepts, conceptsOfTechnology);
 
             await dbConnection.Technologies.FindOneAndUpdateAsync(
-                filter, 
-                technologyUpdateDefinition, 
+                filter,
+                technologyUpdateDefinition,
                 new FindOneAndUpdateOptions<Technology>() { IsUpsert = true }
             );
         }
