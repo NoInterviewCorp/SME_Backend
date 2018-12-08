@@ -70,11 +70,12 @@ namespace SME.Persistence
 
         public async Task<List<LearningPlan>> GetLearningPlansByInfos(List<LearningPlanInfo> infos)
         {
-            var lpIds = infos.Select(lp =>{return new ObjectId(lp.LearningPlanId);}).ToList();
+            var lpIds = infos.Select(lp => lp.LearningPlanId).ToList();
             var id = JsonConvert.SerializeObject(lpIds);
             Console.WriteLine(id);
-            var filter = "{ \"LearningPlanId\" : { \"$in\" :" + id + "}}";
-            var plans = await dbConnection.LearningPlans.Find(filter).ToListAsync();
+            var filterDefinition = Builders<LearningPlan>.Filter.In(lp => lp.LearningPlanId, lpIds);
+            // var filter = "{ \"LearningPlanId\" : { \"$in\" :" + id + "}}";
+            var plans = await dbConnection.LearningPlans.Find(filterDefinition).ToListAsync();
             Console.WriteLine(plans.Count);
             // var plans = await dbConnection.LearningPlans
             //     .Find(lp => infos.FirstOrDefault(lp2 => lp2.LearningPlanId == lp.LearningPlanId) != null)
