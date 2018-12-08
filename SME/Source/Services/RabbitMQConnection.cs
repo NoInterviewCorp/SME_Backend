@@ -99,10 +99,10 @@ namespace SME.Services
         {
             // Initializing the connection
             var consumer2 = new AsyncEventingBasicConsumer(Model);
-            properties = Model.CreateBasicProperties();
+            var properties = Model.CreateBasicProperties();
             var correlationId = " 1"; // Guid.NewGuid().ToString("N");
             properties.CorrelationId = correlationId;
-            properties.ReplyTo = "Response.PopularPlans";
+            properties.ReplyTo = "Reponse.PopularPlans";
 
             // Initialising the reciever
             consumer2.Received += async (model, ea) =>
@@ -114,7 +114,7 @@ namespace SME.Services
                     var response = (List<LearningPlanInfo>)body.DeSerialize(typeof(List<LearningPlanInfo>));
                     if (ea.BasicProperties.CorrelationId == correlationId)
                     {
-                        Console.WriteLine($"Adding reponse to the queue with {response.Count} objects");
+                        Console.WriteLine($"Adding response to the queue with {response.Count} objects");
                         popularPlansQueue.Add(response);
                     }
                 }
@@ -147,10 +147,10 @@ namespace SME.Services
         {
             // Initializing the connection
             var consumer3 = new AsyncEventingBasicConsumer(Model);
-            properties = Model.CreateBasicProperties();
+            var properties = Model.CreateBasicProperties();
             var correlationId = " 1"; // Guid.NewGuid().ToString("N");
             properties.CorrelationId = correlationId;
-            properties.ReplyTo = "Response.Subscriptions";
+            properties.ReplyTo = "Reponse.Subscriptions";
 
             // Initialising the reciever
             consumer3.Received += async (model, ea) =>
