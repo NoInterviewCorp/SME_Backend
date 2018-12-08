@@ -188,7 +188,7 @@ namespace SME.Services
                 queue: "KnowledgeGraph_Contributer_Subscriptions",
                 autoAck: true);
             Console.Write("Taking from Popular Plans Queue with count " + responseQueue.Count);
-            return popularPlansQueue.Take();
+            return subscriptionsQueue.Take();
         }
 
         public void Close()
