@@ -21,6 +21,7 @@ namespace SME.Services
             this.db = db;
             this.rabbit = rabbit;
             HandleQuestionRequestFromQueue();
+            HandleResourceRequestFromQueue();
         }
         public QuestionBatchResponse ProvideQuestionsFromId(QuestionBatchRequest batchRequest)
         {
@@ -78,6 +79,57 @@ namespace SME.Services
             };
             Console.WriteLine("Listening to Knowledge Graph microservice for Question ID request ");
             channel.BasicConsume("KnowledgeGraph_Contributer_Ids", false, consumer);
+        }
+
+        public List<Resource> ProvideRecommendedResources(List<string> resourceIds)
+        {
+            var filterDefinition = Builders<Resource>.Filter.In(r => r.ResourceId, resourceIds);
+            var plans = db.Resources.Find(filterDefinition).ToList();
+            Console.WriteLine(plans.Count+" Resources have been sent");
+            return plans;
+        }
+
+        public void HandleResourceRequestFromQueue()
+        {
+            var channel = rabbit.Connection.CreateModel();
+            var consumer = new AsyncEventingBasicConsumer(channel);
+            Console.WriteLine("----------------------------------------------------------------");
+            consumer.Received += async (model, ea) =>
+            {
+                Console.WriteLine("-----------------------------------------------------------------------");
+                Console.WriteLine("Consuming from KnowledgeGraph ");
+                try
+                {
+                    channel.BasicAck(ea.DeliveryTag, false);
+                    var body = ea.Body;
+                    var request = (List<string>)body.DeSerialize(typeof(List<string>));
+                    Console.WriteLine("Request of "+request.Count+" Resource Ids");
+                    var qbr = ProvideRecommendedResources(request);
+                    var response = ObjectSerialize.Serialize(qbr);
+                    Console.WriteLine("Resources requested are->");
+                    foreach (var item in qbr)
+                    {
+                        Console.WriteLine(JsonConvert.SerializeObject(item));
+                    }
+                    Console.WriteLine("Sending " + qbr.Count + " Resources to Quiz Engine ");
+
+                    // Send a message back to QuizEngine with the necessary question as response
+                    rabbit.Model.BasicPublish(
+                                exchange: rabbit.ExchangeName,
+                                routingKey: "Consume.Resource",
+                                basicProperties: null,
+                                body: response
+                            );
+                    Console.WriteLine("Published to Resource -> QuizEngine");
+                    await Task.Yield();
+                }
+                catch (Exception e)
+                {
+                    ConsoleWriter.ConsoleAnException(e);
+                }
+            };
+            Console.WriteLine("Listening to Knowledge Graph microservice for Resource ID request ");
+            channel.BasicConsume("KnowledgeGraph_Contributer_ResourceIds", false, consumer);
         }
     }
 }

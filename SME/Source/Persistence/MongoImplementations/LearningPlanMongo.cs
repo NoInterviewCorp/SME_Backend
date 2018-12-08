@@ -74,18 +74,14 @@ namespace SME.Persistence
             var id = JsonConvert.SerializeObject(lpIds);
             Console.WriteLine(id);
             var filterDefinition = Builders<LearningPlan>.Filter.In(lp => lp.LearningPlanId, lpIds);
-            // var filter = "{ \"LearningPlanId\" : { \"$in\" :" + id + "}}";
             var plans = await dbConnection.LearningPlans.Find(filterDefinition).ToListAsync();
             Console.WriteLine(plans.Count);
-            // var plans = await dbConnection.LearningPlans
-            //     .Find(lp => infos.FirstOrDefault(lp2 => lp2.LearningPlanId == lp.LearningPlanId) != null)
-            //     .ToListAsync();
             return plans;
         }
 
         public async Task UpdateLearningPlanAsync(LearningPlan learningPlan)
         {
-            // TODO: Throw 400 BadRequest when the user tries 
+            // Throw 400 BadRequest when the user tries 
             // to update a Learning Plan which doesn't exist
             if (learningPlan.LearningPlanId == null)
             {
