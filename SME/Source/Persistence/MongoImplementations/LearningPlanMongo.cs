@@ -71,7 +71,7 @@ namespace SME.Persistence
         public async Task<List<LearningPlan>> GetLearningPlansByInfos(List<LearningPlanInfo> infos)
         {
             var lpIds = infos.Select(lp => new ObjectId(lp.LearningPlanId)).ToList();
-            var id = JsonConvert.ToString(lpIds);
+            var id = JsonConvert.SerializeObject(lpIds);
             var filter = "{ \"_id\" : { \"$in\" :" + id + "}}";
             var plans = await dbConnection.LearningPlans.Find(filter).ToListAsync();
             // var plans = await dbConnection.LearningPlans
