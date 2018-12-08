@@ -72,8 +72,10 @@ namespace SME.Persistence
         {
             var lpIds = infos.Select(lp => new ObjectId(lp.LearningPlanId)).ToList();
             var id = JsonConvert.SerializeObject(lpIds);
+            Console.WriteLine(id);
             var filter = "{ \"_id\" : { \"$in\" :" + id + "}}";
             var plans = await dbConnection.LearningPlans.Find(filter).ToListAsync();
+            Console.WriteLine(plans.Count);
             // var plans = await dbConnection.LearningPlans
             //     .Find(lp => infos.FirstOrDefault(lp2 => lp2.LearningPlanId == lp.LearningPlanId) != null)
             //     .ToListAsync();
