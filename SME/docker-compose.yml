@@ -16,6 +16,8 @@ services:
             - 27017:27017
         networks:
             - potentiometer-network
+        volumes:
+            - ./data:/data/db
 networks:
   potentiometer-network:
     name: potentiometer-network
